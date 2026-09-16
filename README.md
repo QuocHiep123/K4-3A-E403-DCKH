@@ -8,10 +8,10 @@
 
 | Họ và Tên | Mã Học Viên | Vai trò chính | Phần việc đảm nhiệm trong dự án |
 |---|---|---|---|
-| Nguyễn Thế Khang | 2A202602964 |  |  |
-| Nguyễn Việt Dũng | 2A202602812 |  |  |
-| Đào Quang Cảnh | 2A202602542 |  |  |
-| Đặng Quốc Hiệp | 2A202602755 |  |  |
+| Đặng Quốc Hiệp | 2A202602755 | Đội trưởng / AI Lead | Quản lý dự án, thiết kế luồng quyết định AI, Prompt Engineering, kịch bản lỗi (4 lớp chỗ khó), đại diện nộp các mốc Checkpoint |
+| Nguyễn Thế Khang | 2A202602964 | Product & Spec Lead | Phân tích JTBD, xây dựng và hoàn thiện `spec.md`, khai phá dữ liệu (mining chatlog/Discord), tổng hợp bằng chứng (Evidence) |
+| Nguyễn Việt Dũng | 2A202602812 | Prototype & Frontend Lead | Xây dựng mã nguồn prototype trong `codebase/`, thiết kế giao diện demo, tích hợp luồng gọi mô hình AI thật |
+| Đào Quang Cảnh | 2A202602542 | Evaluation & QA Lead | Xây dựng bộ kiểm thử Golden Set (≥20 cases), thực hiện đo lường đánh giá (`eval/`), ghi nhận nhật ký validation người dùng (`validation/`) |
 
 > Nhóm copy nguyên file README này về repo của mình, rồi điền bảng trên. Cột **Phần việc đảm nhiệm** ghi càng cụ thể càng tốt.
 
