@@ -24,3 +24,16 @@ data/
 .DS_Store
 Thumbs.db
 *.log
+
+# Also exclude course packs if copied outside data/.
+vlearn-pack/
+discord-pack/
+studio-pack/
+
+# Organizer reference files are local only, not submission content.
+/01-challenge-brief.md
+/02-guide.md
+/03-ai-spec-template.md
+/04-rubric.md
+/tracks/
+/further-reading/
