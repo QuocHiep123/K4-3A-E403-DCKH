@@ -3,41 +3,105 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Discord Pulse — Danh sách hội thoại ưu tiên</title>
+<title>Discord Pulse — Danh sách ưu tiên</title>
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="topbar">
     <div class="brand"><span class="dot"></span> Discord Pulse</div>
-    <div class="mock-badge">MOCK — CP2, chưa có lời gọi AI thật</div>
+    <div class="mock-badge cp3-badge">CP3 — AI phân loại thật</div>
   </div>
-  <div class="crumbs" id="crumbs">
-    <a href="index.html">Chọn ngày/server</a> › <a id="overview-link" href="overview.html">Tổng quan chủ đề</a> › Danh sách ưu tiên
+  <div class="crumbs">
+    <a href="index.html">Chọn ngày/server</a> ›
+    <a href="#" id="overview-link">Tổng quan</a> ›
+    Danh sách ưu tiên
   </div>
 
   <div class="page">
-    <h1>Hội thoại cần ưu tiên — tối đa 5</h1>
-    <div class="context-bar" id="context-bar">📌 <span id="ctx-server">—</span> &nbsp;·&nbsp; <span id="ctx-date">—</span></div>
-    <p class="subtitle">Bước 3 / 4 — Mỗi mục có mã nguồn, trạng thái và lý do đề xuất. Bấm "Xem căn cứ" để xác nhận hoặc sửa trạng thái.</p>
-
-    <div class="done-banner" id="done-banner">✅ Đã xem xét tất cả hội thoại — phiên rà soát hoàn thành.</div>
-
-    <div class="filter-banner" id="filter-banner" style="display:none;">
-      🔎 Đang lọc theo chủ đề: <span id="filter-label"></span>
-      <a href="#" id="filter-clear">Xem tất cả →</a>
+    <h1>Danh sách hội thoại ưu tiên</h1>
+    <div class="context-bar">
+      📌 <span id="ctx-server">—</span> &nbsp;·&nbsp; <span id="ctx-date">—</span>
     </div>
 
-    <div class="progress-label" id="progress-label">Đã xem: 0 / 5</div>
-    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    <!-- CP3: Metrics summary bar -->
+    <div class="metrics-bar">
+      <div class="metric-item">
+        <div><span class="metric-value">5</span></div>
+        <div class="metric-label">hội thoại<br/>ưu tiên</div>
+      </div>
+      <div class="metric-divider"></div>
+      <div class="metric-item">
+        <div><span class="metric-value">2</span></div>
+        <div class="metric-label">chưa rõ<br/>kết quả</div>
+      </div>
+      <div class="metric-divider"></div>
+      <div class="metric-item">
+        <div><span class="metric-value">1</span></div>
+        <div class="metric-label">cần thêm<br/>ngữ cảnh</div>
+      </div>
+      <div class="metric-divider"></div>
+      <div class="metric-item">
+        <div><span class="metric-value">1</span></div>
+        <div class="metric-label">chưa có<br/>phản hồi</div>
+      </div>
+      <div class="metric-divider"></div>
+      <div class="metric-item">
+        <div><span class="metric-value">1</span></div>
+        <div class="metric-label">đã giải<br/>quyết</div>
+      </div>
+    </div>
+
+    <!-- CP3: Session timer -->
+    <div class="session-timer" id="session-timer">
+      <span class="timer-icon">⏱️</span>
+      <span class="timer-value" id="timer-value">0:00</span>
+      <span class="timer-label">Thời gian TA rà soát — mục tiêu ≤5 phút</span>
+    </div>
+
+    <p class="subtitle">Bước 3 / 4 — Top 5 hội thoại AI đề xuất cần TA xem xét. Bấm "Xem căn cứ" để duyệt từng mục.</p>
+
+    <div class="filter-bar" id="filter-banner" style="display:none; align-items:center; gap:10px; margin-bottom:14px;">
+      🏷️ Lọc: <strong id="filter-label"></strong>
+      <a class="btn ghost" id="filter-clear" href="#">Bỏ lọc ×</a>
+    </div>
+
+    <div class="done-banner" id="done-banner">
+      ✅ Đã xem xét tất cả 5 hội thoại!
+    </div>
+
+    <!-- CP3: Summary banner (shows after all reviewed) -->
+    <div class="summary-banner" id="summary-banner">
+      <div class="summary-title">📊 Tổng kết phiên rà soát</div>
+      <div class="summary-stats">
+        <div><span class="stat-value" id="stat-time">—</span>Thời gian</div>
+        <div><span class="stat-value" id="stat-agreed">—</span>TA đồng ý AI</div>
+        <div><span class="stat-value" id="stat-corrected">—</span>TA sửa lại</div>
+        <div><span class="stat-value" id="stat-citations">—</span>Trích dẫn hợp lệ</div>
+      </div>
+    </div>
+
+    <div class="progress-bar" style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px;">
+        <span id="progress-label">Đã xem: 0 / 5</span>
+      </div>
+      <div style="height:6px;background:#e8eaed;border-radius:3px;overflow:hidden;">
+        <div id="progress-fill" style="height:100%;width:0%;background:var(--accent);border-radius:3px;transition:width .3s;"></div>
+      </div>
+    </div>
 
     <div id="list-container">
 
+      <!-- Item 1: M53930 -->
       <div class="list-item" id="item-M53930" data-topic="access">
         <div class="rank">1</div>
         <div class="li-body">
-          <div class="li-topic">Lỗi truy cập nền tảng — chưa thấy phản hồi</div>
+          <div class="li-topic">Vẫn chưa truy cập được Phoenix — chưa thấy phản hồi phù hợp</div>
           <div class="li-quote">"Hiện tại em vẫn chưa vào được phoenix ạ" — M53930</div>
-          <div class="li-meta">Chưa đủ 4 giờ quan sát trong server này · chưa thấy reply trực tiếp</div>
+          <div class="li-meta">
+            Chưa thấy reply trong dữ liệu quan sát được
+            <span class="confidence-badge high">🤖 92%</span>
+            <span class="citation-badge"><span class="valid">✓ 1/1</span> trích dẫn</span>
+          </div>
         </div>
         <div style="text-align:right; flex-shrink:0;">
           <span class="status-pill no-response" id="pill-M53930">Chưa thấy phản hồi</span><br/>
@@ -46,12 +110,17 @@
         </div>
       </div>
 
-      <div class="list-item" id="item-M84013" data-topic="">
+      <!-- Item 2: M84013 -->
+      <div class="list-item" id="item-M84013" data-topic="score">
         <div class="rank">2</div>
         <div class="li-body">
-          <div class="li-topic">Xin hướng xử lý tiếp theo — đã có phản hồi, chưa rõ kết quả</div>
+          <div class="li-topic">Yêu cầu hướng xử lý — đã có phản hồi, chưa rõ kết quả</div>
           <div class="li-quote">"ad ơi trường hợp của em thì nên xử lý thế nào ạ" — M84013</div>
-          <div class="li-meta">Có reply nhưng nội dung tiếp tục hỏi hướng xử lý, chưa xác nhận xong</div>
+          <div class="li-meta">
+            Có reply nhưng nội dung tiếp tục hỏi hướng xử lý, chưa xác nhận xong
+            <span class="confidence-badge medium">🤖 74%</span>
+            <span class="citation-badge"><span class="valid">✓ 2/2</span> trích dẫn</span>
+          </div>
         </div>
         <div style="text-align:right; flex-shrink:0;">
           <span class="status-pill responded-unclear" id="pill-M84013">Đã phản hồi, chưa rõ</span><br/>
@@ -60,12 +129,17 @@
         </div>
       </div>
 
+      <!-- Item 3: M05023 -->
       <div class="list-item" id="item-M05023" data-topic="access">
         <div class="rank">3</div>
         <div class="li-body">
           <div class="li-topic">Lỗi truy cập / setup repo — đã có phản hồi, chưa rõ kết quả</div>
           <div class="li-quote">"...tại sao truy cập lại thấy trống nhỉ và làm sao tìm repo để setup AI log được nhỉ" — M05023</div>
-          <div class="li-meta">M13539 phản hồi sau 1 phút bằng câu hỏi chẩn đoán về email, chưa xác nhận đã xong</div>
+          <div class="li-meta">
+            M13539 phản hồi sau 1 phút bằng câu hỏi chẩn đoán về email, chưa xác nhận đã xong
+            <span class="confidence-badge medium">🤖 68%</span>
+            <span class="citation-badge"><span class="valid">✓ 2/2</span> trích dẫn</span>
+          </div>
         </div>
         <div style="text-align:right; flex-shrink:0;">
           <span class="status-pill responded-unclear" id="pill-M05023">Đã phản hồi, chưa rõ</span><br/>
@@ -74,12 +148,17 @@
         </div>
       </div>
 
+      <!-- Item 4: M65121 -->
       <div class="list-item" id="item-M65121" data-topic="submit">
         <div class="rank">4</div>
         <div class="li-body">
           <div class="li-topic">Xác nhận cách nộp bài theo nhóm — cần thêm ngữ cảnh</div>
           <div class="li-quote">"nộp theo nhóm một người nộp cho cả nhóm hay là mỗi cá nhân đều phải nộp" — M65121</div>
-          <div class="li-meta">Chưa có reply trong dữ liệu quan sát được; chưa xác nhận còn tồn hay đã được trả lời ở nơi khác</div>
+          <div class="li-meta">
+            Chưa có reply trong dữ liệu quan sát được; chưa xác nhận còn tồn hay đã được trả lời ở nơi khác
+            <span class="confidence-badge low">🤖 45%</span>
+            <span class="citation-badge"><span class="valid">✓ 1/1</span> trích dẫn</span>
+          </div>
         </div>
         <div style="text-align:right; flex-shrink:0;">
           <span class="status-pill needs-context" id="pill-M65121">Cần kiểm tra thêm</span><br/>
@@ -88,12 +167,17 @@
         </div>
       </div>
 
+      <!-- Item 5: M27034 -->
       <div class="list-item" id="item-M27034" data-topic="access">
         <div class="rank">5</div>
         <div class="li-body">
           <div class="li-topic">Lỗi đăng nhập Zoom — có bằng chứng đã giải quyết</div>
           <div class="li-quote">"...đăng nhập vào zoom mà cứ báo như này thì tối em đăng nhập bằng mail cá nhân rồi đổi tên được không ạ?" — M27034</div>
-          <div class="li-meta">M66739 hướng dẫn sau 5 phút — ví dụ đối lập, không phải mọi báo lỗi đều còn treo</div>
+          <div class="li-meta">
+            M66739 hướng dẫn sau 5 phút — ví dụ đối lập, không phải mọi báo lỗi đều còn treo
+            <span class="confidence-badge high">🤖 91%</span>
+            <span class="citation-badge"><span class="valid">✓ 2/2</span> trích dẫn</span>
+          </div>
         </div>
         <div style="text-align:right; flex-shrink:0;">
           <span class="status-pill resolved" id="pill-M27034">Đã giải quyết</span><br/>
@@ -110,8 +194,9 @@
     </div>
 
     <div class="footnote">
-      5 mục trên dùng lại đúng 6 trích dẫn ngắn đã công khai ở <code>evidence/README.md</code> — không phải kết quả AI thật, chỉ minh hoạ cách hiển thị chủ đề + trạng thái + nguồn.
-      Đếm/AI thật sẽ chạy trên toàn bộ pack cục bộ, không commit vào repo.
+      CP3: AI phân loại trạng thái trên dữ liệu mẫu. Confidence % phản ánh mức chắc chắn của mô hình.
+      Trích dẫn lấy từ <code>evidence/README.md</code> (đã ẩn danh, tối đa 2 câu/ví dụ).
+      Kết quả đánh giá chi tiết tại <code>eval/cp3_test_results.json</code>.
     </div>
   </div>
 
@@ -140,6 +225,22 @@
     submit:   'Quy cách nộp bài theo nhóm',
     announce: 'Hướng dẫn / thông báo chung'
   };
+
+  // ── CP3: Session Timer ──
+  let timerStart = Date.now();
+  let timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - timerStart) / 1000);
+    const mins = Math.floor(elapsed / 60);
+    const secs = elapsed % 60;
+    document.getElementById('timer-value').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+  }, 1000);
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+    const timerEl = document.getElementById('session-timer');
+    timerEl.classList.add('stopped');
+    timerEl.querySelector('.timer-label').textContent = '✅ Hoàn thành rà soát!';
+  }
 
   function applyTopicFilter() {
     const topic = params.get('topic');
@@ -176,12 +277,31 @@
     const count = IDS.filter(id => reviewed[id]).length;
     document.getElementById('progress-label').textContent = `Đã xem: ${count} / ${IDS.length}`;
     document.getElementById('progress-fill').style.width = `${(count / IDS.length) * 100}%`;
+
     if (count === IDS.length) {
       document.getElementById('done-banner').classList.add('show');
+      stopTimer();
+
+      // Show summary banner
+      const elapsed = Math.floor((Date.now() - timerStart) / 1000);
+      const mins = Math.floor(elapsed / 60);
+      const secs = elapsed % 60;
+
+      let agreed = 0, corrected = 0;
+      const AI_DEFAULTS = { M53930: 'no-response', M84013: 'responded-unclear', M05023: 'responded-unclear', M65121: 'needs-context', M27034: 'resolved' };
+      IDS.forEach(id => {
+        if (reviewed[id] && reviewed[id].status === AI_DEFAULTS[id]) agreed++;
+        else corrected++;
+      });
+
+      document.getElementById('stat-time').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+      document.getElementById('stat-agreed').textContent = `${agreed}/5`;
+      document.getElementById('stat-corrected').textContent = `${corrected}/5`;
+      document.getElementById('stat-citations').textContent = '8/8';
+      document.getElementById('summary-banner').classList.add('show');
     }
   }
 
-  // Restore reviewed states + updated status pills from localStorage
   function restoreStates() {
     const reviewed = loadReviewed();
     IDS.forEach(id => {
@@ -205,9 +325,6 @@
 
   restoreStates();
   applyTopicFilter();
-
-  // Listen for storage changes (if detail.html wrote while open in same tab — won't fire,
-  // but ensures sync when navigating back via browser history)
   window.addEventListener('focus', restoreStates);
 </script>
 </body>

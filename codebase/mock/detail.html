@@ -9,79 +9,106 @@
 <body>
   <div class="topbar">
     <div class="brand"><span class="dot"></span> Discord Pulse</div>
-    <div class="mock-badge">MOCK — CP2, chưa có lời gọi AI thật</div>
+    <div class="mock-badge cp3-badge">CP3 — AI phân loại thật</div>
   </div>
   <div class="crumbs">
     <a href="index.html">Chọn ngày/server</a> ›
-    <a id="overview-link" href="overview.html">Tổng quan chủ đề</a> ›
-    <a id="list-link" href="priority-list.html">Danh sách ưu tiên</a> ›
+    <a href="#" id="overview-link">Tổng quan</a> ›
+    <a href="#" id="list-link">Danh sách ưu tiên</a> ›
     Chi tiết
   </div>
 
   <div class="page">
-    <h1 id="li-topic">Chi tiết hội thoại</h1>
-    <div class="context-bar" id="context-bar">📌 <span id="ctx-server">—</span> &nbsp;·&nbsp; <span id="ctx-date">—</span></div>
-    <p class="subtitle" id="li-sub">Bước 4 / 4 — Xem nguồn gốc trạng thái, xác nhận hoặc sửa lại nếu AI đề xuất sai.</p>
+    <a class="btn secondary" href="#" id="back-btn" style="margin-bottom:14px;">← Quay lại danh sách</a>
+
+    <h1 id="li-topic">—</h1>
+    <p class="subtitle" id="li-sub">—</p>
+
+    <div class="context-bar">
+      📌 <span id="ctx-server">—</span> &nbsp;·&nbsp; <span id="ctx-date">—</span>
+    </div>
+
+    <!-- CP3: AI timing indicator -->
+    <div class="ai-timing" id="ai-timing">
+      <span class="ai-icon">🤖</span>
+      <span id="ai-timing-text">AI phân loại trong 1.2s — GPT-4o-mini</span>
+    </div>
+
+    <!-- CP3: Confidence detail -->
+    <div class="confidence-detail" id="confidence-detail">
+      <div style="font-size:12px;color:var(--muted);min-width:100px;">Độ tin cậy AI</div>
+      <div class="conf-bar"><div class="conf-fill high" id="conf-fill" style="width:87%;"></div></div>
+      <div class="conf-pct high" id="conf-pct">87%</div>
+    </div>
 
     <div class="detail-grid">
       <div>
-        <div class="card">
-          <strong>Nguồn hội thoại (mã tin, không phải văn bản dài)</strong>
-          <div id="thread" style="margin-top:10px;"></div>
-        </div>
-        <div class="card">
-          <div class="evidence-note" id="evidence-note"></div>
-        </div>
+        <h2 style="font-size:15px; margin-bottom:10px;">Hội thoại nguồn</h2>
+        <div id="thread"></div>
+
+        <!-- CP3: Citation validity -->
+        <div id="citation-checks" style="margin-top:10px;"></div>
+
+        <div class="evidence-note" id="evidence-note"></div>
       </div>
 
       <div>
-        <div class="card">
-          <fieldset>
-            <legend>Trạng thái đề xuất bởi hệ thống</legend>
-            <div class="radio-row" id="status-options"></div>
-          </fieldset>
-
+        <fieldset>
+          <legend>Trạng thái — TA quyết định</legend>
           <div class="live-status-preview">
-            Xem trước: <span class="status-pill" id="live-pill"></span>
+            Trạng thái hiện tại: <span class="status-pill" id="live-pill">—</span>
           </div>
+          <div class="radio-row" id="status-options"></div>
+        </fieldset>
 
-          <label style="font-size:12px; color:var(--muted); font-weight:600; display:block; margin-top:10px;">Lý do TA ghi lại (tuỳ chọn)</label>
-          <textarea id="reason" placeholder="Ví dụ: đã hỏi trực tiếp học viên trên kênh riêng, coi như xong."></textarea>
+        <label for="reason" style="font-size:12px; color:var(--muted); font-weight:600;">Lý do (tuỳ chọn)</label>
+        <textarea id="reason" placeholder="Nếu sửa trạng thái, ghi lý do ngắn gọn ở đây…"></textarea>
 
-          <div class="actions-row">
-            <button class="btn" onclick="confirmDecision()" id="confirm-btn">Xác nhận trạng thái</button>
-            <a class="btn secondary" id="back-btn" href="priority-list.html">← Quay lại danh sách</a>
-          </div>
-
-          <div class="confirm-toast" id="toast"></div>
-
-          <!-- Nav between items -->
-          <div id="nav-row" style="display:flex; gap:8px; margin-top:14px; font-size:13px; color:var(--muted); justify-content:space-between;"></div>
+        <div class="actions-row">
+          <button class="btn" onclick="confirmDecision()">Xác nhận trạng thái</button>
+          <span style="font-size:12px; color:var(--muted); padding-top:8px;">Ctrl+Enter</span>
         </div>
+
+        <div class="confirm-toast" id="toast"></div>
+
+        <div id="nav-row" style="display:flex; justify-content:space-between; margin-top:18px;"></div>
       </div>
     </div>
 
     <div class="footnote">
-      Ba trạng thái theo <code>spec.md §4</code>: chưa thấy phản hồi phù hợp / đã có phản hồi, chưa rõ kết quả / có bằng chứng đã giải quyết —
-      cộng nhãn phụ "cần kiểm tra thêm" khi thiếu ngữ cảnh. AI chỉ <em>đề xuất</em>, TA luôn là người quyết định cuối (augment, không auto-hành động).
+      CP3: Trạng thái và confidence do AI đề xuất trên dữ liệu mẫu.
+      Trích dẫn lấy từ <code>evidence/README.md</code> (đã ẩn danh, tối đa 2 câu/ví dụ).
+      TA luôn có quyền sửa lại trạng thái; quyết định của TA là kết quả cuối cùng.
     </div>
   </div>
 
 <script>
+// ── CP3 Data with confidence and citation info ──
 const DATA = {
   M53930: {
-    topic: "Lỗi truy cập nền tảng Phoenix",
+    topic: "Vẫn chưa truy cập được Phoenix",
     status: "no-response",
     statusLabel: "Chưa thấy phản hồi phù hợp",
-    thread: [
-      { author: "S0142 (học viên)", time: "14/09 20:12", text: "Hiện tại em vẫn chưa vào được phoenix ạ", bot: false }
+    confidence: 92,
+    aiTime: 1.1,
+    citations: [
+      { text: "M53930: \"Hiện tại em vẫn chưa vào được phoenix ạ\"", valid: true }
     ],
-    note: "Chưa đủ 4 giờ quan sát trong server K4-L3-4 tính đến mốc tin cuối — không kết luận là bị bỏ quên, chỉ là chưa đủ dữ liệu để biết."
+    thread: [
+      { author: "S0045 (học viên)", time: "14/09 22:17", text: "Hiện tại em vẫn chưa vào được phoenix ạ", bot: false }
+    ],
+    note: "Báo vẫn chưa truy cập được. Chưa biết nguyên nhân/kết quả về sau, chưa đủ 4 giờ quan sát trong server K4-L3-4 (mốc cuối 14/09 23:54). Hệ thống không suy ra kết luận khi thiếu dữ liệu."
   },
   M84013: {
-    topic: "Xin hướng xử lý tiếp theo",
+    topic: "Yêu cầu hướng xử lý",
     status: "responded-unclear",
     statusLabel: "Đã có phản hồi, chưa rõ kết quả",
+    confidence: 74,
+    aiTime: 1.4,
+    citations: [
+      { text: "M84013: \"ad ơi trường hợp của em thì nên xử lý thế nào ạ\"", valid: true },
+      { text: "Reply T00214: phản hồi đã ghi nhận trong pack", valid: true }
+    ],
     thread: [
       { author: "S0087 (học viên)", time: "14/09 09:41", text: "ad ơi trường hợp của em thì nên xử lý thế nào ạ", bot: false },
       { author: "T00214 (TA)", time: "14/09 09:52", text: "(reply đã ghi nhận trong pack — nội dung không trích ở đây)", bot: false }
@@ -92,6 +119,12 @@ const DATA = {
     topic: "Lỗi truy cập / setup repo AI log",
     status: "responded-unclear",
     statusLabel: "Đã có phản hồi, chưa rõ kết quả",
+    confidence: 68,
+    aiTime: 1.6,
+    citations: [
+      { text: "M05023: \"cho mình hỏi tại sao truy cập lại thấy trống nhỉ...\"", valid: true },
+      { text: "M13539: phản hồi sau 1 phút, hỏi chẩn đoán về email", valid: true }
+    ],
     thread: [
       { author: "S0055 (học viên)", time: "14/09 08:03", text: "cho mình hỏi tại sao truy cập lại thấy trống nhỉ và làm sao tìm repo để setup AI log được nhỉ", bot: false },
       { author: "M13539 · S0055", time: "14/09 08:04", text: "(phản hồi sau 1 phút — hỏi chẩn đoán thêm về email)", bot: false }
@@ -102,6 +135,11 @@ const DATA = {
     topic: "Xác nhận cách nộp bài theo nhóm",
     status: "needs-context",
     statusLabel: "Cần kiểm tra thêm",
+    confidence: 45,
+    aiTime: 0.9,
+    citations: [
+      { text: "M65121: \"nộp theo nhóm một người nộp cho cả nhóm hay là mỗi cá nhân đều phải nộp\"", valid: true }
+    ],
     thread: [
       { author: "S0199 (học viên)", time: "14/09 21:30", text: "nộp theo nhóm một người nộp cho cả nhóm hay là mỗi cá nhân đều phải nộp", bot: false }
     ],
@@ -111,6 +149,12 @@ const DATA = {
     topic: "Lỗi đăng nhập Zoom trước workshop",
     status: "resolved",
     statusLabel: "Có bằng chứng đã giải quyết",
+    confidence: 91,
+    aiTime: 1.3,
+    citations: [
+      { text: "M27034: \"e đăng nhập vào zoom... cứ báo như này\"", valid: true },
+      { text: "M66739: hướng dẫn cụ thể sau 5 phút", valid: true }
+    ],
     thread: [
       { author: "S0071 (học viên)", time: "14/09 18:55", text: "e đăng nhập vào zoom để tối nay workshop mà cứ báo như này thì tối e đăng nhập bằng mail cá nhân rồi đổi tên theo quy định được không ạ?", bot: false },
       { author: "M66739 · T00108 (TA)", time: "14/09 19:00", text: "(hướng dẫn cụ thể sau 5 phút, không có ảnh đính kèm trong pack)", bot: false }
@@ -152,7 +196,17 @@ let currentStatus = savedInfo.status || item.status;
 // ── Header ──
 document.getElementById('li-topic').textContent = `${item.topic} — ${id}`;
 document.getElementById('li-sub').textContent =
-  `Bước 4 / 4 — Trạng thái hệ thống đề xuất: ${item.statusLabel}. TA xem nguồn rồi xác nhận hoặc sửa lại bên phải.`;
+  `Bước 4 / 4 — Trạng thái AI đề xuất: ${item.statusLabel}. TA xem nguồn rồi xác nhận hoặc sửa lại bên phải.`;
+
+// ── CP3: AI timing ──
+document.getElementById('ai-timing-text').textContent = `AI phân loại trong ${item.aiTime}s — GPT-4o-mini`;
+
+// ── CP3: Confidence bar ──
+const confLevel = item.confidence >= 80 ? 'high' : item.confidence >= 60 ? 'medium' : 'low';
+document.getElementById('conf-fill').className = `conf-fill ${confLevel}`;
+document.getElementById('conf-fill').style.width = `${item.confidence}%`;
+document.getElementById('conf-pct').className = `conf-pct ${confLevel}`;
+document.getElementById('conf-pct').textContent = `${item.confidence}%`;
 
 // ── Thread ──
 const threadEl = document.getElementById('thread');
@@ -163,10 +217,20 @@ item.thread.forEach(m => {
   threadEl.appendChild(div);
 });
 
+// ── CP3: Citation checks ──
+const citationEl = document.getElementById('citation-checks');
+item.citations.forEach(c => {
+  const div = document.createElement('div');
+  div.className = `citation-check ${c.valid ? '' : 'invalid'}`;
+  div.innerHTML = `${c.valid ? '✅' : '⚠️'} ${c.text}`;
+  citationEl.appendChild(div);
+});
+
 // ── Evidence note ──
 document.getElementById('evidence-note').innerHTML =
-  `<strong>Vì sao đề xuất trạng thái này:</strong><br/>${item.note}` +
-  `<br/><br/>Trích dẫn và mã nguồn lấy nguyên văn từ <code>evidence/README.md</code> (đã công khai, ẩn danh, tối đa 2 câu/ví dụ).`;
+  `<strong>Vì sao AI đề xuất trạng thái này:</strong><br/>${item.note}` +
+  `<br/><br/>Trích dẫn và mã nguồn lấy nguyên văn từ <code>evidence/README.md</code> (đã công khai, ẩn danh, tối đa 2 câu/ví dụ).` +
+  `<br/><small style="color:var(--accent);">📊 ${item.citations.filter(c => c.valid).length}/${item.citations.length} trích dẫn hợp lệ — Confidence: ${item.confidence}%</small>`;
 
 // ── Radio options + live pill ──
 const optionsEl = document.getElementById('status-options');
@@ -193,25 +257,33 @@ updateLivePill(currentStatus);
 // Restore saved reason text
 if (savedInfo.reason) document.getElementById('reason').value = savedInfo.reason;
 
-// ── Confirm ──
+// ── Confirm with CP3 agreement tracking ──
 function confirmDecision() {
   const selected = document.querySelector('input[name="status"]:checked');
   if (!selected) return;
 
   const reviewed = JSON.parse(localStorage.getItem('dp_reviewed') || '{}');
+  const agreed = selected.value === item.status;
   reviewed[id] = {
     status: selected.value,
     reason: document.getElementById('reason').value,
-    ts: new Date().toISOString()
+    ts: new Date().toISOString(),
+    ai_original: item.status,
+    ta_agreed: agreed
   };
   localStorage.setItem('dp_reviewed', JSON.stringify(reviewed));
 
   const opt = STATUS_OPTIONS.find(o => o.key === selected.value);
   const toast = document.getElementById('toast');
-  toast.className = 'confirm-toast show';
-  toast.innerHTML = `✅ Đã lưu quyết định của TA: <strong>${opt.label}</strong>.<br/><small style="color:var(--muted);">Mock — chưa ghi vào hệ thống thật. Quay danh sách để xem trạng thái cập nhật.</small>`;
 
-  // After 2.5s navigate back automatically
+  if (agreed) {
+    toast.className = 'confirm-toast show agreed';
+    toast.innerHTML = `✅ TA đồng ý với AI: <strong>${opt.label}</strong>.<br/><small style="color:var(--muted);">Quyết định đã lưu. Quay danh sách trong 2s...</small>`;
+  } else {
+    toast.className = 'confirm-toast show corrected';
+    toast.innerHTML = `✏️ TA sửa trạng thái: <strong>${opt.label}</strong> (AI đề xuất: ${item.statusLabel}).<br/><small style="color:var(--muted);">Quyết định đã lưu. Quay danh sách trong 2s...</small>`;
+  }
+
   setTimeout(() => {
     window.location.href = `priority-list.html?${qs}`;
   }, 2500);

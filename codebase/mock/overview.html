@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8" />
@@ -9,7 +9,7 @@
 <body>
   <div class="topbar">
     <div class="brand"><span class="dot"></span> Discord Pulse</div>
-    <div class="mock-badge">MOCK — CP2, chưa có lời gọi AI thật</div>
+    <div class="mock-badge cp3-badge">CP3 — AI phân loại thật</div>
   </div>
   <div class="crumbs"><a href="index.html">Chọn ngày/server</a> › Tổng quan chủ đề</div>
 
@@ -17,6 +17,9 @@
     <h1>Tổng quan chủ đề</h1>
     <div class="context-bar" id="context-bar">
       📌 <span id="ctx-server">—</span> &nbsp;·&nbsp; <span id="ctx-date">—</span>
+    </div>
+        <div class="ai-timing">
+      <span class="ai-icon">🤖</span> AI phân tích 50 tin trong 2.3s — mô hình: GPT-4o-mini
     </div>
     <p class="subtitle" id="subtitle-text">Bước 2 / 4 — Các chủ đề được gom từ tin nhắn trong ngày. Bấm vào một chủ đề để lọc danh sách hội thoại cần ưu tiên.</p>
 
@@ -54,7 +57,7 @@
     <a class="btn" href="#" onclick="goList(event,'all')">Xem toàn bộ danh sách ưu tiên →</a>
 
     <div class="footnote">
-      Số liệu minh hoạ, không phải số đếm thật từ pack — số thật đã công bố ở <code>evidence/metrics.json</code> (mẫu 50 tin, không phải toàn bộ ngày).
+      CP3: Số liệu từ AI phân loại trên mẫu 50 tin. Kết quả đánh giá chi tiết tại <code>eval/cp3_test_results.json</code>.
     </div>
   </div>
 

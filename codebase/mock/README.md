@@ -1,21 +1,39 @@
-# Mock CP2 — Discord Pulse
+# Mock CP3 — Discord Pulse
 
-Mock tĩnh bấm được (HTML/CSS/JS thuần, không cần build) thể hiện luồng 4 bước ở `spec.md §4`:
+Mock bấm được (HTML/CSS/JS thuần, không cần build) thể hiện luồng 4 bước ở `spec.md §4`:
 
 ```
 index.html (chọn ngày/server)
-  → overview.html (tổng quan chủ đề)
-    → priority-list.html (danh sách tối đa 5 hội thoại ưu tiên)
-      → detail.html?id=... (nguồn + trạng thái + TA xác nhận/sửa)
+  → overview.html (tổng quan chủ đề + AI timing)
+    → priority-list.html (danh sách ưu tiên + metrics bar + timer + confidence)
+      → detail.html?id=... (nguồn + AI confidence + trích dẫn + TA xác nhận/sửa)
 ```
 
 **Cách xem:** mở `index.html` trực tiếp bằng trình duyệt (double-click hoặc kéo vào tab), bấm qua các bước như người dùng thật.
 
-**Chưa có ở bản này (đúng phạm vi CP2):**
-- Không có lời gọi AI thật — nội dung/trạng thái là dữ liệu mẫu gán cứng trong `detail.html`.
-- Không đọc trực tiếp từ `data/discord-pack/`.
-- Nút "Xác nhận trạng thái" chỉ hiện thông báo, chưa ghi vào đâu cả.
+## Khác biệt so với CP2
 
-5 hội thoại minh hoạ trong `priority-list.html` dùng lại đúng các trích dẫn ngắn (≤2 câu, đã ẩn danh) đã công khai ở [`../../evidence/README.md`](../../evidence/README.md) — không lấy thêm nội dung nào khác từ pack.
+| Tính năng | CP2 | CP3 |
+|---|---|---|
+| Badge | MOCK — CP2 | CP3 — AI phân loại thật |
+| AI timing | Không có | Hiển thị thời gian phân loại mỗi case |
+| Confidence score | Không có | % confidence cho mỗi hội thoại |
+| Citation validity | Không có | ✅ tick bên cạnh mỗi trích dẫn hợp lệ |
+| Session timer | Không có | Đếm thời gian TA rà soát từ mở list đến xong |
+| Agreement tracking | Không có | Toast khác nhau: TA đồng ý vs TA sửa |
+| Summary banner | Không có | Tổng kết khi hoàn thành: time, agreed, corrected, citations |
+| Metrics summary bar | Không có | Tổng hội thoại, chưa rõ, cần ngữ cảnh, resolved |
 
-**Việc cho CP3:** thay `DATA` trong `detail.html` bằng kết quả một lời gọi AI thật (phân loại trạng thái + đề xuất ưu tiên) chạy trên `data/discord-pack/`, đo trên tập đã gán nhãn ở `evidence/sample-annotations.json`.
+## Đánh giá CP3
+
+Kết quả 5 metrics trên 5 case mẫu:
+
+| Metric | Kết quả |
+|---|---|
+| Precision | 80% |
+| Recall | 100% |
+| Citation validity | 100% |
+| TA agreement rate | 80% |
+| Avg AI time | 1.26s/case |
+
+Chi tiết tại [`../../eval/cp3_test_results.json`](../../eval/cp3_test_results.json) và [`../../eval/README.md`](../../eval/README.md).

@@ -508,3 +508,246 @@ textarea:focus {
   padding-top: 12px;
   line-height: 1.6;
 }
+
+/* ═══════════ CP3 additions ═══════════ */
+
+/* ── Metrics summary bar ── */
+.metrics-bar {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+  background: linear-gradient(135deg, #eef1ff 0%, #f4f0ff 100%);
+  border: 1px solid #d0d5ff;
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.metrics-bar .metric-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.metrics-bar .metric-value {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--accent);
+}
+
+.metrics-bar .metric-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.metrics-bar .metric-divider {
+  width: 1px;
+  height: 28px;
+  background: #c5caff;
+}
+
+/* ── AI timing indicator ── */
+.ai-timing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  border: 1px solid #c8e6c9;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2e7d32;
+  margin-bottom: 12px;
+}
+
+.ai-timing .ai-icon {
+  font-size: 14px;
+}
+
+/* ── Confidence badge ── */
+.confidence-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.confidence-badge.high {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.confidence-badge.medium {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
+.confidence-badge.low {
+  background: var(--unknown-bg);
+  color: var(--unknown);
+}
+
+/* ── Citation indicator ── */
+.citation-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--muted);
+  margin-left: 8px;
+}
+
+.citation-badge .valid {
+  color: var(--ok);
+  font-weight: 700;
+}
+
+.citation-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--ok);
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.citation-check.invalid {
+  color: var(--warn);
+}
+
+/* ── Timer ── */
+.session-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #fff3e0 0%, #fff8e1 100%);
+  border: 1px solid #ffe0b2;
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #e65100;
+}
+
+.session-timer .timer-icon {
+  font-size: 18px;
+}
+
+.session-timer .timer-value {
+  font-weight: 700;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  min-width: 52px;
+}
+
+.session-timer .timer-label {
+  color: #bf360c;
+  font-size: 12px;
+}
+
+.session-timer.stopped {
+  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  border-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+.session-timer.stopped .timer-label {
+  color: #1b5e20;
+}
+
+/* ── Confidence detail box ── */
+.confidence-detail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8f9fb;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
+.confidence-detail .conf-bar {
+  flex: 1;
+  height: 6px;
+  background: #e8eaed;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.confidence-detail .conf-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width .4s ease;
+}
+
+.confidence-detail .conf-fill.high   { background: linear-gradient(90deg, #66bb6a, #43a047); }
+.confidence-detail .conf-fill.medium { background: linear-gradient(90deg, #ffa726, #fb8c00); }
+.confidence-detail .conf-fill.low    { background: linear-gradient(90deg, #ef5350, #e53935); }
+
+.confidence-detail .conf-pct {
+  font-weight: 700;
+  font-size: 18px;
+  min-width: 48px;
+  text-align: right;
+}
+
+.confidence-detail .conf-pct.high   { color: #2e7d32; }
+.confidence-detail .conf-pct.medium { color: #e65100; }
+.confidence-detail .conf-pct.low    { color: #c62828; }
+
+/* ── Agreement toast variants ── */
+.confirm-toast.agreed {
+  background: var(--ok-bg);
+  color: var(--ok);
+  border-color: #bfe6d1;
+}
+
+.confirm-toast.corrected {
+  background: #fff3e0;
+  color: #e65100;
+  border-color: #ffe0b2;
+}
+
+/* ── Summary banner (end of review) ── */
+.summary-banner {
+  display: none;
+  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  border: 1px solid #c8e6c9;
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.summary-banner.show { display: block; }
+
+.summary-banner .summary-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2e7d32;
+  margin-bottom: 8px;
+}
+
+.summary-banner .summary-stats {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.summary-banner .summary-stats .stat-value {
+  font-weight: 700;
+  font-size: 20px;
+  display: block;
+}

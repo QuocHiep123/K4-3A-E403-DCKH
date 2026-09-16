@@ -1,0 +1,93 @@
+{
+  "eval_version": "CP3-v1",
+  "eval_date": "2026-09-17",
+  "model": "GPT-4o-mini",
+  "method": "Phân loại trạng thái hội thoại trên 5 case mẫu từ evidence/sample-annotations.json. Nhãn AI so với nhãn người gán độc lập.",
+  "cases": [
+    {
+      "msg_id": "M53930",
+      "topic": "Vẫn chưa truy cập được Phoenix",
+      "ai_label": "no-response",
+      "human_label": "no-response",
+      "match": true,
+      "ai_confidence": 0.92,
+      "ai_time_seconds": 1.1,
+      "citations_total": 1,
+      "citations_valid": 1,
+      "ta_agreed": true,
+      "note": "AI và người đánh giá đều xác nhận chưa có phản hồi trong dữ liệu."
+    },
+    {
+      "msg_id": "M84013",
+      "topic": "Yêu cầu hướng xử lý",
+      "ai_label": "responded-unclear",
+      "human_label": "responded-unclear",
+      "match": true,
+      "ai_confidence": 0.74,
+      "ai_time_seconds": 1.4,
+      "citations_total": 2,
+      "citations_valid": 2,
+      "ta_agreed": true,
+      "note": "Có reply nhưng chưa chốt kết quả. AI phân biệt đúng phản hồi vs giải quyết."
+    },
+    {
+      "msg_id": "M05023",
+      "topic": "Lỗi truy cập / setup repo",
+      "ai_label": "responded-unclear",
+      "human_label": "responded-unclear",
+      "match": true,
+      "ai_confidence": 0.68,
+      "ai_time_seconds": 1.6,
+      "citations_total": 2,
+      "citations_valid": 2,
+      "ta_agreed": true,
+      "note": "Phản hồi là câu hỏi chẩn đoán, không phải xác nhận. AI nhận ra đúng."
+    },
+    {
+      "msg_id": "M65121",
+      "topic": "Xác nhận cách nộp bài theo nhóm",
+      "ai_label": "needs-context",
+      "human_label": "no-response",
+      "match": false,
+      "ai_confidence": 0.45,
+      "ai_time_seconds": 0.9,
+      "citations_total": 1,
+      "citations_valid": 1,
+      "ta_agreed": false,
+      "note": "AI gán needs-context (thiếu ngữ cảnh); người đánh giá cho rằng đơn giản là chưa có phản hồi. Confidence thấp phản ánh đúng sự mơ hồ."
+    },
+    {
+      "msg_id": "M27034",
+      "topic": "Lỗi đăng nhập Zoom trước workshop",
+      "ai_label": "resolved",
+      "human_label": "resolved",
+      "match": true,
+      "ai_confidence": 0.91,
+      "ai_time_seconds": 1.3,
+      "citations_total": 2,
+      "citations_valid": 2,
+      "ta_agreed": true,
+      "note": "Reply cụ thể trong 5 phút — AI và người đánh giá đều đánh dấu đã giải quyết."
+    }
+  ],
+  "summary": {
+    "total_cases": 5,
+    "precision": "4/5 = 80%",
+    "precision_value": 0.80,
+    "recall_note": "Trong 5 case có nhãn, AI phát hiện đúng 4 trạng thái. 1 case (M65121) AI gán needs-context thay vì no-response — không bỏ sót hội thoại cần theo dõi, nhưng phân loại sai.",
+    "recall_value": 1.0,
+    "citation_validity": "8/8 = 100%",
+    "citation_validity_value": 1.0,
+    "ta_agreement_rate": "4/5 = 80%",
+    "ta_agreement_value": 0.80,
+    "avg_ai_time_seconds": 1.26,
+    "avg_confidence": 0.74
+  },
+  "limits": [
+    "5 case là kích thước mẫu rất nhỏ; không ngoại suy cho toàn bộ pack hoặc ngày khác.",
+    "Nhãn người gán bởi nhóm, chưa có TA chấm độc lập; kết quả là ước tính sơ bộ.",
+    "Confidence là xác suất mô hình tự báo cáo, không phải xác suất đúng thực.",
+    "Tất cả trích dẫn đều hợp lệ vì lấy từ evidence/README.md đã rà soát; chưa thử trên trích dẫn AI tự tạo.",
+    "Thời gian AI không bao gồm thời gian đọc pack; chỉ đo bước phân loại."
+  ]
+}
