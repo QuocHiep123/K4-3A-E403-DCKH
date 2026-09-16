@@ -72,10 +72,12 @@ Canvas 4 ô nằm trong §1–§2. Phương pháp và trích dẫn: [nhật ký 
 
 **Hai người ngoài nhóm sẵn sàng thử:**
 
-| Họ tên | Xác nhận | Bài thử dự kiến |
-|---|---|---|
-| Đỗ Đức Đại | Nhóm cung cấp tên khi được hỏi người đã đồng ý dùng thử, ngày 16/09/2026; vai trò cụ thể chưa cung cấp | Rà soát bản tin, mở nguồn, chọn hội thoại cần theo dõi và sửa nhãn sai |
-| Phạm Cường Quốc | Nhóm cung cấp tên khi được hỏi người đã đồng ý dùng thử, ngày 16/09/2026; vai trò cụ thể chưa cung cấp | Cùng bài thử; ghi thời gian, chỗ vướng và nhận xét nguyên văn |
+| Họ tên | Xác nhận | Vai trò trong buổi dùng thử | Bài thử dự kiến |
+|---|---|---|---|
+| Đỗ Đức Đại | Nhóm xác nhận đồng ý dùng thử ngày 16/09/2026 | Người dùng thử đóng vai TA rà soát cuối ngày | Đọc bản tin, chọn hội thoại cần ưu tiên; đánh giá mức dễ hiểu và thời gian thực hiện |
+| Phạm Cường Quốc | Nhóm xác nhận đồng ý dùng thử ngày 16/09/2026 | Người dùng thử đóng vai TA kiểm chứng kết quả | Mở tin nguồn, kiểm tra nhận định của AI, sửa trạng thái sai và góp ý |
+
+Vai trò trên mô tả nhiệm vụ trong buổi dùng thử, không xác nhận chức danh TA thực tế của hai người tham gia.
 
 Chưa có phiên dùng thử nào diễn ra. Mời thêm người để đạt 5 người ngoài nhóm trước CP5, ưu tiên có TA/coach xác nhận nhu cầu của đúng người dùng mục tiêu.
 
@@ -143,3 +145,4 @@ Phân công và willing users ở §2, ô 4; thông tin thành viên lấy từ 
 | 16/09/2026 | Canvas B2 kết hợp tổng quan, hội thoại cần theo dõi, dấu hiệu cần hỗ trợ | Hướng nhóm chọn; mẫu 50 tin và bốn bản tin nền |
 | 16/09/2026 | Phân biệt có phản hồi với đã giải quyết; giữ trạng thái thiếu ngữ cảnh | M05023/M13539 và M04968/M73803 |
 | 16/09/2026 | Bổ sung Đỗ Đức Đại và Phạm Cường Quốc vào willing users | Nhóm cung cấp; chưa có feedback dùng thử |
+| 16/09/2026 | Phân vai dùng thử: Đỗ Đức Đại rà soát cuối ngày; Phạm Cường Quốc kiểm chứng kết quả | Nhóm chốt nhiệm vụ đóng vai TA; chưa có phiên dùng thử |
