@@ -1,0 +1,369 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discord Pulse - Nhom DCKH - AI20k K4</title>
+<style>
+:root {
+  --discord: #5865f2;
+  --discord-dark: #4752c4;
+  --bg: #0f1117;
+  --panel: #1a1d2e;
+  --panel2: #1e2235;
+  --border: #2e3251;
+  --text: #e8eaf6;
+  --muted: #8b92c4;
+  --green: #57f287;
+  --yellow: #fee75c;
+  --red: #ed4245;
+  --orange: #faa61a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+/* Slides container */
+.deck { max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; }
+
+/* Slide */
+.slide {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 48px;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.slide::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--discord), #7289da);
+}
+
+.slide-num {
+  position: absolute;
+  top: 16px; right: 20px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* Typography */
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--discord); margin-bottom: 12px; }
+h1 { font-size: clamp(28px, 4vw, 44px); font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 16px; }
+h2 { font-size: 24px; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.5px; }
+h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+p { color: var(--muted); font-size: 15px; line-height: 1.7; }
+.lead { font-size: 18px; color: var(--text); font-weight: 400; }
+
+/* Badge */
+.badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; }
+.badge-blue { background: rgba(88,101,242,.2); color: #818cf8; border: 1px solid rgba(88,101,242,.3); }
+.badge-green { background: rgba(87,242,135,.15); color: var(--green); border: 1px solid rgba(87,242,135,.3); }
+.badge-yellow { background: rgba(254,231,92,.15); color: var(--yellow); border: 1px solid rgba(254,231,92,.3); }
+.badge-red { background: rgba(237,66,69,.15); color: var(--red); border: 1px solid rgba(237,66,69,.3); }
+
+/* Grid */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+.card { background: var(--panel2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+.card h3 { color: var(--text); }
+.card p { font-size: 13px; }
+
+/* Stats */
+.stat-grid { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 24px; }
+.stat { background: var(--panel2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; text-align: center; flex: 1; min-width: 110px; }
+.stat-value { font-size: 32px; font-weight: 800; color: var(--discord); display: block; line-height: 1.1; }
+.stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+
+/* Timeline */
+.timeline { margin-top: 20px; }
+.tl-item { display: flex; gap: 16px; margin-bottom: 16px; }
+.tl-dot { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.tl-dot.done { background: rgba(87,242,135,.2); color: var(--green); border: 1px solid rgba(87,242,135,.4); }
+.tl-dot.inprog { background: rgba(88,101,242,.2); color: #818cf8; border: 1px solid rgba(88,101,242,.4); }
+.tl-dot.todo { background: rgba(139,146,196,.1); color: var(--muted); border: 1px solid var(--border); }
+.tl-content h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.tl-content p { font-size: 12px; }
+
+/* HAX table */
+.hax-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+.hax-table th { background: rgba(88,101,242,.15); color: #818cf8; padding: 10px 14px; text-align: left; font-weight: 700; letter-spacing: 0.5px; font-size: 11px; text-transform: uppercase; }
+.hax-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.hax-table tr:last-child td { border-bottom: none; }
+.hax-table tr:hover td { background: rgba(88,101,242,.05); }
+
+/* Metric bar */
+.metric-bar { background: var(--panel2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; }
+.metric-name { font-size: 13px; font-weight: 600; min-width: 200px; }
+.bar-wrap { flex: 1; height: 8px; background: rgba(255,255,255,.08); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; }
+.bar-fill.green { background: var(--green); }
+.bar-fill.blue { background: var(--discord); }
+.bar-fill.yellow { background: var(--yellow); }
+.metric-val { font-size: 14px; font-weight: 700; min-width: 60px; text-align: right; }
+
+/* Quote */
+.quote { background: rgba(88,101,242,.08); border-left: 3px solid var(--discord); padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+.quote p { color: var(--text); font-size: 16px; font-style: italic; }
+.quote-credit { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+/* Divider */
+hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+/* Footer */
+.deck-footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- SLIDE 1: Title -->
+<div class="slide">
+  <span class="slide-num">1 / 9</span>
+  <div class="eyebrow">AI20k K4 Mini Hackathon · Track B2 · Nhom DCKH</div>
+  <h1>Discord Pulse</h1>
+  <p class="lead" style="margin-bottom:24px;">Gio nao TA nen mo tin nao? — AI de xuat, TA quyet dinh.</p>
+  <hr>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
+    <span class="badge badge-blue">Lo 3A · Phong E403</span>
+    <span class="badge badge-green">CP4 Hoan thanh</span>
+    <span style="font-size:13px;color:var(--muted);">Dang Quoc Hiep · Nguyen The Khang · Nguyen Viet Dung · Dao Quang Canh</span>
+  </div>
+</div>
+
+<!-- SLIDE 2: Problem -->
+<div class="slide">
+  <span class="slide-num">2 / 9</span>
+  <div class="eyebrow">Bai toan</div>
+  <h2>Nhan "Da co phan hoi" khong du</h2>
+  <div class="quote">
+    <p>"TA phai mo tung tin nguon de biet hoi thoai nao con can ho tro — nhan 'Da co phan hoi' khong noi len ket qua cuoi cung."</p>
+    <p class="quote-credit">Ket luan tu evidence mining, 50 tin mau, 4 ban tin bot</p>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>So lieu quan sat</h3>
+      <ul style="font-size:13px;color:var(--muted);margin-top:8px;padding-left:18px;line-height:2;">
+        <li>1,092 tin (779 nguoi + 313 bot)</li>
+        <li>28/50 tin mau la cau hoi/yeu cau</li>
+        <li>7 lan nhan "chua xac nhan da xu ly" trong 4 ban tin</li>
+        <li>M05023 → M13539: phan hoi la cau chuan doan, chua xong</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Gia thuyet noi dau</h3>
+      <p>TA kho xac dinh hoi thoai nao con can ho tro chi tu nhan "da co phan hoi", phai doi chieu them noi dung de tranh bo sot hoac theo doi lai viec da xong.</p>
+      <br><span class="badge badge-yellow">Chua do: thoi gian TA mat / so hoi thoai phai mo</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Solution -->
+<div class="slide">
+  <span class="slide-num">3 / 9</span>
+  <div class="eyebrow">Giai phap</div>
+  <h2>Luong 4 buoc, TA quyet dinh</h2>
+  <div class="stat-grid">
+    <div class="stat"><span class="stat-value">1</span><span class="stat-label">Chon pham vi</span></div>
+    <div class="stat"><span class="stat-value">2</span><span class="stat-label">Tong quan chu de</span></div>
+    <div class="stat"><span class="stat-value">3</span><span class="stat-label">Danh sach uu tien</span></div>
+    <div class="stat"><span class="stat-value">4</span><span class="stat-label">Xem can cu, xac nhan</span></div>
+  </div>
+  <div style="margin-top:24px;">
+    <p><strong style="color:var(--text);">Nguyen tac cot loi:</strong> AI chi de xuat trang thai + ly do + trich dan. TA doc can cu, sua nhan dinh, ghi ly do va chot. Khong tu gui tin, tu danh dau, tu nhap hoc. Moi thay doi phai co chu ky TA.</p>
+  </div>
+</div>
+
+<!-- SLIDE 4: AI Results -->
+<div class="slide">
+  <span class="slide-num">4 / 9</span>
+  <div class="eyebrow">CP3 — Ket qua AI that</div>
+  <h2>Golden Set 20 case — Ket qua 5 hard case</h2>
+  <div style="margin-bottom:20px;">
+    <div class="metric-bar">
+      <span class="metric-name">Precision (5 hard case)</span>
+      <div class="bar-wrap"><div class="bar-fill green" style="width:80%"></div></div>
+      <span class="metric-val" style="color:var(--green);">80%</span>
+    </div>
+    <div class="metric-bar">
+      <span class="metric-name">Recall (khong bo sot SOS)</span>
+      <div class="bar-wrap"><div class="bar-fill green" style="width:100%"></div></div>
+      <span class="metric-val" style="color:var(--green);">100%</span>
+    </div>
+    <div class="metric-bar">
+      <span class="metric-name">Trich dan hop le</span>
+      <div class="bar-wrap"><div class="bar-fill green" style="width:100%"></div></div>
+      <span class="metric-val" style="color:var(--green);">100%</span>
+    </div>
+    <div class="metric-bar">
+      <span class="metric-name">Avg API time / case</span>
+      <div class="bar-wrap"><div class="bar-fill blue" style="width:42%"></div></div>
+      <span class="metric-val" style="color:#818cf8;">1.26s</span>
+    </div>
+  </div>
+  <p>Model: nvidia/nemotron-3-ultra-550b-a55b:free (OpenRouter). Ket qua toan bo 20 case xem tai <code style="font-size:12px;background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;">eval/golden_set_results.json</code>.</p>
+  <p style="margin-top:8px;"><span class="badge badge-yellow">Luu y:</span> Model free co the bi rate-limit; ket qua 20 case dang cap nhat. 5 hard case duoc TA ra soat doc lap.</p>
+</div>
+
+<!-- SLIDE 5: HAX Principles -->
+<div class="slide">
+  <span class="slide-num">5 / 9</span>
+  <div class="eyebrow">Thiet ke co trach nhiem</div>
+  <h2>6 Nguyen tac HAX ap dung tu CP2</h2>
+  <table class="hax-table">
+    <thead><tr><th>Nguyen tac</th><th>Vi tri trong san pham</th><th>Kiem chung</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge badge-blue">G1</span> Lam ro he thong lam gi</td><td>Dau trang: "AI goi y… Ban luon la nguoi quyet dinh"; nhan CP3/Mock</td><td>Mo trang, doc pham vi truoc khi tao luot</td></tr>
+      <tr><td><span class="badge badge-blue">G2</span> Lam ro no lam tot den dau</td><td>Confidence bar, nhan chua chac chan, ghi ro gia lap hoac that</td><td>So sanh kich ban 01 va 02</td></tr>
+      <tr><td><span class="badge badge-blue">G8</span> Gat bo de dang</td><td>"Bo khoi de xuat" khong can chay lai AI; van giu lich su</td><td>Bo de xuat kem ly do, chot roi quay lai</td></tr>
+      <tr><td><span class="badge badge-blue">G9</span> Sua de dang</td><td>Form duoi tin nguon: sua trang thai/ghi chu truc tiep; "Mo lai de duyet"</td><td>Doi nhan dinh sai, luu va chot lai</td></tr>
+      <tr><td><span class="badge badge-blue">G10</span> Thu hep khi nghi ngo</td><td>Kich ban 02: khung vang, mac dinh "Can kiem tra them"; kich ban 03: loai nguon sai</td><td>Thieu ly do thi chan luu</td></tr>
+      <tr><td><span class="badge badge-blue">G11</span> Giai thich vi sao</td><td>Khoi "AI de xuat" + ly do; nut mo tin nguon voi noi dung, ma va thoi gian</td><td>Doi chieu DEMO-M03 voi de xuat theo doi</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SLIDE 6: Timeline -->
+<div class="slide">
+  <span class="slide-num">6 / 9</span>
+  <div class="eyebrow">Hanh trinh</div>
+  <h2>Tu Canvas den CP4 trong 48 gio</h2>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot done">✓</div>
+      <div class="tl-content">
+        <h4>CP1 — 19:30 16/09: Canvas va Evidence</h4>
+        <p style="color:var(--muted);">Mining 50 tin, 6 trich dan that, 2 willing users, repo cong khai</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot done">✓</div>
+      <div class="tl-content">
+        <h4>CP2 — 21:00 16/09: Mock Prototype</h4>
+        <p style="color:var(--muted);">HTML/CSS/JS thuan, 7/7 test pass, 7 case kiem chung, 6 nguyen tac HAX</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot done">✓</div>
+      <div class="tl-content">
+        <h4>CP3 — 16:00 17/09: AI that</h4>
+        <p style="color:var(--muted);">Giao dien 4 buoc (codebase/mock/), OpenRouter API, golden set 20 case</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot done">✓</div>
+      <div class="tl-content">
+        <h4>CP4 — 21:00 17/09: Spec day du</h4>
+        <p style="color:var(--muted);">Impact table, nghien cuu tuong tu, chot quality bar, reflection</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot inprog">→</div>
+      <div class="tl-content">
+        <h4>CP5 — 13:00 18/09: Dung thu va Video</h4>
+        <p style="color:var(--muted);">5 nguoi ngoai nhom, nhat ky ket qua, slide PDF, video 30 giay</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: Impact -->
+<div class="slide">
+  <span class="slide-num">7 / 9</span>
+  <div class="eyebrow">Impact va Nguong do</div>
+  <h2>Nhung gi chung toi da do — va chua do</h2>
+  <div class="grid2">
+    <div>
+      <h3 style="color:var(--green);margin-bottom:12px;">Da co bang chung</h3>
+      <ul style="font-size:13px;color:var(--muted);line-height:2.2;padding-left:18px;">
+        <li>7/7 unit test logic pass</li>
+        <li>Precision 80%, Recall 100% (5 hard case)</li>
+        <li>100% trich dan hop le (8/8)</li>
+        <li>API time 1.26s / hoi thoai</li>
+        <li>Giao dien 4 buoc chay tren file://</li>
+        <li>Nhan phuc tap nhu responded-unclear duoc xu ly dung</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="color:var(--yellow);margin-bottom:12px;">Chua do / Chua chung minh</h3>
+      <ul style="font-size:13px;color:var(--muted);line-height:2.2;padding-left:18px;">
+        <li>Thoi gian TA hoan thanh ≤5 phut (chua do voi nguoi that)</li>
+        <li>So TA anh huong va tan suat su dung</li>
+        <li>Ket qua 20 case day du (model bi rate-limit)</li>
+        <li>ROI / tiet kiem thoi gian cu the</li>
+        <li>Ty le nguoi xac nhan noi dau (chua khao sat)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: Architecture -->
+<div class="slide">
+  <span class="slide-num">8 / 9</span>
+  <div class="eyebrow">Kien truc ky thuat</div>
+  <h2>HTML/CSS/JS thuan + Python AI Engine</h2>
+  <div class="grid3">
+    <div class="card">
+      <h3>Frontend (CP2)</h3>
+      <p>codebase/index.html · model.js · app.js · styles.css · Khong can build · Chay tren file:// · 7/7 unit test</p>
+    </div>
+    <div class="card">
+      <h3>Mock UI (CP3)</h3>
+      <p>codebase/mock/ · 4 trang HTML · localStorage · Session timer · Confidence bar · Citation validity</p>
+    </div>
+    <div class="card">
+      <h3>AI Engine (CP3)</h3>
+      <p>codebase/analyze.py · OpenRouter API · nvidia/nemotron · Golden set 20 case · eval/ output</p>
+    </div>
+  </div>
+  <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+    <span class="badge badge-green">Khong can API key de demo CP2</span>
+    <span class="badge badge-blue">AI that chi o analyze.py</span>
+    <span class="badge badge-yellow">Automation: augment, khong tu dong</span>
+  </div>
+</div>
+
+<!-- SLIDE 9: Next Steps -->
+<div class="slide">
+  <span class="slide-num">9 / 9</span>
+  <div class="eyebrow">CP5 va sau CP5</div>
+  <h2>Buoc tiep theo</h2>
+  <div class="grid2">
+    <div>
+      <h3 style="margin-bottom:12px;">Truoc 13:00 18/09 (CP5)</h3>
+      <ol style="font-size:13px;color:var(--muted);line-height:2.2;padding-left:18px;">
+        <li>Tong chuc ≥2 phien dung thu voi Do Duc Dai va Pham Cuong Quoc</li>
+        <li>Moi them 3 nguoi ngoai nhom</li>
+        <li>Ghi nhat ky thoi gian, quyet dinh va phan hoi</li>
+        <li>Cap nhat validation/user_testing.md</li>
+        <li>Chay lai analyze.py, cap nhat eval/</li>
+        <li>Xuat slide PDF</li>
+      </ol>
+    </div>
+    <div>
+      <h3 style="margin-bottom:12px;">Sau Hackathon (neu trien khai that)</h3>
+      <ol style="font-size:13px;color:var(--muted);line-height:2.2;padding-left:18px;">
+        <li>Ket noi Discord API (doc pack truc tiep)</li>
+        <li>Lu tru quyet dinh tren server (khong chi localStorage)</li>
+        <li>Them TA thu 2 cham nhan doc lap</li>
+        <li>Calibrate confidence score voi du lieu that</li>
+        <li>Do thoi gian TA truoc va sau khi dung tool</li>
+      </ol>
+    </div>
+  </div>
+  <hr>
+  <div style="text-align:center;margin-top:20px;">
+    <p style="font-size:14px;color:var(--text);">Cam on! · <a href="https://github.com/QuocHiep123/K4-3A-E403-DCKH" style="color:var(--discord);">github.com/QuocHiep123/K4-3A-E403-DCKH</a></p>
+    <p style="font-size:12px;color:var(--muted);margin-top:6px;">Nhom DCKH · Lo 3A · Phong E403 · AI20k K4</p>
+  </div>
+</div>
+
+<div class="deck-footer">Discord Pulse — Slide CP5 · Khong tu gui tin nhan hoac danh dau tren Discord · 17/09/2026</div>
+</div>
+</body>
+</html>

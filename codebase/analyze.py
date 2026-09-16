@@ -24,7 +24,13 @@ MODEL = os.getenv("OPENROUTER_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free")
 DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "")
 
 BASE_DIR = Path(__file__).parent.parent
-DATA_PATH = BASE_DIR / "challenge_materials" / "discord-pack" / "k4_messages.csv"
+# challenge_materials nằm ở cùng cấp với repo K4-3A-E403-DCKH
+REPO_ROOT = BASE_DIR
+CHALLENGE_ROOT = BASE_DIR.parent / "challenge_materials"
+DATA_PATH = CHALLENGE_ROOT / "discord-pack" / "k4_messages.csv"
+# Fallback: thử đường dẫn trong repo
+if not DATA_PATH.exists():
+    DATA_PATH = BASE_DIR / "challenge_materials" / "discord-pack" / "k4_messages.csv"
 GOLDEN_SET_PATH = BASE_DIR / "eval" / "golden_set.json"
 RESULTS_PATH = BASE_DIR / "eval" / "golden_set_results.json"
 
@@ -131,15 +137,15 @@ Format trả về:
             {"role": "user", "content": context},
         ],
         "temperature": 0.1,
-        "max_tokens": 200,
-        "response_format": {"type": "json_object"},
+        "max_tokens": 300,
+        # Không dùng response_format json_object vì nvidia/nemotron trả JSON tốt hơn không cần
     }
 
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json",
+        "Content-Type": "application/json; charset=utf-8",
         "HTTP-Referer": "https://github.com/QuocHiep123/K4-3A-E403-DCKH",
-        "X-Title": "Discord Pulse — AI20k Hackathon CP3",
+        "X-Title": "Discord Pulse - AI20k Hackathon CP3",
     }
 
     try:
@@ -147,12 +153,19 @@ Format trả về:
         resp = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers=headers,
-            json=payload,
-            timeout=30,
+            data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+            timeout=60,
         )
         elapsed = round(time.time() - t0, 2)
         resp.raise_for_status()
         raw = resp.json()["choices"][0]["message"]["content"]
+        # Strip markdown code blocks if present
+        raw = raw.strip()
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        raw = raw.strip()
         result = json.loads(raw)
         result["api_time_seconds"] = elapsed
         result["model_used"] = MODEL
@@ -161,7 +174,7 @@ Format trả về:
         return {
             "label": "needs-context",
             "confidence": 0.0,
-            "reasoning": f"Lỗi gọi API: {str(e)[:120]}",
+            "reasoning": f"Loi goi API: {str(e)[:120]}",
             "needs_ta_review": True,
             "api_time_seconds": 0,
             "model_used": MODEL,

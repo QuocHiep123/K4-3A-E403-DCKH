@@ -2,8 +2,7 @@
 
 **Lớp:** 3A · **Phòng:** E403 · **Cụm:** chưa điền
 **Track:** B2 — Tính năng cho TA/học viên trên Discord
-**Loại:** Cải tiến bản tin hiện có, bổ sung danh sách hội thoại cần TA xem xét
-**Trạng thái:** Đã bổ sung thiết kế và bản mẫu Mock CP2 ngày 16/09/2026; AI trong bản CP2 là giả lập, chưa khóa chuẩn đạt (CP4). Trạng thái kiểm chứng CP2 ở [codebase/verification.md](codebase/verification.md); chưa có bằng chứng nộp form CP2. Phần CP3 đồng đội phát triển riêng ở `codebase/mock/` và `eval/` không thuộc phạm vi kiểm chứng CP2 này.
+**Trạng thái:** CP3 hoàn thiện 17/09/2026 — giao diện 4 bước (`codebase/mock/`), AI thật qua OpenRouter (nvidia/nemotron), golden set 20 case. CP4 bổ sung impact table, nghiên cứu tương tự, chốt quality bar. Kiểm chứng CP2 tại [codebase/verification.md](codebase/verification.md); kết quả eval tại [eval/README.md](eval/README.md).
 
 **Đội trưởng:** Đặng Quốc Hiệp · **Mã học viên:** 2A202602755
 **Repo:** https://github.com/QuocHiep123/K4-3A-E403-DCKH
@@ -83,8 +82,20 @@ Chưa có phiên dùng thử nào diễn ra. Mời thêm người để đạt 5
 
 ## §3. Giải pháp tương tự đã nghiên cứu
 
-- Đã đọc bốn bản tin bot trong pack: có chủ đề, câu hỏi và nội dung coach cần chú ý, nhưng nhãn phản hồi chưa đủ xác định kết quả cuối cùng.
-- Chưa hoàn thành nghiên cứu sản phẩm tương tự thứ hai; bổ sung trước CP4. Không coi nội dung bot là thông báo chính thức.
+**Bên trong pack — bản tin bot hiện có:**
+- Đã đọc 4 bản tin bot trong pack (`k4_daily_reports.md`): có chủ đề, câu hỏi và nội dung coach cần chú ý, nhưng nhãn "Đã có phản hồi, chưa xác nhận đã xử lý" không đủ để TA quyết định hội thoại nào còn cần xem.
+- Bản tin hiện tại thiếu: danh sách ưu tiên theo mức cần hỗ trợ, confidence indicator, cơ chế TA sửa có lưu lý do và audit log.
+
+**So sánh với giải pháp bên ngoài (CP4):**
+
+| Giải pháp | Chức năng tương tự | Điểm Discord Pulse khác biệt |
+|---|---|---|
+| Slack AI Summary (Slack 2024) | Tóm tắt kênh theo chủ đề | Không phân loại trạng thái cần hỗ trợ; không có TA sửa + ghi lý do |
+| Discourse AI Summarize | Gom thread theo chủ đề | Diễn đàn tĩnh, không real-time; không có urgency prioritization |
+| Intercom AI Triage | Phân loại ticket theo độ ưu tiên | B2B customer support; không có nhãn "responded-unclear" quan trọng với TA dạy học |
+| Linear/GitHub Copilot for Issues | Gợi ý ưu tiên issue | Dành cho dev workflow; không map sang bài toán học tập Discord |
+
+**Lý do Discord Pulse cần thiết:** Không có sản phẩm nào trên giải quyết đúng bài toán TA rà soát cuối ngày — cần phân biệt *có phản hồi* với *đã giải quyết*, cần TA đọc căn cứ trước khi quyết định, và cần ghi lý do khi sửa để audit. Đây là thiết kế HAX augment (G1, G2, G8-G11), không phải automate.
 
 ## §4. Thiết kế CP2 — bản mẫu tương tác
 
@@ -156,26 +167,42 @@ Các kịch bản chọn trực tiếp trong ô “Kịch bản thử nghiệm�
 
 **Kiểm chứng:** xem [nhật ký kỹ thuật](codebase/verification.md); không coi kiểm thử nội bộ là buổi dùng thử với người ngoài nhóm hoặc bằng chứng AI hoạt động thật.
 
-## §7. Kiểm thử — kế hoạch sau CP1
+## §7. Khám phá, Kiểm thử và Quality Bar — CP4
 
-- Xây ≥20 case, gồm ≥10 case lấy/phát triển từ dữ liệu thật, ≥2 case mỗi lớp khó, 8–10 case thường và 2–4 case hiếm.
-- Nhãn tham chiếu độc lập: cần theo dõi không, trạng thái phản hồi, nguồn hỗ trợ nhận định; cho phép “không đủ thông tin”.
-- Đo tỷ lệ đề xuất đúng, tỷ lệ bỏ sót trong tập đã gán nhãn, tỷ lệ trích dẫn hợp lệ/hỗ trợ nhận định, thời gian TA chốt danh sách.
-- So sánh bản tin nền/prototype trên cùng phạm vi đối chiếu được; bản tin nền có thể dùng nguồn ngoài pack, không phải nhãn đúng tuyệt đối.
-- Mục tiêu thời gian đề xuất: ≤5 phút. **Quality bar kỹ thuật chưa chốt**; định nghĩa trước lượt đo tương ứng, khóa tại CP4.
-- Trong lượt hoàn thiện CP2, chưa kiểm chứng golden set CP3, lời gọi AI thật hay các kết quả trong `eval/`; không dùng số mining CP1 hoặc kiểm thử mock làm độ chính xác sản phẩm.
+**Bộ kiểm thử CP3 (golden set 20 case):**
+- 5 hard case (TA rà soát độc lập) + 5 ambiguous + 10 standard; phân bố tại [eval/golden_set.json](eval/golden_set.json).
+- Kết quả chạy model thật (`nvidia/nemotron-3-ultra-550b-a55b:free` qua OpenRouter) lưu tại [eval/golden_set_results.json](eval/golden_set_results.json):
+  - Accuracy: 7/20 (35.0%) trên bộ 20 case đầy đủ
+  - Recall với case `no-response`: 4/5 (80.0%)
+  - Trích dẫn hợp lệ: 100% (tất cả 20 case đều map đúng msg_id từ pack thật)
+  - Avg API time: ~15.95s/case (nguyên nhân do model 550B free tier queue)
+
+**Quality Bar CP4 — ĐÃ CHỐT:**
+
+| Chỉ số | Ngưỡng tối thiểu | Lý do |
+|---|---|---|
+| Overall accuracy (20 case) | >= 70% | Đủ để TA tin vào đề xuất làm điểm xuất phát (cần tune prompt hoặc model nhanh hơn) |
+| Recall (no-response) | >= 90% | Không bỏ sót người đang cần giúp là ưu tiên sống còn của TA |
+| Trích dẫn hợp lệ | >= 95% | Mọi đề xuất phải có căn cứ tin nhắn gốc đọc được, không bịa mã tin |
+| Avg API time | <= 5s / case | Toàn bộ lượt rà soát 5 case trong <=25s là chấp nhận được trong trải nghiệm thực |
+| Thời gian TA hoàn thành | <= 5 phút | Đo bằng session timer trong mock; xác nhận với TA thật ở CP5 |
+
+**Kế hoạch CP5:**
+- Chạy lại analyze.py khi cần tune prompt để đạt quality bar; lưu kết quả so sánh.
+- Tổ chức >=5 phiên dùng thử với người ngoài nhóm; ghi nhật ký chi tiết tại [validation/user_testing.md](validation/user_testing.md).
+- Đo thời gian thật từ khi mở mock/index.html đến khi chốt danh sách; ghi nhận tỷ lệ TA tự sửa và hiểu nhãn.
 
 ## §8. Phân công & kế hoạch
 
 Phân công và willing users ở §2, ô 4; thông tin thành viên lấy từ [TEAMMATES.md](TEAMMATES.md).
 
-| Mốc | Việc cần hoàn thành |
-|---|---|
-| CP1 — 19:30 16/09 | Canvas, evidence ban đầu, hai willing users, repo công khai; đội trưởng nộp form |
-| CP2 — 21:00 16/09 | Bản mẫu Mock và sơ đồ trong codebase; §4/§6 và bảng HAX đã bổ sung. Đội trưởng còn cần nộp form và lưu xác nhận |
-| CP3 — 16:00 17/09 | AI thật, video 30 giây, bộ kiểm thử và kết quả lượt đầu |
-| CP4 — 21:00 17/09 | Bổ sung impact, nghiên cứu tương tự; rà soát HAX đã áp dụng từ CP2; chốt spec/quality bar |
-| CP5 — 13:00 18/09 | Năm người ngoài nhóm dùng thử, nhật ký/changelog, slide PDF và video dự phòng |
+| Mốc | Việc cần hoàn thành | Trạng thái |
+|---|---|---|
+| CP1 — 19:30 16/09 | Canvas, evidence ban đầu, hai willing users, repo công khai | Hoàn thành |
+| CP2 — 21:00 16/09 | Bản mẫu Mock, sơ đồ luồng, HAX table, 7/7 test pass | Hoàn thành |
+| CP3 — 16:00 17/09 | AI thật qua OpenRouter, giao diện 4 bước, golden set 20 case | Hoàn thành |
+| CP4 — 21:00 17/09 | Impact table, nghiên cứu tương tự, chốt quality bar, reflection | Hoàn thành |
+| CP5 — 13:00 18/09 | >=5 người ngoài nhóm dùng thử, nhật ký kết quả, slide PDF và video 30 giây | Đang thực hiện |
 
 ## §9. Changelog
 
@@ -186,3 +213,6 @@ Phân công và willing users ở §2, ô 4; thông tin thành viên lấy từ 
 | 16/09/2026 | Bổ sung Đỗ Đức Đại và Phạm Cường Quốc vào willing users | Nhóm cung cấp; chưa có feedback dùng thử |
 | 16/09/2026 | Phân vai dùng thử: Đỗ Đức Đại rà soát cuối ngày; Phạm Cường Quốc kiểm chứng kết quả | Nhóm chốt nhiệm vụ đóng vai TA; chưa có phiên dùng thử |
 | 16/09/2026 | Bổ sung CP2: bản mẫu Mock, sơ đồ đầy đủ, 4 nhánh trải nghiệm và 6 nguyên tắc HAX ở §4/§6 | Yêu cầu CP2; dữ liệu tự tạo, TA giữ quyền quyết định, AI thật để CP3 |
+| 17/09/2026 | CP3: giao diện 4 bước (`codebase/mock/`), AI thật qua OpenRouter nvidia/nemotron, golden set 20 case | Yêu cầu CP3; analyze.py gọi API thật; eval/ lưu kết quả |
+| 17/09/2026 | CP4: nghiên cứu tương tự (§3), chốt quality bar (§7), reflection, slide CP5, validation doc | Yêu cầu CP4; dựa trên kết quả eval CP3 và kế hoạch CP5 |
+| 17/09/2026 | Fix analyze.py: đường dẫn data linh hoạt, bộ xử lý UTF-8, strip markdown code block | Chạy kiểm thử 20 case thành công |
