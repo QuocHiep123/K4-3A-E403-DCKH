@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Discord Pulse — Tổng quan chủ đề</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span> Discord Pulse</div>
+    <div class="mock-badge">MOCK — CP2, chưa có lời gọi AI thật</div>
+  </div>
+  <div class="crumbs"><a href="index.html">Chọn ngày/server</a> › Tổng quan chủ đề</div>
+
+  <div class="page">
+    <h1>Tổng quan chủ đề</h1>
+    <div class="context-bar" id="context-bar">
+      📌 <span id="ctx-server">—</span> &nbsp;·&nbsp; <span id="ctx-date">—</span>
+    </div>
+    <p class="subtitle" id="subtitle-text">Bước 2 / 4 — Các chủ đề được gom từ tin nhắn trong ngày. Bấm vào một chủ đề để lọc danh sách hội thoại cần ưu tiên.</p>
+
+    <div class="topic-grid">
+      <a class="topic-card" href="#" data-topic="access" onclick="goList(event,'access')">
+        <div class="count">6</div>
+        <div class="label">Lỗi truy cập nền tảng (Phoenix, VLearn, Zoom)</div>
+        <span class="flag needs-review">2 chưa rõ kết quả</span>
+      </a>
+      <a class="topic-card" href="#" data-topic="score" onclick="goList(event,'score')">
+        <div class="count">4</div>
+        <div class="label">Thắc mắc cộng điểm / xác nhận lớp</div>
+        <span class="flag needs-review">1 chưa rõ kết quả</span>
+      </a>
+      <a class="topic-card" href="#" data-topic="submit" onclick="goList(event,'submit')">
+        <div class="count">3</div>
+        <div class="label">Quy cách nộp bài theo nhóm</div>
+        <span class="flag needs-review">1 cần thêm ngữ cảnh</span>
+      </a>
+      <a class="topic-card" href="#" data-topic="announce" onclick="goList(event,'announce')">
+        <div class="count">5</div>
+        <div class="label">Hướng dẫn / thông báo chung</div>
+        <span class="flag ok">Không cần theo dõi thêm</span>
+      </a>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <strong>Vì sao gom theo chủ đề trước?</strong>
+      <p class="subtitle" style="margin-bottom:0;">
+        Bản tin hiện tại chỉ đánh dấu "đã có phản hồi", TA phải tự mở từng tin để biết còn vướng hay không.
+        Gom theo chủ đề giúp TA thấy ngay nhóm nào còn nhiều hội thoại chưa rõ kết quả trước khi đi vào chi tiết.
+      </p>
+    </div>
+
+    <a class="btn" href="#" onclick="goList(event,'all')">Xem toàn bộ danh sách ưu tiên →</a>
+
+    <div class="footnote">
+      Số liệu minh hoạ, không phải số đếm thật từ pack — số thật đã công bố ở <code>evidence/metrics.json</code> (mẫu 50 tin, không phải toàn bộ ngày).
+    </div>
+  </div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const server = params.get('server') || (JSON.parse(localStorage.getItem('dp_selection') || '{}').server) || 'K4-L3-4';
+  const date   = params.get('date')   || (JSON.parse(localStorage.getItem('dp_selection') || '{}').date)   || '14/09/2026';
+
+  document.getElementById('ctx-server').textContent = server;
+  document.getElementById('ctx-date').textContent   = date;
+  document.title = `Discord Pulse — Tổng quan · ${server} · ${date}`;
+  document.querySelector('h1').textContent = `Tổng quan chủ đề — ${server}, ${date}`;
+
+  function goList(e, topic) {
+    e.preventDefault();
+    window.location.href = `priority-list.html?server=${encodeURIComponent(server)}&date=${encodeURIComponent(date)}&topic=${encodeURIComponent(topic)}`;
+  }
+
+  // Keyboard: press Enter on a topic card
+  document.querySelectorAll('.topic-card').forEach(card => {
+    card.setAttribute('tabindex', '0');
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter') card.click();
+    });
+  });
+</script>
+</body>
+</html>

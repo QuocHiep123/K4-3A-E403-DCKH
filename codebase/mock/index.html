@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Discord Pulse — Chọn ngày &amp; server</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span> Discord Pulse</div>
+    <div class="mock-badge">MOCK — CP2, chưa có lời gọi AI thật</div>
+  </div>
+
+  <div class="page">
+    <h1>Chào, TA 👋</h1>
+    <p class="subtitle">Bước 1 / 4 — Chọn server và ngày cần rà soát cuối ngày.</p>
+
+    <div class="card">
+      <div class="selector-row">
+        <div class="field">
+          <label for="server">Server</label>
+          <select id="server">
+            <option value="K4-L3-4">K4-L3-4</option>
+            <option value="K4-L2-3">K4-L2-3</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="date">Ngày</label>
+          <select id="date">
+            <option value="14/09/2026">14/09/2026 (thứ Hai)</option>
+            <option value="13/09/2026">13/09/2026 (Chủ nhật)</option>
+            <option value="12/09/2026">12/09/2026 (thứ Bảy)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" onclick="goNext()">Xem tổng quan chủ đề →</button>
+    </div>
+
+    <div class="card">
+      <strong>Luồng dự kiến (4 bước)</strong>
+      <p class="subtitle" style="margin-bottom:0;">
+        Chọn ngày/server → xem chủ đề nổi bật → mở danh sách hội thoại ưu tiên → xem căn cứ và xác nhận/sửa trạng thái.<br/>
+        Mục tiêu: TA chốt danh sách tối đa 5 hội thoại có căn cứ trong ≤5 phút (mục tiêu, chưa đo được ở bản mock này).
+      </p>
+    </div>
+
+    <div class="footnote">
+      Dữ liệu trong mock này là ví dụ minh hoạ dựa trên 6 trích dẫn ngắn đã công khai tại
+      <code>evidence/README.md</code> (đã ẩn danh, tối đa 2 câu/ví dụ) — không phải dữ liệu thật chạy trực tiếp từ pack.
+      Không có lời gọi AI thật trong bản CP2 này; dự kiến bổ sung ở CP3.
+    </div>
+  </div>
+
+<script>
+  // Restore previous selections from localStorage
+  const saved = JSON.parse(localStorage.getItem('dp_selection') || '{}');
+  if (saved.server) document.getElementById('server').value = saved.server;
+  if (saved.date)   document.getElementById('date').value   = saved.date;
+
+  function goNext() {
+    const server = document.getElementById('server').value;
+    const date   = document.getElementById('date').value;
+    localStorage.setItem('dp_selection', JSON.stringify({ server, date }));
+    window.location.href = `overview.html?server=${encodeURIComponent(server)}&date=${encodeURIComponent(date)}`;
+  }
+
+  // Allow Enter key on selects to proceed
+  document.querySelectorAll('select').forEach(el =>
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') goNext(); })
+  );
+</script>
+</body>
+</html>

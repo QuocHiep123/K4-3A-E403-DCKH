@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Discord Pulse — Danh sách hội thoại ưu tiên</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span> Discord Pulse</div>
+    <div class="mock-badge">MOCK — CP2, chưa có lời gọi AI thật</div>
+  </div>
+  <div class="crumbs" id="crumbs">
+    <a href="index.html">Chọn ngày/server</a> › <a id="overview-link" href="overview.html">Tổng quan chủ đề</a> › Danh sách ưu tiên
+  </div>
+
+  <div class="page">
+    <h1>Hội thoại cần ưu tiên — tối đa 5</h1>
+    <div class="context-bar" id="context-bar">📌 <span id="ctx-server">—</span> &nbsp;·&nbsp; <span id="ctx-date">—</span></div>
+    <p class="subtitle">Bước 3 / 4 — Mỗi mục có mã nguồn, trạng thái và lý do đề xuất. Bấm "Xem căn cứ" để xác nhận hoặc sửa trạng thái.</p>
+
+    <div class="done-banner" id="done-banner">✅ Đã xem xét tất cả hội thoại — phiên rà soát hoàn thành.</div>
+
+    <div class="filter-banner" id="filter-banner" style="display:none;">
+      🔎 Đang lọc theo chủ đề: <span id="filter-label"></span>
+      <a href="#" id="filter-clear">Xem tất cả →</a>
+    </div>
+
+    <div class="progress-label" id="progress-label">Đã xem: 0 / 5</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+
+    <div id="list-container">
+
+      <div class="list-item" id="item-M53930" data-topic="access">
+        <div class="rank">1</div>
+        <div class="li-body">
+          <div class="li-topic">Lỗi truy cập nền tảng — chưa thấy phản hồi</div>
+          <div class="li-quote">"Hiện tại em vẫn chưa vào được phoenix ạ" — M53930</div>
+          <div class="li-meta">Chưa đủ 4 giờ quan sát trong server này · chưa thấy reply trực tiếp</div>
+        </div>
+        <div style="text-align:right; flex-shrink:0;">
+          <span class="status-pill no-response" id="pill-M53930">Chưa thấy phản hồi</span><br/>
+          <div class="reviewed-tick">✓ Đã xem xét</div>
+          <a class="btn ghost" style="margin-top:6px;" href="#" onclick="goDetail(event,'M53930')">Xem căn cứ →</a>
+        </div>
+      </div>
+
+      <div class="list-item" id="item-M84013" data-topic="">
+        <div class="rank">2</div>
+        <div class="li-body">
+          <div class="li-topic">Xin hướng xử lý tiếp theo — đã có phản hồi, chưa rõ kết quả</div>
+          <div class="li-quote">"ad ơi trường hợp của em thì nên xử lý thế nào ạ" — M84013</div>
+          <div class="li-meta">Có reply nhưng nội dung tiếp tục hỏi hướng xử lý, chưa xác nhận xong</div>
+        </div>
+        <div style="text-align:right; flex-shrink:0;">
+          <span class="status-pill responded-unclear" id="pill-M84013">Đã phản hồi, chưa rõ</span><br/>
+          <div class="reviewed-tick">✓ Đã xem xét</div>
+          <a class="btn ghost" style="margin-top:6px;" href="#" onclick="goDetail(event,'M84013')">Xem căn cứ →</a>
+        </div>
+      </div>
+
+      <div class="list-item" id="item-M05023" data-topic="access">
+        <div class="rank">3</div>
+        <div class="li-body">
+          <div class="li-topic">Lỗi truy cập / setup repo — đã có phản hồi, chưa rõ kết quả</div>
+          <div class="li-quote">"...tại sao truy cập lại thấy trống nhỉ và làm sao tìm repo để setup AI log được nhỉ" — M05023</div>
+          <div class="li-meta">M13539 phản hồi sau 1 phút bằng câu hỏi chẩn đoán về email, chưa xác nhận đã xong</div>
+        </div>
+        <div style="text-align:right; flex-shrink:0;">
+          <span class="status-pill responded-unclear" id="pill-M05023">Đã phản hồi, chưa rõ</span><br/>
+          <div class="reviewed-tick">✓ Đã xem xét</div>
+          <a class="btn ghost" style="margin-top:6px;" href="#" onclick="goDetail(event,'M05023')">Xem căn cứ →</a>
+        </div>
+      </div>
+
+      <div class="list-item" id="item-M65121" data-topic="submit">
+        <div class="rank">4</div>
+        <div class="li-body">
+          <div class="li-topic">Xác nhận cách nộp bài theo nhóm — cần thêm ngữ cảnh</div>
+          <div class="li-quote">"nộp theo nhóm một người nộp cho cả nhóm hay là mỗi cá nhân đều phải nộp" — M65121</div>
+          <div class="li-meta">Chưa có reply trong dữ liệu quan sát được; chưa xác nhận còn tồn hay đã được trả lời ở nơi khác</div>
+        </div>
+        <div style="text-align:right; flex-shrink:0;">
+          <span class="status-pill needs-context" id="pill-M65121">Cần kiểm tra thêm</span><br/>
+          <div class="reviewed-tick">✓ Đã xem xét</div>
+          <a class="btn ghost" style="margin-top:6px;" href="#" onclick="goDetail(event,'M65121')">Xem căn cứ →</a>
+        </div>
+      </div>
+
+      <div class="list-item" id="item-M27034" data-topic="access">
+        <div class="rank">5</div>
+        <div class="li-body">
+          <div class="li-topic">Lỗi đăng nhập Zoom — có bằng chứng đã giải quyết</div>
+          <div class="li-quote">"...đăng nhập vào zoom mà cứ báo như này thì tối em đăng nhập bằng mail cá nhân rồi đổi tên được không ạ?" — M27034</div>
+          <div class="li-meta">M66739 hướng dẫn sau 5 phút — ví dụ đối lập, không phải mọi báo lỗi đều còn treo</div>
+        </div>
+        <div style="text-align:right; flex-shrink:0;">
+          <span class="status-pill resolved" id="pill-M27034">Đã giải quyết</span><br/>
+          <div class="reviewed-tick">✓ Đã xem xét</div>
+          <a class="btn ghost" style="margin-top:6px;" href="#" onclick="goDetail(event,'M27034')">Xem căn cứ →</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="empty-state" id="empty-state" style="display:none;">
+      Không có hội thoại nào thuộc chủ đề này trong top-5 ưu tiên hiện tại.<br/>
+      <small>Không suy đoán thêm — có thể các hội thoại thuộc chủ đề này chưa đủ dấu hiệu cần ưu tiên, hoặc đã được xử lý.</small>
+    </div>
+
+    <div class="footnote">
+      5 mục trên dùng lại đúng 6 trích dẫn ngắn đã công khai ở <code>evidence/README.md</code> — không phải kết quả AI thật, chỉ minh hoạ cách hiển thị chủ đề + trạng thái + nguồn.
+      Đếm/AI thật sẽ chạy trên toàn bộ pack cục bộ, không commit vào repo.
+    </div>
+  </div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const server = params.get('server') || (JSON.parse(localStorage.getItem('dp_selection') || '{}').server) || 'K4-L3-4';
+  const date   = params.get('date')   || (JSON.parse(localStorage.getItem('dp_selection') || '{}').date)   || '14/09/2026';
+  const qs     = `server=${encodeURIComponent(server)}&date=${encodeURIComponent(date)}`;
+
+  document.getElementById('ctx-server').textContent = server;
+  document.getElementById('ctx-date').textContent   = date;
+  document.getElementById('overview-link').href = `overview.html?${qs}`;
+
+  const STATUS_MAP = {
+    'no-response':       { label: 'Chưa thấy phản hồi', cls: 'no-response' },
+    'responded-unclear': { label: 'Đã phản hồi, chưa rõ', cls: 'responded-unclear' },
+    'resolved':          { label: 'Đã giải quyết', cls: 'resolved' },
+    'needs-context':     { label: 'Cần kiểm tra thêm', cls: 'needs-context' }
+  };
+
+  const IDS = ['M53930','M84013','M05023','M65121','M27034'];
+
+  const TOPIC_LABELS = {
+    access:   'Lỗi truy cập nền tảng',
+    score:    'Thắc mắc cộng điểm / xác nhận lớp',
+    submit:   'Quy cách nộp bài theo nhóm',
+    announce: 'Hướng dẫn / thông báo chung'
+  };
+
+  function applyTopicFilter() {
+    const topic = params.get('topic');
+    const banner = document.getElementById('filter-banner');
+    const emptyState = document.getElementById('empty-state');
+    const items = document.querySelectorAll('.list-item');
+
+    if (!topic || topic === 'all') {
+      banner.style.display = 'none';
+      emptyState.style.display = 'none';
+      items.forEach(el => { el.style.display = ''; });
+      return;
+    }
+
+    document.getElementById('filter-label').textContent = TOPIC_LABELS[topic] || topic;
+    document.getElementById('filter-clear').href = `priority-list.html?${qs}`;
+    banner.style.display = 'flex';
+
+    let visibleCount = 0;
+    items.forEach(el => {
+      const match = el.dataset.topic === topic;
+      el.style.display = match ? '' : 'none';
+      if (match) visibleCount++;
+    });
+    emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+
+  function loadReviewed() {
+    return JSON.parse(localStorage.getItem('dp_reviewed') || '{}');
+  }
+
+  function updateProgress() {
+    const reviewed = loadReviewed();
+    const count = IDS.filter(id => reviewed[id]).length;
+    document.getElementById('progress-label').textContent = `Đã xem: ${count} / ${IDS.length}`;
+    document.getElementById('progress-fill').style.width = `${(count / IDS.length) * 100}%`;
+    if (count === IDS.length) {
+      document.getElementById('done-banner').classList.add('show');
+    }
+  }
+
+  // Restore reviewed states + updated status pills from localStorage
+  function restoreStates() {
+    const reviewed = loadReviewed();
+    IDS.forEach(id => {
+      const info = reviewed[id];
+      if (!info) return;
+      const item = document.getElementById(`item-${id}`);
+      const pill = document.getElementById(`pill-${id}`);
+      if (item) item.classList.add('reviewed');
+      if (pill && info.status && STATUS_MAP[info.status]) {
+        pill.className = `status-pill ${STATUS_MAP[info.status].cls}`;
+        pill.textContent = STATUS_MAP[info.status].label;
+      }
+    });
+    updateProgress();
+  }
+
+  function goDetail(e, id) {
+    e.preventDefault();
+    window.location.href = `detail.html?id=${id}&${qs}`;
+  }
+
+  restoreStates();
+  applyTopicFilter();
+
+  // Listen for storage changes (if detail.html wrote while open in same tab — won't fire,
+  // but ensures sync when navigating back via browser history)
+  window.addEventListener('focus', restoreStates);
+</script>
+</body>
+</html>

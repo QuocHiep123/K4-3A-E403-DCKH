@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Discord Pulse — Chi tiết hội thoại</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span> Discord Pulse</div>
+    <div class="mock-badge">MOCK — CP2, chưa có lời gọi AI thật</div>
+  </div>
+  <div class="crumbs">
+    <a href="index.html">Chọn ngày/server</a> ›
+    <a id="overview-link" href="overview.html">Tổng quan chủ đề</a> ›
+    <a id="list-link" href="priority-list.html">Danh sách ưu tiên</a> ›
+    Chi tiết
+  </div>
+
+  <div class="page">
+    <h1 id="li-topic">Chi tiết hội thoại</h1>
+    <div class="context-bar" id="context-bar">📌 <span id="ctx-server">—</span> &nbsp;·&nbsp; <span id="ctx-date">—</span></div>
+    <p class="subtitle" id="li-sub">Bước 4 / 4 — Xem nguồn gốc trạng thái, xác nhận hoặc sửa lại nếu AI đề xuất sai.</p>
+
+    <div class="detail-grid">
+      <div>
+        <div class="card">
+          <strong>Nguồn hội thoại (mã tin, không phải văn bản dài)</strong>
+          <div id="thread" style="margin-top:10px;"></div>
+        </div>
+        <div class="card">
+          <div class="evidence-note" id="evidence-note"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <fieldset>
+            <legend>Trạng thái đề xuất bởi hệ thống</legend>
+            <div class="radio-row" id="status-options"></div>
+          </fieldset>
+
+          <div class="live-status-preview">
+            Xem trước: <span class="status-pill" id="live-pill"></span>
+          </div>
+
+          <label style="font-size:12px; color:var(--muted); font-weight:600; display:block; margin-top:10px;">Lý do TA ghi lại (tuỳ chọn)</label>
+          <textarea id="reason" placeholder="Ví dụ: đã hỏi trực tiếp học viên trên kênh riêng, coi như xong."></textarea>
+
+          <div class="actions-row">
+            <button class="btn" onclick="confirmDecision()" id="confirm-btn">Xác nhận trạng thái</button>
+            <a class="btn secondary" id="back-btn" href="priority-list.html">← Quay lại danh sách</a>
+          </div>
+
+          <div class="confirm-toast" id="toast"></div>
+
+          <!-- Nav between items -->
+          <div id="nav-row" style="display:flex; gap:8px; margin-top:14px; font-size:13px; color:var(--muted); justify-content:space-between;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footnote">
+      Ba trạng thái theo <code>spec.md §4</code>: chưa thấy phản hồi phù hợp / đã có phản hồi, chưa rõ kết quả / có bằng chứng đã giải quyết —
+      cộng nhãn phụ "cần kiểm tra thêm" khi thiếu ngữ cảnh. AI chỉ <em>đề xuất</em>, TA luôn là người quyết định cuối (augment, không auto-hành động).
+    </div>
+  </div>
+
+<script>
+const DATA = {
+  M53930: {
+    topic: "Lỗi truy cập nền tảng Phoenix",
+    status: "no-response",
+    statusLabel: "Chưa thấy phản hồi phù hợp",
+    thread: [
+      { author: "S0142 (học viên)", time: "14/09 20:12", text: "Hiện tại em vẫn chưa vào được phoenix ạ", bot: false }
+    ],
+    note: "Chưa đủ 4 giờ quan sát trong server K4-L3-4 tính đến mốc tin cuối — không kết luận là bị bỏ quên, chỉ là chưa đủ dữ liệu để biết."
+  },
+  M84013: {
+    topic: "Xin hướng xử lý tiếp theo",
+    status: "responded-unclear",
+    statusLabel: "Đã có phản hồi, chưa rõ kết quả",
+    thread: [
+      { author: "S0087 (học viên)", time: "14/09 09:41", text: "ad ơi trường hợp của em thì nên xử lý thế nào ạ", bot: false },
+      { author: "T00214 (TA)", time: "14/09 09:52", text: "(reply đã ghi nhận trong pack — nội dung không trích ở đây)", bot: false }
+    ],
+    note: "Có reply nhưng tin gốc vẫn đang hỏi hướng xử lý — hệ thống không tự suy ra là đã xong, cần TA xác nhận."
+  },
+  M05023: {
+    topic: "Lỗi truy cập / setup repo AI log",
+    status: "responded-unclear",
+    statusLabel: "Đã có phản hồi, chưa rõ kết quả",
+    thread: [
+      { author: "S0055 (học viên)", time: "14/09 08:03", text: "cho mình hỏi tại sao truy cập lại thấy trống nhỉ và làm sao tìm repo để setup AI log được nhỉ", bot: false },
+      { author: "M13539 · S0055", time: "14/09 08:04", text: "(phản hồi sau 1 phút — hỏi chẩn đoán thêm về email)", bot: false }
+    ],
+    note: "Phản hồi là một câu hỏi chẩn đoán, không phải câu trả lời chốt — có phản hồi không đồng nghĩa đã giải quyết."
+  },
+  M65121: {
+    topic: "Xác nhận cách nộp bài theo nhóm",
+    status: "needs-context",
+    statusLabel: "Cần kiểm tra thêm",
+    thread: [
+      { author: "S0199 (học viên)", time: "14/09 21:30", text: "nộp theo nhóm một người nộp cho cả nhóm hay là mỗi cá nhân đều phải nộp", bot: false }
+    ],
+    note: "Không thấy reply trong dữ liệu quan sát được. Có thể đã được trả lời ở kênh/thread khác ngoài pack — hệ thống không suy đoán, để TA kiểm tra."
+  },
+  M27034: {
+    topic: "Lỗi đăng nhập Zoom trước workshop",
+    status: "resolved",
+    statusLabel: "Có bằng chứng đã giải quyết",
+    thread: [
+      { author: "S0071 (học viên)", time: "14/09 18:55", text: "e đăng nhập vào zoom để tối nay workshop mà cứ báo như này thì tối e đăng nhập bằng mail cá nhân rồi đổi tên theo quy định được không ạ?", bot: false },
+      { author: "M66739 · T00108 (TA)", time: "14/09 19:00", text: "(hướng dẫn cụ thể sau 5 phút, không có ảnh đính kèm trong pack)", bot: false }
+    ],
+    note: "Ví dụ đối lập: không phải mọi báo lỗi đều còn treo — reply cụ thể trong thời gian ngắn là bằng chứng hợp lý để đóng."
+  }
+};
+
+const STATUS_OPTIONS = [
+  { key: "no-response",       label: "Chưa thấy phản hồi phù hợp",    cls: "no-response" },
+  { key: "responded-unclear", label: "Đã có phản hồi, chưa rõ kết quả", cls: "responded-unclear" },
+  { key: "resolved",          label: "Có bằng chứng đã giải quyết",   cls: "resolved" },
+  { key: "needs-context",     label: "Cần kiểm tra thêm (thiếu ngữ cảnh)", cls: "needs-context" }
+];
+
+const IDS = Object.keys(DATA);
+
+// ── URL / context ──
+const urlParams = new URLSearchParams(window.location.search);
+const id     = urlParams.get('id') || 'M53930';
+const server = urlParams.get('server') || (JSON.parse(localStorage.getItem('dp_selection') || '{}').server) || 'K4-L3-4';
+const date   = urlParams.get('date')   || (JSON.parse(localStorage.getItem('dp_selection') || '{}').date)   || '14/09/2026';
+const qs     = `server=${encodeURIComponent(server)}&date=${encodeURIComponent(date)}`;
+
+const item = DATA[id] || DATA.M53930;
+
+// ── Context links ──
+document.getElementById('ctx-server').textContent = server;
+document.getElementById('ctx-date').textContent   = date;
+document.getElementById('overview-link').href = `overview.html?${qs}`;
+document.getElementById('list-link').href     = `priority-list.html?${qs}`;
+document.getElementById('back-btn').href      = `priority-list.html?${qs}`;
+
+// ── Restore previously saved reason from localStorage ──
+const savedReviewed = JSON.parse(localStorage.getItem('dp_reviewed') || '{}');
+const savedInfo = savedReviewed[id] || {};
+let currentStatus = savedInfo.status || item.status;
+
+// ── Header ──
+document.getElementById('li-topic').textContent = `${item.topic} — ${id}`;
+document.getElementById('li-sub').textContent =
+  `Bước 4 / 4 — Trạng thái hệ thống đề xuất: ${item.statusLabel}. TA xem nguồn rồi xác nhận hoặc sửa lại bên phải.`;
+
+// ── Thread ──
+const threadEl = document.getElementById('thread');
+item.thread.forEach(m => {
+  const div = document.createElement('div');
+  div.className = 'source-msg' + (m.bot ? ' bot' : '');
+  div.innerHTML = `<span class="author">${m.author}</span><span class="time">${m.time}</span><div class="text">${m.text}</div>`;
+  threadEl.appendChild(div);
+});
+
+// ── Evidence note ──
+document.getElementById('evidence-note').innerHTML =
+  `<strong>Vì sao đề xuất trạng thái này:</strong><br/>${item.note}` +
+  `<br/><br/>Trích dẫn và mã nguồn lấy nguyên văn từ <code>evidence/README.md</code> (đã công khai, ẩn danh, tối đa 2 câu/ví dụ).`;
+
+// ── Radio options + live pill ──
+const optionsEl = document.getElementById('status-options');
+const livePill  = document.getElementById('live-pill');
+
+function updateLivePill(key) {
+  const opt = STATUS_OPTIONS.find(o => o.key === key);
+  if (!opt) return;
+  livePill.className = `status-pill ${opt.cls}`;
+  livePill.textContent = opt.label;
+  currentStatus = key;
+}
+
+STATUS_OPTIONS.forEach(opt => {
+  const label = document.createElement('label');
+  const checked = opt.key === currentStatus ? 'checked' : '';
+  label.innerHTML = `<input type="radio" name="status" value="${opt.key}" ${checked}/> ${opt.label}`;
+  label.querySelector('input').addEventListener('change', () => updateLivePill(opt.key));
+  optionsEl.appendChild(label);
+});
+
+updateLivePill(currentStatus);
+
+// Restore saved reason text
+if (savedInfo.reason) document.getElementById('reason').value = savedInfo.reason;
+
+// ── Confirm ──
+function confirmDecision() {
+  const selected = document.querySelector('input[name="status"]:checked');
+  if (!selected) return;
+
+  const reviewed = JSON.parse(localStorage.getItem('dp_reviewed') || '{}');
+  reviewed[id] = {
+    status: selected.value,
+    reason: document.getElementById('reason').value,
+    ts: new Date().toISOString()
+  };
+  localStorage.setItem('dp_reviewed', JSON.stringify(reviewed));
+
+  const opt = STATUS_OPTIONS.find(o => o.key === selected.value);
+  const toast = document.getElementById('toast');
+  toast.className = 'confirm-toast show';
+  toast.innerHTML = `✅ Đã lưu quyết định của TA: <strong>${opt.label}</strong>.<br/><small style="color:var(--muted);">Mock — chưa ghi vào hệ thống thật. Quay danh sách để xem trạng thái cập nhật.</small>`;
+
+  // After 2.5s navigate back automatically
+  setTimeout(() => {
+    window.location.href = `priority-list.html?${qs}`;
+  }, 2500);
+}
+
+// Enter key shortcut to confirm
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter') && (e.ctrlKey || e.metaKey)) confirmDecision();
+});
+
+// ── Prev / Next navigation ──
+const currentIdx = IDS.indexOf(id);
+const navRow = document.getElementById('nav-row');
+
+if (currentIdx > 0) {
+  const prevId = IDS[currentIdx - 1];
+  const a = document.createElement('a');
+  a.href = `detail.html?id=${prevId}&${qs}`;
+  a.className = 'btn ghost';
+  a.textContent = `← ${prevId}`;
+  navRow.appendChild(a);
+} else {
+  navRow.appendChild(document.createElement('span'));
+}
+
+const navInfo = document.createElement('span');
+navInfo.style.paddingTop = '8px';
+navInfo.textContent = `${currentIdx + 1} / ${IDS.length}`;
+navRow.appendChild(navInfo);
+
+if (currentIdx < IDS.length - 1) {
+  const nextId = IDS[currentIdx + 1];
+  const a = document.createElement('a');
+  a.href = `detail.html?id=${nextId}&${qs}`;
+  a.className = 'btn ghost';
+  a.textContent = `${nextId} →`;
+  navRow.appendChild(a);
+}
+</script>
+</body>
+</html>
