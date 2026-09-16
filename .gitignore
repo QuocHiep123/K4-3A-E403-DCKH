@@ -1,0 +1,26 @@
+# Environment & API keys
+.env
+.env.*
+*.local
+
+# Dependencies & Virtual Envirionments
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# Data safety (Do not commit hackathon data pack)
+data/
+*.csv
+*.pdf
+!demo-slides.pdf
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
