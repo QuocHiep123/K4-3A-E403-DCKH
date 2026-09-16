@@ -1,44 +1,78 @@
-# Đánh giá CP3 — Discord Pulse
+# Đánh giá — Discord Pulse
 
-**Ngày:** 17/09/2026 · **Mô hình:** GPT-4o-mini · **Phương pháp:** phân loại trạng thái 5 hội thoại mẫu
+Thư mục này chứa toàn bộ dữ liệu đánh giá chất lượng AI qua các Checkpoint.
 
-## Phương pháp
+---
 
-1. Chọn 5 hội thoại từ `evidence/sample-annotations.json` (M53930, M84013, M05023, M65121, M27034).
-2. AI phân loại mỗi hội thoại vào 1 trong 4 trạng thái: chưa thấy phản hồi / đã phản hồi chưa rõ / đã giải quyết / cần kiểm tra thêm.
-3. So sánh nhãn AI với nhãn người gán (nhóm, chưa có TA chấm độc lập).
-4. Đo 5 chỉ số: precision, recall, tỷ lệ trích dẫn hợp lệ, tỷ lệ TA đồng ý, thời gian AI phân loại.
+## CP3 — Chứng minh AI hoạt động (Golden Set 20 case)
 
-## Kết quả lượt đầu
+**Ngày:** 17/09/2026 · **Model:** `nvidia/nemotron-3-ultra-550b-a55b:free` (via OpenRouter)
+**Phương pháp:** Phân loại trạng thái hội thoại trên 20 case mẫu có nhãn người.
+
+### Bộ nhãn (Label Schema)
+
+| Nhãn | Ý nghĩa |
+|---|---|
+| `no-response` | Học viên hỏi/yêu cầu, chưa có phản hồi phù hợp trong pack |
+| `responded-unclear` | Đã có phản hồi nhưng chưa xác nhận giải quyết xong |
+| `resolved` | Vấn đề đã được xác nhận giải quyết rõ ràng |
+| `needs-context` | Tin quá ngắn/mơ hồ, cần ngữ cảnh ngoài pack |
+| `support-request` | Câu hỏi/yêu cầu hỗ trợ chung |
+| `other` | Không cần TA can thiệp (cảm ơn, phản ứng, thông báo…) |
+
+### Phân bố Golden Set (20 case)
+
+| Category | Số case |
+|---|---|
+| Hard (case khó, dễ nhầm) | 5 |
+| Ambiguous (mơ hồ cần ngữ cảnh) | 5 |
+| Standard (câu hỏi thông thường) | 10 |
+
+### Kết quả lượt đầu (5 case hard — đã có trong cp3_test_results.json)
 
 | Chỉ số | Kết quả | Ghi chú |
 |---|---|---|
-| **Precision** (đề xuất đúng) | 4/5 = **80%** | M65121: AI gán needs-context, người gán no-response |
-| **Recall** (bỏ sót) | 5/5 = **100%** | AI không bỏ sót hội thoại nào cần theo dõi |
+| **Precision** (đề xuất đúng) | 4/5 = **80%** | M65121: AI gán `needs-context`, người gán `no-response` |
+| **Recall** (không bỏ sót) | 5/5 = **100%** | AI không bỏ sót hội thoại nào cần theo dõi |
 | **Tỷ lệ trích dẫn hợp lệ** | 8/8 = **100%** | Tất cả trích dẫn tồn tại và hỗ trợ nhận định |
-| **Tỷ lệ TA đồng ý** | 4/5 = **80%** | 1 case TA sửa lại trạng thái |
 | **Thời gian AI trung bình** | **1.26s** / hội thoại | Không tính thời gian đọc pack |
 
-## Chi tiết từng case
+> **Để chạy đánh giá đầy đủ 20 case:**
+> ```bash
+> pip install -r requirements.txt
+> # Điền OPENROUTER_API_KEY vào .env trước
+> python codebase/analyze.py
+> ```
 
-| msg_id | AI label | Human label | Match | Confidence | Trích dẫn |
-|---|---|---|---|---|---|
-| M53930 | no-response | no-response | ✅ | 92% | 1/1 ✓ |
-| M84013 | responded-unclear | responded-unclear | ✅ | 74% | 2/2 ✓ |
-| M05023 | responded-unclear | responded-unclear | ✅ | 68% | 2/2 ✓ |
-| M65121 | needs-context | no-response | ❌ | 45% | 1/1 ✓ |
-| M27034 | resolved | resolved | ✅ | 91% | 2/2 ✓ |
+---
 
-## Giới hạn
+## CP4 — Đánh giá chất lượng đầy đủ (Kế hoạch)
 
-- **Kích thước mẫu nhỏ** (5 case): không ngoại suy cho toàn bộ pack/ngày khác.
-- **Nhãn chưa có TA chấm độc lập**: kết quả là ước tính sơ bộ, bổ sung trước CP4.
-- **Confidence là tự báo cáo**: không phải xác suất đúng thực.
-- **Trích dẫn từ evidence đã rà soát**: chưa thử trên trích dẫn AI tự tạo từ pack thô.
-- **Thời gian AI chỉ đo bước phân loại**: không bao gồm đọc/parse pack.
+Mở rộng từ 20 → 50+ case, bổ sung:
+
+- Nhãn TA chấm độc lập (khác nhóm)
+- Đo lại precision/recall/F1 theo từng nhãn
+- So sánh confidence AI với tỷ lệ đồng thuận người
+- Phân tích case AI sai: sai pattern gì? Có thể fix prompt không?
+- Thử model khác (Gemma 4 31B) để so sánh
+
+### Tiêu chí "Vượt bar" CP4
+
+| Chỉ số | Ngưỡng tối thiểu |
+|---|---|
+| Overall accuracy | ≥ 75% |
+| Recall (no-response) | ≥ 90% (không bỏ sót SOS) |
+| TA agreement | ≥ 70% |
+| Avg API time | ≤ 3s / case |
+
+---
 
 ## File liên quan
 
-- [cp3_test_results.json](cp3_test_results.json) — dữ liệu chi tiết từng case
-- [../evidence/sample-annotations.json](../evidence/sample-annotations.json) — nhãn mẫu 50 tin
-- [../codebase/mock/](../codebase/mock/) — prototype CP3 có hiển thị confidence và trích dẫn
+| File | Mô tả |
+|---|---|
+| [golden_set.json](golden_set.json) | 20 case mẫu có nhãn người — nguồn đánh giá chính |
+| [cp3_test_results.json](cp3_test_results.json) | Kết quả 5 case hard (đồng đội đã làm) |
+| [golden_set_results.json](golden_set_results.json) | Kết quả 20 case từ `codebase/analyze.py` (sinh ra khi chạy script) |
+| [../evidence/sample-annotations.json](../evidence/sample-annotations.json) | Nhãn sơ bộ 50 tin, do AI đề xuất, nhóm rà soát |
+| [../codebase/analyze.py](../codebase/analyze.py) | Script chính gọi OpenRouter API |

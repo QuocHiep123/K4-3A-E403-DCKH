@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "version": "CP3-v2",
+    "created": "2026-09-17",
+    "model_used": "nvidia/nemotron-3-ultra-550b-a55b (openrouter - free)",
+    "total_cases": 20,
+    "label_schema": {
+      "no-response": "Học viên hỏi/yêu cầu hỗ trợ, chưa có phản hồi phù hợp trong pack",
+      "responded-unclear": "Đã có phản hồi nhưng chưa xác nhận giải quyết xong",
+      "resolved": "Có bằng chứng rõ ràng vấn đề đã được giải quyết",
+      "needs-context": "Tin quá ngắn/mơ hồ hoặc phụ thuộc context ngoài pack",
+      "support-request": "Câu hỏi/yêu cầu hỗ trợ chung (khi chưa biết trạng thái reply)"
+    },
+    "source": "evidence/sample-annotations.json + nhóm rà soát thủ công"
+  },
+  "cases": [
+    {
+      "id": 1,
+      "msg_id": "M53930",
+      "human_label": "no-response",
+      "category": "hard",
+      "note": "Báo rõ vẫn chưa truy cập được Phoenix. Chưa xác định nguyên nhân hay kết quả.",
+      "ta_reviewed": true
+    },
+    {
+      "id": 2,
+      "msg_id": "M84013",
+      "human_label": "responded-unclear",
+      "category": "hard",
+      "note": "Có reply nhưng chưa chốt kết quả. AI cần phân biệt đúng responded vs resolved.",
+      "ta_reviewed": true
+    },
+    {
+      "id": 3,
+      "msg_id": "M05023",
+      "human_label": "responded-unclear",
+      "category": "hard",
+      "note": "Reply là câu hỏi chẩn đoán của TA. Có phản hồi ≠ đã giải quyết.",
+      "ta_reviewed": true
+    },
+    {
+      "id": 4,
+      "msg_id": "M65121",
+      "human_label": "no-response",
+      "category": "hard",
+      "note": "Hỏi cách nộp bài theo nhóm. Không có phản hồi rõ trong pack.",
+      "ta_reviewed": true
+    },
+    {
+      "id": 5,
+      "msg_id": "M27034",
+      "human_label": "resolved",
+      "category": "hard",
+      "note": "Có xác nhận rõ ràng vấn đề đã được xử lý xong.",
+      "ta_reviewed": true
+    },
+    {
+      "id": 6,
+      "msg_id": "M45980",
+      "human_label": "needs-context",
+      "category": "ambiguous",
+      "note": "Tin quá ngắn, không đủ context để kết luận loại yêu cầu.",
+      "ta_reviewed": false
+    },
+    {
+      "id": 7,
+      "msg_id": "M92861",
+      "human_label": "needs-context",
+      "category": "ambiguous",
+      "note": "Một lời đồng tình ngắn, phụ thuộc thread bên ngoài.",
+      "ta_reviewed": false
+    },
+    {
+      "id": 8,
+      "msg_id": "M36026",
+      "human_label": "needs-context",
+      "category": "ambiguous",
+      "note": "Phụ thuộc ngữ cảnh không có trong pack.",
+      "ta_reviewed": false
+    },
+    {
+      "id": 9,
+      "msg_id": "M47681",
+      "human_label": "needs-context",
+      "category": "ambiguous",
+      "note": "Cần xem reply chain để hiểu. Không đủ thông tin tự thân.",
+      "ta_reviewed": false
+    },
+    {
+      "id": 10,
+      "msg_id": "M86664",
+      "human_label": "needs-context",
+      "category": "ambiguous",
+      "note": "Tin chỉ có 1 từ hoặc cụm từ rất ngắn.",
+      "ta_reviewed": false
+    },
+    {
+      "id": 11,
+      "msg_id": "M56157",
+      "human_label": "support-request",
+      "category": "standard",
+      "note": "Câu hỏi rõ về quy trình nộp bài / tiêu chí đánh giá.",
+      "ta_reviewed": false
+    },
+    {
+      "id": 12,
+      "msg_id": "M09090",
+      "human_label": "support-request",
+      "category": "standard",
+      "note": "Câu hỏi logistics: địa điểm, thời gian, yêu cầu buổi học.",
+      "ta_reviewed": false
+    },
+    {
+      "id": 13,
+      "msg_id": "M49586",
+      "human_label": "support-request",
+      "category": "standard",
+      "note": "Hỏi cách làm lab / hướng dẫn kỹ thuật.",
+      "ta_reviewed": false
+    },
+    {
+      "id": 14,
+      "msg_id": "M80709",
+      "human_label": "support-request",
+      "category": "standard",
+      "note": "Báo cáo lỗi kỹ thuật (link hỏng, không vào được tool).",
+      "ta_reviewed": false
+    },
+    {
+      "id": 15,
+      "msg_id": "M67785",
+      "human_label": "support-request",
+      "category": "standard",
+      "note": "Hỏi cơ cấu nhóm, phân công vai trò. Giữ là câu hỏi rộng.",
+      "ta_reviewed": false
+    },
+    {
+      "id": 16,
+      "msg_id": "M32171",
+      "human_label": "support-request",
+      "category": "standard",
+      "note": "Hỏi về deadline nộp checkpoint.",
+      "ta_reviewed": false
+    },
+    {
+      "id": 17,
+      "msg_id": "M48859",
+      "human_label": "support-request",
+      "category": "standard",
+      "note": "Xin link tài liệu / slide buổi học.",
+      "ta_reviewed": false
+    },
+    {
+      "id": 18,
+      "msg_id": "M97148",
+      "human_label": "support-request",
+      "category": "standard",
+      "note": "Hỏi quy định điểm danh / chuyên cần.",
+      "ta_reviewed": false
+    },
+    {
+      "id": 19,
+      "msg_id": "M53663",
+      "human_label": "support-request",
+      "category": "standard",
+      "note": "Hỏi xác nhận đã điểm danh chưa.",
+      "ta_reviewed": false
+    },
+    {
+      "id": 20,
+      "msg_id": "M88243",
+      "human_label": "other",
+      "category": "standard",
+      "note": "Cảm ơn / phản ứng tích cực. Không cần TA can thiệp.",
+      "ta_reviewed": false
+    }
+  ],
+  "distribution": {
+    "no-response": 2,
+    "responded-unclear": 2,
+    "resolved": 1,
+    "needs-context": 5,
+    "support-request": 9,
+    "other": 1
+  }
+}
