@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-09-16T13:24:01.581Z",
+  "browser": "153.0.4234.32",
+  "checks": [
+    "CP2-01: source gate, 3 decisions, 2 follow-ups, JSON download",
+    "CP2-02: uncertainty, required explanation, complete with context request",
+    "CP2-03: no invented result, inspect invalid source, recover to mock happy path",
+    "CP2-04/07: correction, audit, escaped notes, reopen, dismiss, re-finalize",
+    "CP2-05: error, raw input, retry preserves selected server/day",
+    "CP2-06: empty result has explicit scope limitation",
+    "Mobile 390px: no horizontal overflow, review and finish",
+    "Keyboard entry: visible brand and form controls are focusable"
+  ],
+  "pageErrors": []
+}

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Discord Pulse: bản mẫu CP2 giúp trợ giảng xem căn cứ và chốt hội thoại cần hỗ trợ.">
+  <title>Discord Pulse — Rà soát cuối ngày</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="model.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="masthead">
+    <a class="brand" href="index.html" aria-label="Discord Pulse, bắt đầu lại"><span class="brand-mark" aria-hidden="true">p</span> Discord Pulse</a>
+    <span class="prototype-label">CP2 / Bản mẫu Mock</span>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div><p class="eyebrow">Bàn làm việc của trợ giảng</p><h1 id="page-title">Khép lại ngày học.<br>Đừng bỏ lỡ người cần giúp.</h1></div>
+      <p class="intro-note">AI gợi ý hội thoại cần xem lại.<br> Bạn xem căn cứ, sửa nhận định và chốt việc tiếp theo. <strong>Bạn luôn là người quyết định.</strong></p>
+    </section>
+    <aside class="demo-notice" id="capabilities"><span class="demo-dot" aria-hidden="true"></span><div><strong>Đang dùng dữ liệu giả lập.</strong> Đề xuất và mức tin cậy được dựng sẵn để thử luồng; chưa có AI thật, chưa kết nối Discord. Quyết định chỉ giữ trong tab này; tải kết quả để lưu.</div></aside>
+    <form id="setup" class="setup">
+      <label>Server<select id="server"><option value="Lớp thực hành (demo)">Lớp thực hành (demo)</option><option value="Nhóm workshop (demo)">Nhóm workshop (demo)</option></select></label>
+      <label>Ngày rà soát<input id="day" type="date" value="2026-09-16" min="2026-09-15" max="2026-09-16" required></label>
+      <label class="scenario-label">Kịch bản thử nghiệm<select id="scenario"><option value="happy">01 · Đủ căn cứ</option><option value="low">02 · Chưa chắc chắn</option><option value="no-grounding">03 · Không có căn cứ</option><option value="correction">04 · Sửa nhận định sai</option><option value="error">05 · Lỗi gọi AI</option><option value="empty">06 · Không có hội thoại</option></select></label>
+      <button class="primary" type="submit" id="start">Tạo lượt rà soát</button>
+      <p class="setup-note">Mỗi lượt mới thay thế lượt đang xem. Hai ngày và hai server đều dùng ví dụ giả lập; không phải dữ liệu khóa học.</p>
+    </form>
+    <ol class="steps" aria-label="Tiến trình"><li id="step-one" aria-current="step"><span>1</span> Chọn phạm vi</li><li id="step-two"><span>2</span> Xem căn cứ & duyệt</li><li id="step-three"><span>3</span> Chốt danh sách</li></ol>
+    <p id="announcement" class="announcement" role="status" aria-live="polite"></p>
+    <section id="workspace" aria-label="Lượt rà soát"><div class="welcome"><span class="welcome-symbol" aria-hidden="true">↳</span><h2>Một lượt xem, một danh sách rõ ràng.</h2><p>Chọn kịch bản rồi tạo lượt rà soát. Mở từng hội thoại để xem lý do, kiểm tra tin nguồn và quyết định bước tiếp theo.</p><div class="legend"><span>● Cần theo dõi</span><span>◐ Cần kiểm tra thêm</span><span>✓ Đã giải quyết</span></div></div></section>
+    <footer><span>Discord Pulse / Nhóm DCKH</span><a href="README.md">Hướng dẫn kiểm chứng CP2</a><span>Không tự gửi tin nhắn hoặc đánh dấu trên Discord.</span></footer>
+  </main>
+</body>
+</html>

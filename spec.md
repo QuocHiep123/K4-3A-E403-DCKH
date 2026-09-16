@@ -3,7 +3,7 @@
 **Lớp:** 3A · **Phòng:** E403 · **Cụm:** chưa điền
 **Track:** B2 — Tính năng cho TA/học viên trên Discord
 **Loại:** Cải tiến bản tin hiện có, bổ sung danh sách hội thoại cần TA xem xét
-**Trạng thái:** Bản CP1 ngày 16/09/2026; chưa khóa chuẩn đạt tại CP4.
+**Trạng thái:** Đã bổ sung thiết kế và bản mẫu Mock CP2 ngày 16/09/2026; AI trong bản CP2 là giả lập, chưa khóa chuẩn đạt (CP4). Trạng thái kiểm chứng CP2 ở [codebase/verification.md](codebase/verification.md); chưa có bằng chứng nộp form CP2. Phần CP3 đồng đội phát triển riêng ở `codebase/mock/` và `eval/` không thuộc phạm vi kiểm chứng CP2 này.
 
 **Đội trưởng:** Đặng Quốc Hiệp · **Mã học viên:** 2A202602755
 **Repo:** https://github.com/QuocHiep123/K4-3A-E403-DCKH
@@ -60,8 +60,8 @@ Canvas 4 ô nằm trong §1–§2. Phương pháp và trích dẫn: [nhật ký 
 ### Ô 4 — Cam kết triển khai
 
 - **Automation: augment — AI hỗ trợ, TA quyết định.** AI đề xuất chủ đề/trạng thái/ưu tiên; TA xem nguồn và xác nhận. Bỏ sót người cần giúp hoặc đánh dấu sai đã giải quyết đều có chi phí, nên chưa tự động liên hệ học viên.
-- **Phạm vi CP2–CP3:** một màn hình, một server và một ngày được chọn, có ngữ cảnh trước đó khi pack cung cấp. Ba phần dùng chung kết quả phân tích; có ít nhất một lời gọi AI thật ở bước đề xuất hội thoại cần hỗ trợ.
-- **Thật/mock dự kiến:** pack cục bộ; nguồn mở theo `msg_id`. Kết nối Discord trực tiếp và link tin thật chưa triển khai vì pack đã ẩn danh ID. Code tính số lượng/thời gian; AI phân tích nội dung.
+- **Phạm vi CP2:** một màn hình, một server/ngày trong mỗi lượt; dữ liệu tự tạo và đề xuất dựng sẵn. TA mở nguồn, sửa/duyệt và chốt danh sách bằng tương tác thật trong trình duyệt.
+- **Mục tiêu CP3:** thêm ít nhất một lời gọi AI thật để đề xuất hội thoại; đọc pack cục bộ theo `msg_id`. Kết nối Discord trực tiếp và link tin thật chưa triển khai vì pack đã ẩn danh ID. Không coi mock CP2 là bằng chứng AI chạy thật.
 
 | Thành viên | Mã học viên | Phần việc cam kết |
 |---|---|---|
@@ -86,15 +86,47 @@ Chưa có phiên dùng thử nào diễn ra. Mời thêm người để đạt 5
 - Đã đọc bốn bản tin bot trong pack: có chủ đề, câu hỏi và nội dung coach cần chú ý, nhưng nhãn phản hồi chưa đủ xác định kết quả cuối cùng.
 - Chưa hoàn thành nghiên cứu sản phẩm tương tự thứ hai; bổ sung trước CP4. Không coi nội dung bot là thông báo chính thức.
 
-## §4. Thiết kế dự kiến
+## §4. Thiết kế CP2 — bản mẫu tương tác
 
-- **Luồng:** chọn ngày/server → xem chủ đề → mở danh sách hội thoại → xem căn cứ → TA xác nhận/sửa trạng thái.
-- **Ba trạng thái:** chưa thấy phản hồi phù hợp / đã có phản hồi, chưa rõ kết quả / có bằng chứng đã giải quyết. Thiếu ngữ cảnh thì hiển thị “cần kiểm tra thêm”, không ép kết luận.
-- **Ngưỡng 4 giờ:** tín hiệu thời gian để xem xét, không chứng minh chưa được trả lời. Đo theo mốc ngày đang xem; không dùng phản hồi xảy ra sau mốc đó.
-- **Dấu hiệu cần hỗ trợ:** lời báo vẫn lỗi/nhắc lại yêu cầu trong hội thoại; hỏi nhiều không đồng nghĩa học yếu. Gom chủ đề nhưng giữ nguồn và trạng thái riêng từng hội thoại.
-- **Mức prototype nhắm tới:** Working cho luồng cục bộ; chưa có prototype chạy tại thời điểm soạn CP1.
-- **Non-goals:** không tự gửi DM/đăng bản tin; không xếp hạng năng lực; không quyết định điểm danh/XP/deadline; không xây tích hợp Discord production trong bản đầu.
-- **HAX/PAIR:** chưa hoàn tất bảng ≥4 nguyên tắc; bổ sung trước CP4 cùng vị trí áp dụng trong giao diện.
+**Mức prototype: Mock.** [Mã nguồn / hướng dẫn chạy](codebase/README.md) · [Bản mẫu HTML](codebase/index.html) · [Sơ đồ luồng đầy đủ](codebase/flow.md) · [Kiểm chứng](codebase/verification.md).
+
+**Link kiểm chứng để nộp:** https://github.com/QuocHiep123/K4-3A-E403-DCKH/tree/main/codebase. GitHub hiển thị mã; tải repo và mở `codebase/index.html` để bấm thử. Sơ đồ Mermaid xem được ngay trong `codebase/flow.md` trên GitHub.
+
+### Hành trình và quyền quyết định
+
+1. TA đọc thông báo khả năng/giới hạn; chọn server, ngày và kịch bản. “Tạo lượt rà soát” bắt đầu một lượt, thay thế lượt trước.
+2. Tại điểm quyết định AI, hệ thống trả đề xuất trạng thái, lý do và nguồn **giả lập**. Màn hình có danh sách chủ đề/hội thoại bên trái và chi tiết bên phải.
+3. TA mở tin nguồn trước khi phần quyết định được bật. Nhãn “Đủ căn cứ · giả lập” hoặc “Chưa chắc chắn” đi kèm lý do cụ thể; không dùng phần trăm tin cậy chưa được hiệu chuẩn.
+4. TA chọn **Cần theo dõi / Cần kiểm tra thêm / Đã giải quyết / Bỏ khỏi đề xuất**. Khi sửa đề xuất hoặc xử lý thiếu chắc chắn, phải ghi lý do/việc cần làm tiếp. Lưu quyết định giữ lại đề xuất AI ban đầu để đối chiếu.
+5. Duyệt hết hội thoại mới được chốt. Chỉ hai trạng thái đầu vào danh sách theo dõi, tối đa 5 mục; có thể chốt 0 mục. Kết quả hiển thị phạm vi, quyết định, ghi chú, mã nguồn và thông báo chưa gửi Discord.
+6. TA có thể tải JSON để lưu kết quả và lịch sử sửa, hoặc quay lại chỉnh sửa rồi chốt lại. Quyết định chỉ ở trong tab; tải lại/đóng tab mất dữ liệu chưa xuất. Giao diện báo rõ giới hạn này.
+
+**Automation: augment.** Chi phí sai gồm bỏ sót người cần giúp và đánh dấu nhầm đã giải quyết. AI chỉ đề xuất; TA đọc căn cứ, sửa và chốt. Không tự nhắn, tự đăng bản tin, tự đánh dấu trên Discord; không xếp hạng năng lực học viên hoặc quyết định điểm danh/XP/deadline.
+
+**Quy tắc thiết kế:** có phản hồi chưa đồng nghĩa đã giải quyết. Thiếu ngữ cảnh thì “Cần kiểm tra thêm”; không đoán nội dung ảnh. Gom theo chủ đề nhưng giữ quyết định và căn cứ riêng mỗi hội thoại. Ngưỡng 4 giờ chỉ là tín hiệu dự kiến cho CP3, chưa được tính trong mock CP2 và không chứng minh chưa được trả lời. Khi nối pack thật, phải cắt dữ liệu tại mốc ngày rà soát, không dùng phản hồi tương lai.
+
+### Phần chạy thật và phần mock
+
+| Thành phần | CP2 hiện tại | Tiếp theo |
+|---|---|---|
+| Nhập phạm vi, mở nguồn, sửa/bỏ/duyệt, kiểm tra lý do và số mục | HTML/CSS/JS chạy thật, không cần build | Giữ luồng khi nối AI |
+| Chốt danh sách, mở lại, tải JSON và lịch sử quyết định | Chạy thật trong tab và tệp tải xuống; không có lưu máy chủ | Cân nhắc lưu bền vững sau dùng thử |
+| Tin nhắn / chủ đề / mã nguồn | Ví dụ tự tạo có tiền tố DEMO; hai server/hai ngày dùng chung mẫu | CP3 đọc pack cục bộ theo mã nguồn |
+| Phân tích AI, confidence, lỗi/no-grounding, retry | Kịch bản dựng sẵn; retry chủ động chuyển sang happy giả lập | CP3 có ≥1 lời gọi AI thật và kiểm tra nguồn trả về |
+| Discord, xác thực, gửi tin | Chưa triển khai | Ngoài phạm vi bản đầu |
+
+### Nguyên tắc HAX và vị trí áp dụng
+
+Chọn **6 nguyên tắc**, gồm G10 bắt buộc. Tham chiếu: [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/); tên nguyên tắc theo bản hướng dẫn HAX của BTC đã đọc tại CP1–CP2. Đây là lựa chọn thiết kế, chưa phải kết quả đánh giá với người dùng.
+
+| Nguyên tắc | Vị trí cụ thể trong bản mẫu | Cách kiểm chứng |
+|---|---|---|
+| G1 — Làm rõ hệ thống làm được gì | Đầu trang: “AI gợi ý… Bạn luôn là người quyết định”; thanh `#capabilities` ghi rõ mock, chưa kết nối Discord | Mở trang, đọc phạm vi trước khi tạo lượt (CP2-01) |
+| G2 — Làm rõ nó làm tốt đến đâu | Thanh giới hạn ở đầu trang; nhãn tin cậy trong danh sách và chi tiết, ghi rõ tình huống giả lập, không phải xác suất đã đo | So sánh kịch bản 01 và 02 (CP2-01/02) |
+| G8 — Gạt bỏ dễ dàng | Ô “Quyết định của TA” có “Bỏ khỏi đề xuất”; không cần chạy lại AI, vẫn giữ lịch sử và có thể mở lại | Bỏ đề xuất kèm lý do, chốt rồi quay lại (CP2-07) |
+| G9 — Sửa dễ dàng | Form dưới tin nguồn: sửa trạng thái/ghi chú trực tiếp; nút “Mở lại để duyệt” và “Quay lại chỉnh sửa” ở kết quả | Đổi nhận định sai thành đã giải quyết, lưu và chốt lại (CP2-04/07) |
+| G10 — Thu hẹp phạm vi khi nghi ngờ | Kịch bản 02: khung vàng yêu cầu ngữ cảnh, mặc định “Cần kiểm tra thêm”; kịch bản 03: loại nguồn sai và không cho chốt | Thiếu lý do thì chặn lưu; thiếu căn cứ thì không có kết quả bịa (CP2-02/03) |
+| G11 — Giải thích vì sao | Khối “AI đề xuất” và lý do; nút “Mở … tin nguồn” mở nội dung, mã, thời gian và người viết giả lập ngay trong chi tiết | Đối chiếu DEMO-M03 với đề xuất theo dõi, DEMO-M06 với correction (CP2-01/04) |
 
 ## §5. Kiểu lỗi — dự kiến 8 kịch bản
 
@@ -111,11 +143,18 @@ Chưa có phiên dùng thử nào diễn ra. Mời thêm người để đạt 5
 
 ## §6. Bốn đường đi của trải nghiệm
 
-- **Happy path:** nguồn rõ → đề xuất hội thoại → TA duyệt.
-- **Low-confidence:** thiếu/mâu thuẫn ngữ cảnh → hiển thị căn cứ và yêu cầu TA xác nhận.
-- **Failure:** nguồn không hợp lệ hoặc lỗi gọi AI → báo lỗi, cho thử lại/xem dữ liệu; không tạo kết quả giả.
-- **Correction:** TA sửa trạng thái hoặc bỏ đề xuất → lưu quyết định và lý do.
-- Chưa kiểm chứng các đường đi trên bằng prototype.
+Các kịch bản chọn trực tiếp trong ô “Kịch bản thử nghiệm”; thao tác chi tiết trong [codebase/README.md](codebase/README.md). Tất cả nhánh AI là giả lập CP2; chốt/tải kết quả là chức năng thật trong trình duyệt.
+
+| Đường đi | Đầu vào / điểm rẽ | Giao diện và thao tác TA | Điểm kết thúc / khôi phục |
+|---|---|---|---|
+| **Happy path** | Kịch bản 01; nguồn rõ, mức chắc chắn cao giả lập | Xem 3 hội thoại → mở nguồn từng mục → giữ hoặc sửa đề xuất → lưu | Duyệt 3/3 → chốt 2 mục theo dõi và 1 đã giải quyết → tải JSON |
+| **Low-confidence** | Kịch bản 02; câu “vẫn như lúc nãy”, thiếu ảnh/ngữ cảnh | Hiện giới hạn; TA mở nguồn, chọn cần kiểm tra thêm, ghi câu hỏi tiếp theo. Không cho lưu thiếu lý do | Chốt mục “Cần kiểm tra thêm”; hoặc bỏ kèm lý do, không ép kết luận đã giải quyết |
+| **Failure / no-grounding** | Kịch bản 03 có mã DEMO-MISSING không hợp lệ; kịch bản 05 mô phỏng timeout | Loại đề xuất/báo lỗi; không cho chốt như thành công. Có “Kiểm tra dữ liệu đầu vào” và nút thử lại | Xem giới hạn nguồn; đổi phạm vi; hoặc thử lại chuyển rõ sang happy giả lập, giữ server/ngày |
+| **Correction** | Kịch bản 04 cố ý đề xuất theo dõi dù DEMO-M06 đã xác nhận mở được tài liệu | TA mở nguồn → đổi thành đã giải quyết → nhập lý do → lưu; có thể mở lại hoặc bỏ đề xuất | Chốt danh sách 0 mục; JSON giữ đề xuất AI cũ + quyết định TA + lý do + lịch sử. Quay lại sửa được |
+
+**Nhánh bổ sung:** kịch bản 06 không có hội thoại, cho đổi phạm vi hoặc chốt rỗng và ghi rõ không đủ dữ liệu để kết luận toàn server đã ổn. Không đồng nhất nhánh rỗng hợp lệ với lỗi/no-grounding. Chưa mở nguồn thì không bật quyết định; chưa duyệt hết thì không bật chốt. Mọi thay đổi sau khi chốt đều yêu cầu chốt lại.
+
+**Kiểm chứng:** xem [nhật ký kỹ thuật](codebase/verification.md); không coi kiểm thử nội bộ là buổi dùng thử với người ngoài nhóm hoặc bằng chứng AI hoạt động thật.
 
 ## §7. Kiểm thử — kế hoạch sau CP1
 
@@ -124,7 +163,7 @@ Chưa có phiên dùng thử nào diễn ra. Mời thêm người để đạt 5
 - Đo tỷ lệ đề xuất đúng, tỷ lệ bỏ sót trong tập đã gán nhãn, tỷ lệ trích dẫn hợp lệ/hỗ trợ nhận định, thời gian TA chốt danh sách.
 - So sánh bản tin nền/prototype trên cùng phạm vi đối chiếu được; bản tin nền có thể dùng nguồn ngoài pack, không phải nhãn đúng tuyệt đối.
 - Mục tiêu thời gian đề xuất: ≤5 phút. **Quality bar kỹ thuật chưa chốt**; định nghĩa trước lượt đo tương ứng, khóa tại CP4.
-- Chưa có golden set hoàn chỉnh, lượt chạy AI thật hay kết quả đánh giá; không dùng số mining CP1 làm độ chính xác sản phẩm.
+- Trong lượt hoàn thiện CP2, chưa kiểm chứng golden set CP3, lời gọi AI thật hay các kết quả trong `eval/`; không dùng số mining CP1 hoặc kiểm thử mock làm độ chính xác sản phẩm.
 
 ## §8. Phân công & kế hoạch
 
@@ -133,9 +172,9 @@ Phân công và willing users ở §2, ô 4; thông tin thành viên lấy từ 
 | Mốc | Việc cần hoàn thành |
 |---|---|
 | CP1 — 19:30 16/09 | Canvas, evidence ban đầu, hai willing users, repo công khai; đội trưởng nộp form |
-| CP2 — 21:00 16/09 | Luồng chính bấm được hoặc sơ đồ rõ các bước |
+| CP2 — 21:00 16/09 | Bản mẫu Mock và sơ đồ trong codebase; §4/§6 và bảng HAX đã bổ sung. Đội trưởng còn cần nộp form và lưu xác nhận |
 | CP3 — 16:00 17/09 | AI thật, video 30 giây, bộ kiểm thử và kết quả lượt đầu |
-| CP4 — 21:00 17/09 | Bổ sung impact, nghiên cứu tương tự, HAX/PAIR, chốt spec/quality bar |
+| CP4 — 21:00 17/09 | Bổ sung impact, nghiên cứu tương tự; rà soát HAX đã áp dụng từ CP2; chốt spec/quality bar |
 | CP5 — 13:00 18/09 | Năm người ngoài nhóm dùng thử, nhật ký/changelog, slide PDF và video dự phòng |
 
 ## §9. Changelog
@@ -146,3 +185,4 @@ Phân công và willing users ở §2, ô 4; thông tin thành viên lấy từ 
 | 16/09/2026 | Phân biệt có phản hồi với đã giải quyết; giữ trạng thái thiếu ngữ cảnh | M05023/M13539 và M04968/M73803 |
 | 16/09/2026 | Bổ sung Đỗ Đức Đại và Phạm Cường Quốc vào willing users | Nhóm cung cấp; chưa có feedback dùng thử |
 | 16/09/2026 | Phân vai dùng thử: Đỗ Đức Đại rà soát cuối ngày; Phạm Cường Quốc kiểm chứng kết quả | Nhóm chốt nhiệm vụ đóng vai TA; chưa có phiên dùng thử |
+| 16/09/2026 | Bổ sung CP2: bản mẫu Mock, sơ đồ đầy đủ, 4 nhánh trải nghiệm và 6 nguyên tắc HAX ở §4/§6 | Yêu cầu CP2; dữ liệu tự tạo, TA giữ quyền quyết định, AI thật để CP3 |

@@ -79,6 +79,8 @@ Hai phòng cùng ca dùng chung lịch mốc. Năm link form phát đủ từ đ
 
 ### CP2 · Cho thấy luồng hoạt động
 
+**Bản mẫu nhóm DCKH:** [mã nguồn và cách chạy](codebase/README.md) · [sơ đồ luồng](codebase/flow.md) · [kiểm chứng](codebase/verification.md). Mức **Mock**, dữ liệu tự tạo, đủ bốn nhánh trải nghiệm; thiết kế và bảng 6 nguyên tắc HAX ở `spec.md` §4/§6. Đội trưởng còn cần nộp form CP2; push mã nguồn không tự nộp form.
+
 **Để làm gì:** nhìn được cả luồng từ đầu đến cuối — người dùng bấm gì trước, thấy gì sau, kết thúc ở đâu. Vẽ ra giấy thì phát hiện chỗ hổng trong mười phút; code xong mới thấy thì mất cả buổi sửa.
 
 **Nộp một trong ba thứ, thứ nào cũng được:**
