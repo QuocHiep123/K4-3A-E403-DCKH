@@ -1,0 +1,16 @@
+{
+  "method": "Đọc trực tiếp 50 tin do người viết, lấy cách đều theo thứ tự thời gian; nhãn sơ bộ do trợ lý AI đề xuất cho CP1, cần nhóm và TA rà soát độc lập.",
+  "support_request": ["M56157", "M09090", "M49586", "M80709", "M67785", "M32171", "M48859", "M27034", "M97148", "M53663", "M88243", "M53930", "M84013", "M66718", "M09203", "M89758", "M65121", "M83607", "M81080", "M31729", "M78589", "M80377", "M04785", "M16166", "M86498", "M05023", "M21700", "M04968"],
+  "needs_context": ["M45980", "M92861", "M36026", "M47681", "M86664", "M40682"],
+  "other": ["M30801", "M57346", "M41884", "M92726", "M61093", "M90319", "M64792", "M31445", "M22784", "M97517", "M80017", "M93168", "M76725", "M64649", "M01842", "M34524"],
+  "notes": {
+    "support_request": "Câu hỏi hoặc yêu cầu thông tin/hỗ trợ rõ trong nội dung, kể cả báo chưa truy cập được. Không đồng nghĩa cần TA can thiệp, chưa được trả lời hay chưa giải quyết.",
+    "needs_context": "Tin quá ngắn hoặc phụ thuộc ngữ cảnh; không tự gán thành câu hỏi còn tồn.",
+    "other": "Hướng dẫn, thông báo, cảm ơn, phản ứng hoặc nội dung không đủ dấu hiệu yêu cầu hỗ trợ.",
+    "M53930": "Báo rõ vẫn chưa truy cập được; xếp yêu cầu hỗ trợ ngầm. Chưa xác định nguyên nhân hay kết quả cuối cùng.",
+    "M67785": "Câu hỏi về cơ cấu nhóm; giữ trong nhóm câu hỏi rộng, không suy ra cần TA trả lời.",
+    "M92861": "Không kết luận đang gặp khó khăn chỉ từ một lời đồng tình ngắn.",
+    "M05023": "Phản hồi trực tiếp là câu hỏi chẩn đoán; có phản hồi không chứng minh đã giải quyết.",
+    "M04968": "Bot hỏi làm rõ; không suy ra đã giải quyết hoặc đã chờ đủ 4 giờ."
+  }
+}
