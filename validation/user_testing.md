@@ -6,15 +6,17 @@
 
 ---
 
-## 1. Danh sách 5 Người Dùng Ngoài Nhóm
+## 1. Danh sách Người Dùng Ngoài Nhóm Tham Gia Thử Nghiệm
 
-| STT | Họ và tên | Vai trò / Bối cảnh | Nguồn người dùng | Thiết bị & Môi trường thử nghiệm |
+*(Gồm 2 người dùng đã đăng ký từ mốc CP1 là Đỗ Đức Đại và Phạm Cường Quốc, cùng 3 học viên AI20k được mời mở rộng ngày 17/09)*
+
+| STT | Họ và tên | Bối cảnh người tham gia | Vai trò đóng thử nghiệm | Trọng tâm đánh giá |
 |:---:|---|---|---|---|
-| **1** | **Đỗ Đức Đại** | Học viên AI20k / Đóng vai TA rà soát cuối ngày | Đã khai từ CP1 (16/09) | Laptop Windows 11, Chrome 128 |
-| **2** | **Phạm Cường Quốc** | Học viên AI20k / Đóng vai TA kiểm chứng kết quả | Đã khai từ CP1 (16/09) | Macbook Air M2, Safari |
-| **3** | **Nguyễn Khánh Sơn** | Học viên AI20k / Đóng vai TA rà soát ca khó | Mời thêm ngày 17/09 | Laptop Dell XPS, Edge |
-| **4** | **Ngô Xuân Hoàng** | Học viên AI20k / Đóng vai TA kiểm tra trích dẫn nguồn | Mời thêm ngày 17/09 | Desktop PC, Chrome 128 |
-| **5** | **Đỗ Ngọc Phi** | Học viên AI20k / Đóng vai học viên kiểm tra độ tin cậy | Mời thêm ngày 17/09 | Laptop Asus Zenbook, Brave |
+| **1** | **Đỗ Đức Đại** | Học viên AI20k (ngoài nhóm) | TA rà soát cuối ngày | Tốc độ quét & chốt nhanh top 5 ca cần hỗ trợ |
+| **2** | **Phạm Cường Quốc** | Học viên AI20k (ngoài nhóm) | TA kiểm chứng kết quả | Khả năng can thiệp & sửa nhận định của AI (HAX G9) |
+| **3** | **Nguyễn Khánh Sơn** | Học viên AI20k (ngoài nhóm) | TA rà soát ca khó | Mức độ rõ ràng của nhãn cảnh báo tin cậy & màu sắc |
+| **4** | **Ngô Xuân Hoàng** | Học viên AI20k (ngoài nhóm) | TA đối chiếu căn cứ | Tính xác thực của trích dẫn `msg_id` & tính minh bạch của log |
+| **5** | **Đỗ Ngọc Phi** | Học viên AI20k (ngoài nhóm) | Học viên gửi yêu cầu | Phản hồi thị giác (visual feedback) khi hệ thống xử lý |
 
 ---
 
@@ -33,11 +35,11 @@
 
 | Người thử | Nhiệm vụ (Task) | Điểm nghẽn / Lúng túng (Bottleneck) | Trích dẫn nguyên văn (Verbatim Quote) | Quyết định kỹ thuật của nhóm |
 |---|---|---|---|---|
-| **Đỗ Đức Đại** *(khai từ CP1)* | Rà soát nhanh ca `M53930` và chốt danh sách cần can thiệp | Ban đầu mở `codebase/mock/index.html` cũ bị kẹt vì phải bấm qua 2 trang chọn ngày và xem chủ đề mới tới được danh sách, mất hơn 1.5 phút. | *"Ủa sao ban đầu phải bấm qua 2 trang chọn ngày với xem chủ đề mới tới được danh sách? Nếu đang vội cuối ngày thì mình muốn mở ra thấy ngay top 5 cái kẹt nhất luôn."* | **Đã sửa ngay:** Gom toàn bộ quy trình 4 bước thành **All-in-One Dashboard** ngay tại trang chủ `index.html`. Giảm thời gian thao tác từ 4m15s xuống còn **1m20s**. |
-| **Phạm Cường Quốc** *(khai từ CP1)* | Thử thách kịch bản AI phân loại sai và thực hiện sửa nhận định (Correction) | Khi bấm nút *"Xác nhận trạng thái"*, hệ thống không có thông báo gì khiến bạn ấy bấm liên tục 3 lần vì tưởng bị đơ web. | *"Nút 'Chạy AI' có hiện log terminal này hay đấy, nhìn biết ngay là máy đang gọi API chứ không phải dữ liệu tĩnh. Nhưng nút 'Xác nhận trạng thái' bấm xong chẳng biết đã lưu chưa, tưởng bị đơ."* | **Đã sửa ngay:** Bổ sung hộp thoại **Toast Notification màu xanh** nổi bật góc dưới màn hình (`✓ Đã lưu quyết định của TA vào hệ thống!`) và in dòng log xác nhận trực tiếp vào terminal console. |
-| **Nguyễn Khánh Sơn** *(Học viên AI20k)* | Đọc hiểu các mức độ tin cậy và lý do trích dẫn căn cứ | Lúng túng với màu sắc: Case `M36026` thiếu ngữ cảnh nhưng ban đầu cùng màu với case đã có phản hồi khiến khó phân biệt mức độ khẩn cấp. | *"Chỗ độ tin cậy 92% có màu xanh dễ nhìn, nhưng với case thiếu ngữ cảnh như M36026 thì nên hiện chữ màu vàng cảnh báo rõ hơn để TA biết ca này phải vào hỏi lại học viên."* | **Đã sửa ngay:** Tách màu riêng cho từng nhãn: `🔴 Cần theo dõi` (Đỏ/Cam), `🟡 Chưa rõ kết quả` (Vàng), `🟢 Đã giải quyết` (Xanh lục), `⚪ Thiếu ngữ cảnh` (Xám tro). |
-| **Ngô Xuân Hoàng** *(Học viên AI20k)* | Kiểm tra tính xác thực của lời gọi AI và căn cứ trích dẫn | Ban đầu đọc đoạn tin nhắn Discord thấy cả tin SV và TA gộp chung một khối nên mất vài giây để tìm ai là người nhắn sau cùng. | *"Phần trích dẫn tin nhắn Discord nên hiện rõ ai là sinh viên ai là TA trả lời, chứ nhìn một cục text dễ bị nhầm. Có thêm 2 cửa sổ terminal chạy lệnh python bên cạnh nhìn rất chuyên nghiệp và minh bạch."* | **Đã sửa ngay:** Tách rõ 2 khối tin nhắn riêng biệt: Khối tin nhắn học viên có border xanh tím, khối tin nhắn reply của TA có icon chat và nền phân cách rõ ràng. |
-| **Đỗ Ngọc Phi** *(Học viên AI20k)* | Đóng vai học viên kiểm tra xem câu hỏi ngắn có bị AI đoán mò không | Quan sát thấy khi bấm nút gọi AI, nếu mạng hơi chậm thì không biết máy có đang xử lý hay bị treo. | *"Bấm nút 'Chạy AI' thì nó delay tầm 1 giây, nếu không để ý terminal thì sợ web lag. Nên disable nút và đổi text thành 'Đang gọi OpenRouter...' để người dùng biết là đang chờ mạng."* | **Đã sửa ngay:** Thêm hiệu ứng disable nút khi click, đổi trạng thái badge thành *"Đang gọi OpenRouter..."* và hiệu ứng pulsing viền tím cho result card. |
+| **Đỗ Đức Đại** | Rà soát nhanh ca `M53930` và chốt danh sách cần can thiệp | Ban đầu mở `codebase/mock/index.html` cũ bị kẹt vì phải bấm qua 2 trang chọn ngày và xem chủ đề mới tới được danh sách, mất hơn 1.5 phút. | *"Ủa sao ban đầu phải bấm qua 2 trang chọn ngày với xem chủ đề mới tới được danh sách? Nếu đang vội cuối ngày thì mình muốn mở ra thấy ngay top 5 cái kẹt nhất luôn."* | **Đã sửa ngay:** Gom toàn bộ quy trình 4 bước thành **All-in-One Dashboard** ngay tại trang chủ `index.html`. Giảm thời gian thao tác từ 4m15s xuống còn **1m20s**. |
+| **Phạm Cường Quốc** | Thử thách kịch bản AI phân loại sai và thực hiện sửa nhận định (Correction) | Khi bấm nút *"Xác nhận trạng thái"*, hệ thống không có thông báo gì khiến bạn ấy bấm liên tục 3 lần vì tưởng bị đơ web. | *"Nút 'Chạy AI' có hiện log terminal này hay đấy, nhìn biết ngay là máy đang gọi API chứ không phải dữ liệu tĩnh. Nhưng nút 'Xác nhận trạng thái' bấm xong chẳng biết đã lưu chưa, tưởng bị đơ."* | **Đã sửa ngay:** Bổ sung hộp thoại **Toast Notification màu xanh** nổi bật góc dưới màn hình (`✓ Đã lưu quyết định của TA vào hệ thống!`) và in dòng log xác nhận trực tiếp vào terminal console. |
+| **Nguyễn Khánh Sơn** | Đọc hiểu các mức độ tin cậy và lý do trích dẫn căn cứ | Lúng túng với màu sắc: Case `M36026` thiếu ngữ cảnh nhưng ban đầu cùng màu với case đã có phản hồi khiến khó phân biệt mức độ khẩn cấp. | *"Chỗ độ tin cậy 92% có màu xanh dễ nhìn, nhưng với case thiếu ngữ cảnh như M36026 thì nên hiện chữ màu vàng cảnh báo rõ hơn để TA biết ca này phải vào hỏi lại học viên."* | **Đã sửa ngay:** Tách màu riêng cho từng nhãn: `🔴 Cần theo dõi` (Đỏ/Cam), `🟡 Chưa rõ kết quả` (Vàng), `🟢 Đã giải quyết` (Xanh lục), `⚪ Thiếu ngữ cảnh` (Xám tro). |
+| **Ngô Xuân Hoàng** | Kiểm tra tính xác thực của lời gọi AI và căn cứ trích dẫn | Ban đầu đọc đoạn tin nhắn Discord thấy cả tin SV và TA gộp chung một khối nên mất vài giây để tìm ai là người nhắn sau cùng. | *"Phần trích dẫn tin nhắn Discord nên hiện rõ ai là sinh viên ai là TA trả lời, chứ nhìn một cục text dễ bị nhầm. Có thêm 2 cửa sổ terminal chạy lệnh python bên cạnh nhìn rất chuyên nghiệp và minh bạch."* | **Đã sửa ngay:** Tách rõ 2 khối tin nhắn riêng biệt: Khối tin nhắn học viên có border xanh tím, khối tin nhắn reply của TA có icon chat và nền phân cách rõ ràng. |
+| **Đỗ Ngọc Phi** | Đóng vai học viên kiểm tra xem câu hỏi ngắn có bị AI đoán mò không | Quan sát thấy khi bấm nút gọi AI, nếu mạng hơi chậm thì không biết máy có đang xử lý hay bị treo. | *"Bấm nút 'Chạy AI' thì nó delay tầm 1 giây, nếu không để ý terminal thì sợ web lag. Nên disable nút và đổi text thành 'Đang gọi OpenRouter...' để người dùng biết là đang chờ mạng."* | **Đã sửa ngay:** Thêm hiệu ứng disable nút khi click, đổi trạng thái badge thành *"Đang gọi OpenRouter..."* và hiệu ứng pulsing viền tím cho result card. |
 
 ---
 
