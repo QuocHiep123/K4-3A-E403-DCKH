@@ -14,6 +14,12 @@ import os
 import time
 from pathlib import Path
 
+import sys
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 import requests
 from dotenv import load_dotenv
 
@@ -250,12 +256,21 @@ def main():
 
     print(f"   ✅ Đọc được {len(messages)}/{len(GOLDEN_SET_IDS)} tin nhắn cần phân tích.")
 
+    import sys
+    limit = len(GOLDEN_SET_IDS)
+    for arg in sys.argv[1:]:
+        if arg.startswith("--limit="):
+            limit = int(arg.split("=")[1])
+        elif arg.isdigit():
+            limit = int(arg)
+    target_ids = GOLDEN_SET_IDS[:limit]
+
     # 2. Phân loại từng tin nhắn
-    print(f"\n🤖 Gọi AI phân loại {len(GOLDEN_SET_IDS)} hội thoại...")
+    print(f"\n🤖 Gọi AI phân loại {len(target_ids)}/{len(GOLDEN_SET_IDS)} hội thoại...")
     cases = []
-    for i, msg_id in enumerate(GOLDEN_SET_IDS, 1):
+    for i, msg_id in enumerate(target_ids, 1):
         if msg_id not in messages:
-            print(f"  [{i:02d}/{len(GOLDEN_SET_IDS)}] ⚠️  {msg_id} — Không tìm thấy trong CSV, bỏ qua.")
+            print(f"  [{i:02d}/{len(target_ids)}] ⚠️  {msg_id} — Không tìm thấy trong CSV, bỏ qua.")
             continue
 
         row = messages[msg_id]
@@ -277,7 +292,7 @@ def main():
 
         status = "✅" if match else "❌"
         print(
-            f"  [{i:02d}/{len(GOLDEN_SET_IDS)}] {status} {msg_id} "
+            f"  [{i:02d}/{len(target_ids)}] {status} {msg_id} "
             f"AI={ai_result.get('label')} Human={human_label} "
             f"conf={ai_result.get('confidence', 0):.0%} "
             f"({ai_result.get('api_time_seconds', 0)}s)"

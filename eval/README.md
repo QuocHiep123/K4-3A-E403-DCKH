@@ -6,7 +6,8 @@ Thư mục này chứa toàn bộ dữ liệu đánh giá chất lượng AI qua
 
 ## CP3 — Chứng minh AI hoạt động (Golden Set 20 case)
 
-**Ngày:** 17/09/2026 · **Model:** `nvidia/nemotron-3-ultra-550b-a55b:free` (via OpenRouter)
+**Ngày:** 17/09/2026 · **Model:** `nvidia/nemotron-3-ultra-550b-a55b:free` (via OpenRouter)  
+**Video thao tác 30 giây:** [Xem video demo CP3 (cp3.mp4)](https://drive.google.com/file/d/183CW6dLKk_Aju-_lJ5M4XI26dz5HE2cp/view)  
 **Phương pháp:** Phân loại trạng thái hội thoại trên 20 case mẫu có nhãn người.
 
 ### Bộ nhãn (Label Schema)
