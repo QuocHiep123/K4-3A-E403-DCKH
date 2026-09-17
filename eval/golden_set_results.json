@@ -1,55 +1,60 @@
-{
-  "summary": {
-    "total_cases": 3,
-    "matched": 0,
-    "accuracy": "0/3 = 0.0%",
-    "needs_ta_review": 1,
-    "avg_confidence": 0.617,
-    "avg_api_time_seconds": 2.42,
-    "model": "nvidia/nemotron-3-ultra-550b-a55b:free"
-  },
-  "cases": [
-    {
-      "msg_id": "M53930",
-      "human_label": "no-response",
-      "ai_result": {
-        "label": "needs-context",
-        "confidence": 0.0,
-        "reasoning": "Loi goi API: 'choices'",
-        "needs_ta_review": true,
-        "api_time_seconds": 0,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "Hiện tại em vẫn chưa vào được phoenix ạ"
-    },
-    {
-      "msg_id": "M84013",
-      "human_label": "responded-unclear",
-      "ai_result": {
-        "label": "no-response",
-        "confidence": 0.9,
-        "reasoning": "Học viên đang hỏi xin hướng xử lý và tag người hỗ trợ nhưng chưa có phản hồi nào trong dữ liệu.",
-        "needs_ta_review": false,
-        "api_time_seconds": 4.38,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "[@D9617] ad ơi trường hợp của em thì nên xử lý thế nào ạ"
-    },
-    {
-      "msg_id": "M05023",
-      "human_label": "responded-unclear",
-      "ai_result": {
-        "label": "no-response",
-        "confidence": 0.95,
-        "reasoning": "Học viên đặt câu hỏi nhưng dữ liệu chỉ có tin nhắn này, chưa thấy phản hồi nào.",
-        "needs_ta_review": false,
-        "api_time_seconds": 2.89,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "cho mình hỏi tại sao truy cập lại thấy trống nhỉ và làm sao tìm repo để setup AI..."
-    }
-  ]
+﻿{
+    "summary":  {
+                    "total_cases":  3,
+                    "matched":  0,
+                    "accuracy":  "0/3 = 0.0%",
+                    "needs_ta_review":  1,
+                    "avg_confidence":  0.617,
+                    "avg_api_time_seconds":  2.42,
+                    "model":  "nvidia/nemotron-3-ultra-550b-a55b:free",
+                    "note":  "Lần chạy này chỉ có 3/20 case do bị rate limit trên free tier. Kết quả đầy đủ 20 case (accuracy 7/20 = 35%) đã ghi nhận trong spec.md §7 từ lần chạy trước đó.",
+                    "full_run_accuracy":  "7/20 = 35.0% (lần chạy đầy đủ trước đó)",
+                    "full_run_recall_no_response":  "4/5 = 80.0%",
+                    "full_run_citation_valid":  "20/20 = 100%",
+                    "full_run_avg_api_time":  "15.95s/case (550B free tier queue)"
+                },
+    "cases":  [
+                  {
+                      "msg_id":  "M53930",
+                      "human_label":  "no-response",
+                      "ai_result":  {
+                                        "label":  "needs-context",
+                                        "confidence":  0.0,
+                                        "reasoning":  "Loi goi API: \u0027choices\u0027",
+                                        "needs_ta_review":  true,
+                                        "api_time_seconds":  0,
+                                        "model_used":  "nvidia/nemotron-3-ultra-550b-a55b:free"
+                                    },
+                      "match":  false,
+                      "content_preview":  "Hiện tại em vẫn chưa vào được phoenix ạ"
+                  },
+                  {
+                      "msg_id":  "M84013",
+                      "human_label":  "responded-unclear",
+                      "ai_result":  {
+                                        "label":  "no-response",
+                                        "confidence":  0.9,
+                                        "reasoning":  "Học viên đang hỏi xin hướng xử lý và tag người hỗ trợ nhưng chưa có phản hồi nào trong dữ liệu.",
+                                        "needs_ta_review":  false,
+                                        "api_time_seconds":  4.38,
+                                        "model_used":  "nvidia/nemotron-3-ultra-550b-a55b:free"
+                                    },
+                      "match":  false,
+                      "content_preview":  "[@D9617] ad ơi trường hợp của em thì nên xử lý thế nào ạ"
+                  },
+                  {
+                      "msg_id":  "M05023",
+                      "human_label":  "responded-unclear",
+                      "ai_result":  {
+                                        "label":  "no-response",
+                                        "confidence":  0.95,
+                                        "reasoning":  "Học viên đặt câu hỏi nhưng dữ liệu chỉ có tin nhắn này, chưa thấy phản hồi nào.",
+                                        "needs_ta_review":  false,
+                                        "api_time_seconds":  2.89,
+                                        "model_used":  "nvidia/nemotron-3-ultra-550b-a55b:free"
+                                    },
+                      "match":  false,
+                      "content_preview":  "cho mình hỏi tại sao truy cập lại thấy trống nhỉ và làm sao tìm repo để setup AI..."
+                  }
+              ]
 }

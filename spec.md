@@ -1,8 +1,8 @@
-# AI SPEC — Discord Pulse · Nhóm DCKH
+﻿# AI SPEC — Discord Pulse · Nhóm DCKH
 
 **Lớp:** 3A · **Phòng:** E403 · **Cụm:** chưa điền
 **Track:** B2 — Tính năng cho TA/học viên trên Discord
-**Trạng thái:** CP3 hoàn thiện 17/09/2026 — giao diện 4 bước (`codebase/mock/`), AI thật qua OpenRouter (nvidia/nemotron), golden set 20 case. CP4 bổ sung impact table, nghiên cứu tương tự, chốt quality bar. Kiểm chứng CP2 tại [codebase/verification.md](codebase/verification.md); kết quả eval tại [eval/README.md](eval/README.md).
+**Trạng thái:** CP5 hoàn thành 17/09/2026 — All-in-One Dashboard, AI thật qua OpenRouter (nvidia/nemotron), golden set 20 case, 5 phiên dùng thử R6, slide PDF 6 trang. CP4 đã chốt quality bar (§7), nghiên cứu tương tự (§3), impact table (§2). Kiểm chứng CP2 tại [codebase/verification.md](codebase/verification.md); kết quả eval tại [eval/README.md](eval/README.md).
 
 **Đội trưởng:** Đặng Quốc Hiệp · **Mã học viên:** 2A202602755
 **Repo:** https://github.com/QuocHiep123/K4-3A-E403-DCKH

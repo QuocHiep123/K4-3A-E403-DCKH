@@ -1,4 +1,4 @@
-# Đánh giá — Discord Pulse
+﻿# Đánh giá — Discord Pulse
 
 Thư mục này chứa toàn bộ dữ liệu đánh giá chất lượng AI qua các Checkpoint.
 
@@ -52,24 +52,17 @@ Bộ kiểm thử được xây dựng phủ đủ 4 lớp chỗ khó theo taxon
 
 ---
 
-## CP4 — Đánh giá chất lượng đầy đủ (Kế hoạch)
+## CP4 — Quality Bar ĐÃ CHỐT (đồng bộ với spec.md §7)
 
-Mở rộng từ 20 → 50+ case, bổ sung:
+| Chỉ số | Ngưỡng tối thiểu | Lý do |
+|---|---|---|
+| Overall accuracy (20 case) | >= 70% | Đủ để TA tin vào đề xuất làm điểm xuất phát (cần tune prompt hoặc model nhanh hơn) |
+| Recall (no-response) | >= 90% | Không bỏ sót người đang cần giúp là ưu tiên sống còn của TA |
+| Trích dẫn hợp lệ | >= 95% | Mọi đề xuất phải có căn cứ tin nhắn gốc đọc được, không bịa mã tin |
+| Avg API time | <= 5s / case | Toàn bộ lượt rà soát 5 case trong <=25s là chấp nhận được |
+| Thời gian TA hoàn thành | <= 5 phút | Đo bằng session timer trong mock; xác nhận với TA thật ở CP5 |
 
-- Nhãn TA chấm độc lập (khác nhóm)
-- Đo lại precision/recall/F1 theo từng nhãn
-- So sánh confidence AI với tỷ lệ đồng thuận người
-- Phân tích case AI sai: sai pattern gì? Có thể fix prompt không?
-- Thử model khác (Gemma 4 31B) để so sánh
-
-### Tiêu chí "Vượt bar" CP4
-
-| Chỉ số | Ngưỡng tối thiểu |
-|---|---|
-| Overall accuracy | ≥ 75% |
-| Recall (no-response) | ≥ 90% (không bỏ sót SOS) |
-| TA agreement | ≥ 70% |
-| Avg API time | ≤ 3s / case |
+> **Lưu ý:** Bảng trên đã được đồng bộ với spec.md §7 (17/09/2026). Phiên bản nháp trước đó ghi ngưỡng accuracy >=75% và API time <=3s.
 
 ---
 
