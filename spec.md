@@ -78,7 +78,7 @@ Canvas 4 ô nằm trong §1–§2. Phương pháp và trích dẫn: [nhật ký 
 
 Vai trò trên mô tả nhiệm vụ trong buổi dùng thử, không xác nhận chức danh TA thực tế của hai người tham gia.
 
-Chưa có phiên dùng thử nào diễn ra. Mời thêm người để đạt 5 người ngoài nhóm trước CP5, ưu tiên có TA/coach xác nhận nhu cầu của đúng người dùng mục tiêu.
+Đã hoàn thành 5 phiên dùng thử (17/09/2026) với 5 người ngoài nhóm: Đỗ Đức Đại, Phạm Cường Quốc, Nguyễn Khánh Sơn, Ngô Xuân Hoàng, Đỗ Ngọc Phi. Kết quả chi tiết tại [validation/user_testing.md](validation/user_testing.md). Thời gian trung bình hoàn thành tác vụ: 1 phút 25 giây.
 
 ## §3. Giải pháp tương tự đã nghiên cứu
 
@@ -227,3 +227,4 @@ Phân công và willing users ở §2, ô 4; thông tin thành viên lấy từ 
 | 17/09/2026 | **Thêm Toast Notification xanh và log hành động TA vào terminal** khi bấm xác nhận | **Góp ý từ Phạm Cường Quốc (R6):** Cần visual feedback tức thì để biết quyết định đã lưu |
 | 17/09/2026 | **Tách riêng màu sắc cho từng mức độ khẩn cấp và phân tách tin SV vs reply của TA** | **Góp ý từ Nguyễn Khánh Sơn & Ngô Xuân Hoàng (R6):** Cải thiện khả năng quét nhanh cho TA |
 | 17/09/2026 | **Giữ nguyên nguyên tắc HAX G11 & Non-goal 1:** Không tự động gửi tin lên Discord thật | **Phân tích nhóm:** Đảm bảo an toàn đào tạo, TA luôn là người chốt quyết định cuối cùng |
+| 17/09/2026 | **Hoàn thành 5 phiên dùng thử R6** với Đỗ Đức Đại, Phạm Cường Quốc, Nguyễn Khánh Sơn, Ngô Xuân Hoàng, Đỗ Ngọc Phi; thời gian TB 1m25s | Kết quả tại [validation/user_testing.md](validation/user_testing.md); 4/4 chỉ số ĐẠT |
