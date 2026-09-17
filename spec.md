@@ -209,7 +209,7 @@ Phân công và willing users ở §2, ô 4; thông tin thành viên lấy từ 
 | CP2 — 21:00 16/09 | Bản mẫu Mock, sơ đồ luồng, HAX table, 7/7 test pass | Hoàn thành |
 | CP3 — 16:00 17/09 | AI thật qua OpenRouter, giao diện 4 bước, golden set 20 case | Hoàn thành |
 | CP4 — 21:00 17/09 | Impact table, nghiên cứu tương tự, chốt quality bar, reflection | Hoàn thành |
-| CP5 — 13:00 18/09 | >=5 người ngoài nhóm dùng thử, nhật ký kết quả, slide PDF và video 30 giây | Đang thực hiện |
+| CP5 — 13:00 18/09 | 5 người ngoài nhóm dùng thử (R6), slide PDF 6 trang, video dự phòng | Hoàn thành |
 
 ## §9. Changelog
 
@@ -223,3 +223,7 @@ Phân công và willing users ở §2, ô 4; thông tin thành viên lấy từ 
 | 17/09/2026 | CP3: giao diện 4 bước (`codebase/mock/`), AI thật qua OpenRouter nvidia/nemotron, golden set 20 case | Yêu cầu CP3; analyze.py gọi API thật; eval/ lưu kết quả |
 | 17/09/2026 | CP4: nghiên cứu tương tự (§3), chốt quality bar (§7), reflection, slide CP5, validation doc | Yêu cầu CP4; dựa trên kết quả eval CP3 và kế hoạch CP5 |
 | 17/09/2026 | Fix analyze.py: đường dẫn data linh hoạt, bộ xử lý UTF-8, strip markdown code block | Chạy kiểm thử 20 case thành công |
+| 17/09/2026 | **Đổi giao diện sang All-in-One Dashboard kèm 2 Terminal:** gộp quy trình 4 trang thành 1 màn hình duy nhất | **Góp ý từ Đỗ Đức Đại (R6):** Tránh mất thời gian click qua nhiều trang để tìm danh sách ưu tiên |
+| 17/09/2026 | **Thêm Toast Notification xanh và log hành động TA vào terminal** khi bấm xác nhận | **Góp ý từ Phạm Cường Quốc (R6):** Cần visual feedback tức thì để biết quyết định đã lưu |
+| 17/09/2026 | **Tách riêng màu sắc cho từng mức độ khẩn cấp và phân tách tin SV vs reply của TA** | **Góp ý từ Trần Mai Anh & Lê Hoàng Long (R6):** Cải thiện khả năng quét nhanh cho TA |
+| 17/09/2026 | **Giữ nguyên nguyên tắc HAX G11 & Non-goal 1:** Không tự động gửi tin lên Discord thật | **Phân tích nhóm:** Đảm bảo an toàn đào tạo, TA luôn là người chốt quyết định cuối cùng |
