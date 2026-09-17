@@ -2,7 +2,7 @@
 
 **Lớp:** 3A · **Phòng:** E403 · **Cụm:** chưa điền
 **Track:** B2 — Tính năng cho TA/học viên trên Discord
-**Trạng thái:** CP3 hoàn thiện 17/09/2026 — giao diện 4 bước (`codebase/mock/`), AI thật qua OpenRouter (nvidia/nemotron), golden set 20 case, [video thao tác 30s CP3](https://drive.google.com/file/d/183CW6dLKk_Aju-_lJ5M4XI26dz5HE2cp/view). CP4 bổ sung impact table, nghiên cứu tương tự, chốt quality bar. Kiểm chứng CP2 tại [codebase/verification.md](codebase/verification.md); kết quả eval tại [eval/README.md](eval/README.md).
+**Trạng thái:** CP3 hoàn thiện 17/09/2026 — giao diện 4 bước (`codebase/mock/`), AI thật qua OpenRouter (nvidia/nemotron), golden set 20 case. CP4 bổ sung impact table, nghiên cứu tương tự, chốt quality bar. Kiểm chứng CP2 tại [codebase/verification.md](codebase/verification.md); kết quả eval tại [eval/README.md](eval/README.md).
 
 **Đội trưởng:** Đặng Quốc Hiệp · **Mã học viên:** 2A202602755
 **Repo:** https://github.com/QuocHiep123/K4-3A-E403-DCKH

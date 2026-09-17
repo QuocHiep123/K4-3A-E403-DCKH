@@ -1,11 +1,11 @@
 {
   "summary": {
-    "total_cases": 20,
-    "matched": 7,
-    "accuracy": "7/20 = 35.0%",
-    "needs_ta_review": 9,
-    "avg_confidence": 0.652,
-    "avg_api_time_seconds": 15.95,
+    "total_cases": 3,
+    "matched": 0,
+    "accuracy": "0/3 = 0.0%",
+    "needs_ta_review": 1,
+    "avg_confidence": 0.617,
+    "avg_api_time_seconds": 2.42,
     "model": "nvidia/nemotron-3-ultra-550b-a55b:free"
   },
   "cases": [
@@ -13,14 +13,14 @@
       "msg_id": "M53930",
       "human_label": "no-response",
       "ai_result": {
-        "label": "no-response",
-        "confidence": 0.95,
-        "reasoning": "Học viên báo lỗi không truy cập được Phoenix nhưng chưa có phản hồi nào trong dữ liệu.",
-        "needs_ta_review": false,
-        "api_time_seconds": 31.37,
+        "label": "needs-context",
+        "confidence": 0.0,
+        "reasoning": "Loi goi API: 'choices'",
+        "needs_ta_review": true,
+        "api_time_seconds": 0,
         "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
       },
-      "match": true,
+      "match": false,
       "content_preview": "Hiện tại em vẫn chưa vào được phoenix ạ"
     },
     {
@@ -28,10 +28,10 @@
       "human_label": "responded-unclear",
       "ai_result": {
         "label": "no-response",
-        "confidence": 0.95,
-        "reasoning": "Học viên đang hỏi xin hướng xử lý và tag người hỗ trợ, chưa có phản hồi nào trong dữ liệu.",
+        "confidence": 0.9,
+        "reasoning": "Học viên đang hỏi xin hướng xử lý và tag người hỗ trợ nhưng chưa có phản hồi nào trong dữ liệu.",
         "needs_ta_review": false,
-        "api_time_seconds": 3.33,
+        "api_time_seconds": 4.38,
         "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
       },
       "match": false,
@@ -43,251 +43,13 @@
       "ai_result": {
         "label": "no-response",
         "confidence": 0.95,
-        "reasoning": "Học viên đặt hai câu hỏi nhưng chưa có bất kỳ phản hồi nào trong dữ liệu.",
+        "reasoning": "Học viên đặt câu hỏi nhưng dữ liệu chỉ có tin nhắn này, chưa thấy phản hồi nào.",
         "needs_ta_review": false,
-        "api_time_seconds": 37.68,
+        "api_time_seconds": 2.89,
         "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
       },
       "match": false,
       "content_preview": "cho mình hỏi tại sao truy cập lại thấy trống nhỉ và làm sao tìm repo để setup AI..."
-    },
-    {
-      "msg_id": "M65121",
-      "human_label": "no-response",
-      "ai_result": {
-        "label": "no-response",
-        "confidence": 0.95,
-        "reasoning": "Học viên đặt câu hỏi về quy cách nộp daily standup nhưng không có tin nhắn phản hồi nào trong dữ liệu cung cấp.",
-        "needs_ta_review": false,
-        "api_time_seconds": 4.5,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": true,
-      "content_preview": "[@BOT] \n\nQuy cách nộp daily standup cho nhóm\nnộp theo nhóm một người nộp cho cả ..."
-    },
-    {
-      "msg_id": "M27034",
-      "human_label": "resolved",
-      "ai_result": {
-        "label": "needs-context",
-        "confidence": 0.0,
-        "reasoning": "Loi goi API: Expecting ',' delimiter: line 5 column 27 (char 191)",
-        "needs_ta_review": true,
-        "api_time_seconds": 0,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "e đăng nhập vào zoom để tối nay workshop mà cứ báo như này thì tối e đăng nhập b..."
-    },
-    {
-      "msg_id": "M45980",
-      "human_label": "needs-context",
-      "ai_result": {
-        "label": "needs-context",
-        "confidence": 0.35,
-        "reasoning": "Tin nhắn quá ngắn ('[@BOT] tất cả'), là reply cho tin khác (M39039) nhưng thiếu ngữ cảnh để biết đây là câu hỏi, câu trả lời hay lệnh bot.",
-        "needs_ta_review": true,
-        "api_time_seconds": 10.26,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": true,
-      "content_preview": "[@BOT] tất cả"
-    },
-    {
-      "msg_id": "M92861",
-      "human_label": "needs-context",
-      "ai_result": {
-        "label": "needs-context",
-        "confidence": 0.9,
-        "reasoning": "Tin nhắn quá ngắn ('hic mình cũng thế') và phụ thuộc hoàn toàn vào context trước đó không có trong dữ liệu.",
-        "needs_ta_review": true,
-        "api_time_seconds": 55.58,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": true,
-      "content_preview": "hic mình cũng thế"
-    },
-    {
-      "msg_id": "M36026",
-      "human_label": "needs-context",
-      "ai_result": {
-        "label": "needs-context",
-        "confidence": 0.0,
-        "reasoning": "Loi goi API: Unterminated string starting at: line 4 column 16 (char 64)",
-        "needs_ta_review": true,
-        "api_time_seconds": 0,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": true,
-      "content_preview": "[@BOT] chọn chủ đề làm build phases trên đó"
-    },
-    {
-      "msg_id": "M47681",
-      "human_label": "needs-context",
-      "ai_result": {
-        "label": "needs-context",
-        "confidence": 0.0,
-        "reasoning": "Loi goi API: Expecting value: line 1 column 1 (char 0)",
-        "needs_ta_review": true,
-        "api_time_seconds": 0,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": true,
-      "content_preview": "Đây bạn ạ:"
-    },
-    {
-      "msg_id": "M86664",
-      "human_label": "needs-context",
-      "ai_result": {
-        "label": "needs-context",
-        "confidence": 0.95,
-        "reasoning": "Tin nhắn quá ngắn, mơ hồ ('ntn' = như thế này), thường kèm ảnh/kết quả chạy code nhưng không có context đề bài, lỗi, hoặc phản hồi nào trong dữ liệu.",
-        "needs_ta_review": true,
-        "api_time_seconds": 20.8,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": true,
-      "content_preview": "Mình chạy ra ntn"
-    },
-    {
-      "msg_id": "M56157",
-      "human_label": "support-request",
-      "ai_result": {
-        "label": "no-response",
-        "confidence": 0.95,
-        "reasoning": "Học viên đặt câu hỏi về việc chưa nhận thẻ học viên ngày khai giảng nhưng không có tin nhắn phản hồi nào trong dữ liệu.",
-        "needs_ta_review": false,
-        "api_time_seconds": 3.73,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "[@BOT] mình hôm khai giảng chưa nhận thẻ học viên thì làm sao"
-    },
-    {
-      "msg_id": "M09090",
-      "human_label": "support-request",
-      "ai_result": {
-        "label": "no-response",
-        "confidence": 0.95,
-        "reasoning": "Học viên hỏi bot về số lượng lớp học trong khóa 4 nhưng chưa có phản hồi nào xuất hiện trong dữ liệu.",
-        "needs_ta_review": false,
-        "api_time_seconds": 20.32,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "[@BOT] có tổng bao nhiêu lớp học trong khóa 4 ví dụ c401, d301"
-    },
-    {
-      "msg_id": "M49586",
-      "human_label": "support-request",
-      "ai_result": {
-        "label": "needs-context",
-        "confidence": 0.0,
-        "reasoning": "Loi goi API: Expecting value: line 1 column 1 (char 0)",
-        "needs_ta_review": true,
-        "api_time_seconds": 0,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "Kiểu em ko có câu hỏi nào hỏi , có ổn ko ạ :))"
-    },
-    {
-      "msg_id": "M80709",
-      "human_label": "support-request",
-      "ai_result": {
-        "label": "needs-context",
-        "confidence": 0.55,
-        "reasoning": "Tin nhắn quá ngắn, dùng từ lóng/tắt ('nhwuxng'), tag bot nhưng không thấy phản hồi bot trong dữ liệu, không đủ thông tin để xác định trạng thái.",
-        "needs_ta_review": true,
-        "api_time_seconds": 15.46,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "[@BOT] có nhwuxng ticket type nào"
-    },
-    {
-      "msg_id": "M67785",
-      "human_label": "support-request",
-      "ai_result": {
-        "label": "needs-context",
-        "confidence": 0.0,
-        "reasoning": "Loi goi API: 'choices'",
-        "needs_ta_review": true,
-        "api_time_seconds": 0,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "ông thấy team mình có nhiều người trùng bg quá ko ông :)))"
-    },
-    {
-      "msg_id": "M32171",
-      "human_label": "support-request",
-      "ai_result": {
-        "label": "no-response",
-        "confidence": 0.9,
-        "reasoning": "Học viên hỏi bot xin file hướng dẫn setup nhưng dữ liệu chỉ có tin nhắn này, không thấy phản hồi nào.",
-        "needs_ta_review": false,
-        "api_time_seconds": 74.23,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "[@BOT] cho tôi file hướng dẫn setup từ git đến phoenix đến team với"
-    },
-    {
-      "msg_id": "M48859",
-      "human_label": "support-request",
-      "ai_result": {
-        "label": "no-response",
-        "confidence": 0.9,
-        "reasoning": "Học viên đặt câu hỏi tiếp theo (reply) nhưng chưa có phản hồi nào trong dữ liệu.",
-        "needs_ta_review": false,
-        "api_time_seconds": 8.46,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "A ơi, Tại e thấy trong sổ tay phải có xác nhận của giám đốc, nên là k biết e có ..."
-    },
-    {
-      "msg_id": "M97148",
-      "human_label": "support-request",
-      "ai_result": {
-        "label": "no-response",
-        "confidence": 0.95,
-        "reasoning": "Học viên đặt câu hỏi rõ ràng cho bot về việc sử dụng GitHub/GitLab nhưng chưa có phản hồi nào trong dữ liệu.",
-        "needs_ta_review": false,
-        "api_time_seconds": 21.77,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "[@BOT] build phase tôi có thể vừa sài github và vừa sài gitlab được không hay on..."
-    },
-    {
-      "msg_id": "M53663",
-      "human_label": "support-request",
-      "ai_result": {
-        "label": "no-response",
-        "confidence": 0.9,
-        "reasoning": "Học viên hỏi bot về quyền truy cập repo nhưng không có tin nhắn phản hồi nào trong dữ liệu cung cấp.",
-        "needs_ta_review": false,
-        "api_time_seconds": 4.96,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "[@BOT] Quyền truy cập của bạn vào repo đó sẽ thay đổi ra sao?"
-    },
-    {
-      "msg_id": "M88243",
-      "human_label": "other",
-      "ai_result": {
-        "label": "no-response",
-        "confidence": 0.95,
-        "reasoning": "Học viên hỏi bot về kênh tạo ticket nhưng chưa có phản hồi nào trong dữ liệu.",
-        "needs_ta_review": false,
-        "api_time_seconds": 6.53,
-        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free"
-      },
-      "match": false,
-      "content_preview": "[@BOT] tạo ticket tại kênh nào"
     }
   ]
 }
