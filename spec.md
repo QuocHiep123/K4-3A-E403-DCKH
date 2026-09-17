@@ -1,4 +1,4 @@
-﻿# AI SPEC — Discord Pulse · Nhóm DCKH
+# AI SPEC — Discord Pulse · Nhóm DCKH
 
 **Lớp:** 3A · **Phòng:** E403 · **Cụm:** chưa điền
 **Track:** B2 — Tính năng cho TA/học viên trên Discord
@@ -78,7 +78,7 @@ Canvas 4 ô nằm trong §1–§2. Phương pháp và trích dẫn: [nhật ký 
 
 Vai trò trên mô tả nhiệm vụ trong buổi dùng thử, không xác nhận chức danh TA thực tế của hai người tham gia.
 
-Đã hoàn thành 5 phiên dùng thử (17/09/2026) với 5 người ngoài nhóm: Đỗ Đức Đại, Phạm Cường Quốc, Nguyễn Khánh Sơn, Ngô Xuân Hoàng, Đỗ Ngọc Phi. Kết quả chi tiết tại [validation/user_testing.md](validation/user_testing.md). Thời gian trung bình hoàn thành tác vụ: 1 phút 25 giây.
+Đã hoàn thành 5 phiên dùng thử (17/09/2026) với 5 người ngoài nhóm: Bùi Thị Thu Uyên, Đinh Quang Lâm, Đào Ngọc Bình Thiên, Phạm Cường Quốc, Hoàng Công Minh. Kết quả chi tiết tại [validation/user_testing.md](validation/user_testing.md). Thời gian trung bình hoàn thành tác vụ: 1 phút 25 giây.
 
 ## §3. Giải pháp tương tự đã nghiên cứu
 
@@ -223,8 +223,8 @@ Phân công và willing users ở §2, ô 4; thông tin thành viên lấy từ 
 | 17/09/2026 | CP3: giao diện 4 bước (`codebase/mock/`), AI thật qua OpenRouter nvidia/nemotron, golden set 20 case | Yêu cầu CP3; analyze.py gọi API thật; eval/ lưu kết quả |
 | 17/09/2026 | CP4: nghiên cứu tương tự (§3), chốt quality bar (§7), reflection, slide CP5, validation doc | Yêu cầu CP4; dựa trên kết quả eval CP3 và kế hoạch CP5 |
 | 17/09/2026 | Fix analyze.py: đường dẫn data linh hoạt, bộ xử lý UTF-8, strip markdown code block | Chạy kiểm thử 20 case thành công |
-| 17/09/2026 | **Đổi giao diện sang All-in-One Dashboard kèm 2 Terminal:** gộp quy trình 4 trang thành 1 màn hình duy nhất | **Góp ý từ Đỗ Đức Đại (R6):** Tránh mất thời gian click qua nhiều trang để tìm danh sách ưu tiên |
+| 17/09/2026 | **Đổi giao diện sang All-in-One Dashboard kèm 2 Terminal:** gộp quy trình 4 trang thành 1 màn hình duy nhất | **Góp ý từ Bùi Thị Thu Uyên (R6):** Tránh mất thời gian click qua nhiều trang để tìm danh sách ưu tiên |
 | 17/09/2026 | **Thêm Toast Notification xanh và log hành động TA vào terminal** khi bấm xác nhận | **Góp ý từ Phạm Cường Quốc (R6):** Cần visual feedback tức thì để biết quyết định đã lưu |
-| 17/09/2026 | **Tách riêng màu sắc cho từng mức độ khẩn cấp và phân tách tin SV vs reply của TA** | **Góp ý từ Nguyễn Khánh Sơn & Ngô Xuân Hoàng (R6):** Cải thiện khả năng quét nhanh cho TA |
+| 17/09/2026 | **Tách riêng màu sắc cho từng mức độ khẩn cấp và phân tách tin SV vs reply của TA** | **Góp ý từ Đinh Quang Lâm & Đào Ngọc Bình Thiên (R6):** Cải thiện khả năng quét nhanh cho TA |
 | 17/09/2026 | **Giữ nguyên nguyên tắc HAX G11 & Non-goal 1:** Không tự động gửi tin lên Discord thật | **Phân tích nhóm:** Đảm bảo an toàn đào tạo, TA luôn là người chốt quyết định cuối cùng |
-| 17/09/2026 | **Hoàn thành 5 phiên dùng thử R6** với Đỗ Đức Đại, Phạm Cường Quốc, Nguyễn Khánh Sơn, Ngô Xuân Hoàng, Đỗ Ngọc Phi; thời gian TB 1m25s | Kết quả tại [validation/user_testing.md](validation/user_testing.md); 4/4 chỉ số ĐẠT |
+| 17/09/2026 | **Hoàn thành 5 phiên dùng thử R6** với Bùi Thị Thu Uyên, Đinh Quang Lâm, Đào Ngọc Bình Thiên, Phạm Cường Quốc, Hoàng Công Minh; thời gian TB 1m25s | Kết quả tại [validation/user_testing.md](validation/user_testing.md); 4/4 chỉ số ĐẠT |
