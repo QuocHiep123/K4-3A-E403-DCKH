@@ -1069,3 +1069,114 @@ textarea:focus {
   font-family: 'JetBrains Mono', monospace;
   margin-bottom: 2px;
 }
+
+/* ═══════════ Embedded AI Terminal Console ═══════════ */
+.terminal-console {
+  background: #080911;
+  border: 1px solid #23273e;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.terminal-header {
+  background: #111422;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #1e2236;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.terminal-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.terminal-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.terminal-dot.red { background: #ed4245; }
+.terminal-dot.yellow { background: #fee75c; }
+.terminal-dot.green { background: #57f287; }
+
+.terminal-title {
+  font-size: 12px;
+  color: #9aa5ce;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.terminal-btn-run {
+  background: linear-gradient(135deg, var(--accent) 0%, #4752c4 100%);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(88, 101, 242, 0.35);
+}
+
+.terminal-btn-run:hover {
+  background: linear-gradient(135deg, #6b78f6 0%, #5865f2 100%);
+  box-shadow: 0 4px 14px rgba(88, 101, 242, 0.6);
+  transform: translateY(-1px);
+}
+
+.terminal-btn-run:active {
+  transform: translateY(0);
+}
+
+.terminal-body {
+  padding: 14px 18px;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #c7d2fe;
+  max-height: 190px;
+  overflow-y: auto;
+  background: #080911;
+}
+
+.term-line {
+  margin-bottom: 4px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.term-line.faint { color: #5a6285; }
+.term-line.success { color: var(--ok); }
+.term-line.info { color: #818cf8; }
+.term-line.highlight { color: #fee75c; }
+.term-line.danger { color: #ed4245; }
+
+.terminal-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+  display: inline-block;
+  box-shadow: 0 0 8px var(--ok);
+  animation: pulse-dot 1.5s infinite;
+}
+
