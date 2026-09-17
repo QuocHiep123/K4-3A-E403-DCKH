@@ -225,5 +225,5 @@ Phân công và willing users ở §2, ô 4; thông tin thành viên lấy từ 
 | 17/09/2026 | Fix analyze.py: đường dẫn data linh hoạt, bộ xử lý UTF-8, strip markdown code block | Chạy kiểm thử 20 case thành công |
 | 17/09/2026 | **Đổi giao diện sang All-in-One Dashboard kèm 2 Terminal:** gộp quy trình 4 trang thành 1 màn hình duy nhất | **Góp ý từ Đỗ Đức Đại (R6):** Tránh mất thời gian click qua nhiều trang để tìm danh sách ưu tiên |
 | 17/09/2026 | **Thêm Toast Notification xanh và log hành động TA vào terminal** khi bấm xác nhận | **Góp ý từ Phạm Cường Quốc (R6):** Cần visual feedback tức thì để biết quyết định đã lưu |
-| 17/09/2026 | **Tách riêng màu sắc cho từng mức độ khẩn cấp và phân tách tin SV vs reply của TA** | **Góp ý từ Trần Mai Anh & Lê Hoàng Long (R6):** Cải thiện khả năng quét nhanh cho TA |
+| 17/09/2026 | **Tách riêng màu sắc cho từng mức độ khẩn cấp và phân tách tin SV vs reply của TA** | **Góp ý từ Nguyễn Khánh Sơn & Ngô Xuân Hoàng (R6):** Cải thiện khả năng quét nhanh cho TA |
 | 17/09/2026 | **Giữ nguyên nguyên tắc HAX G11 & Non-goal 1:** Không tự động gửi tin lên Discord thật | **Phân tích nhóm:** Đảm bảo an toàn đào tạo, TA luôn là người chốt quyết định cuối cùng |
