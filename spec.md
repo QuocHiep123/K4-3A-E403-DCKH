@@ -114,6 +114,13 @@ Chưa có phiên dùng thử nào diễn ra. Mời thêm người để đạt 5
 
 **Automation: augment.** Chi phí sai gồm bỏ sót người cần giúp và đánh dấu nhầm đã giải quyết. AI chỉ đề xuất; TA đọc căn cứ, sửa và chốt. Không tự nhắn, tự đăng bản tin, tự đánh dấu trên Discord; không xếp hạng năng lực học viên hoặc quyết định điểm danh/XP/deadline.
 
+### Non-goals (Phạm vi không làm)
+Để đảm bảo an toàn và tập trung đúng lát cắt, hệ thống cam kết bản build không vi phạm 4 non-goals sau:
+1. **Không tự động nhắn tin / tag / gửi thông báo trực tiếp cho học viên trên Discord**: Tránh làm phiền học viên và loại trừ rủi ro AI phát ngôn sai lệch nhân danh ban tổ chức hoặc trợ giảng.
+2. **Không xếp hạng năng lực học viên, không quyết định điểm danh/XP/deadline**: AI không can thiệp vào thẩm quyền quản trị đào tạo hay đánh giá học viên; chỉ hỗ trợ TA phát hiện người cần giúp.
+3. **Không tự động đóng hoặc đánh dấu "đã giải quyết" trên thread Discord**: Quyền quyết định trạng thái cuối cùng luôn thuộc về TA sau khi đã đối chiếu căn cứ tin nhắn gốc.
+4. **Không suy đoán nội dung hình ảnh đính kèm khi thiếu dữ liệu**: Khi tin nhắn chứa ảnh không có trong pack hoặc ngữ cảnh bị cắt, hệ thống bắt buộc chuyển sang trạng thái "Cần kiểm tra thêm" thay vì phỏng đoán.
+
 **Quy tắc thiết kế:** có phản hồi chưa đồng nghĩa đã giải quyết. Thiếu ngữ cảnh thì “Cần kiểm tra thêm”; không đoán nội dung ảnh. Gom theo chủ đề nhưng giữ quyết định và căn cứ riêng mỗi hội thoại. Ngưỡng 4 giờ chỉ là tín hiệu dự kiến cho CP3, chưa được tính trong mock CP2 và không chứng minh chưa được trả lời. Khi nối pack thật, phải cắt dữ liệu tại mốc ngày rà soát, không dùng phản hồi tương lai.
 
 ### Phần chạy thật và phần mock
