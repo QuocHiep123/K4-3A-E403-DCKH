@@ -149,7 +149,8 @@ async function importData(source) {
       body={source,text,name:file.name};
     } else if(source==='paste') body.text=$('pasteText').value;
     state.dataset=await api('/api/import',body);
-    $('inputStatus').textContent=`${state.dataset.name}: ${state.dataset.message_count} tin nhắn, ${state.dataset.human_count} tin do người viết. Chưa gọi AI.`;
+    const inputCount=source==='paste'?`${state.dataset.message_count} hội thoại`:`${state.dataset.message_count} tin nhắn, ${state.dataset.human_count} tin do người viết`;
+    $('inputStatus').textContent=`${state.dataset.name}: ${inputCount}. Chưa gọi AI.`;
     options($('guildFilter'),state.dataset.guilds);
     $('guildFilter').value=state.dataset.guilds.at(-1);
     guildOptions(); $('scopePanel').hidden=false;
@@ -164,7 +165,7 @@ async function loadPreview(fromImport=false) {
     const result=await api('/api/preview',{dataset_id:state.dataset.dataset_id,guild:$('guildFilter').value,day:$('dateFilter').value,channel:$('channelFilter').value});
     state.review=result; readRecords(); state.view='all'; state.selected=result.conversations[0]?.id||null;
     $('analysisSection').hidden=false; $('reviewSection').hidden=false;
-    $('scopeSummary').textContent=`${result.conversations.length} hội thoại · ${result.message_count} tin · ${result.batches.length} lượt AI`;
+    $('scopeSummary').textContent=`${result.conversations.length} hội thoại${result.source==='paste'?'':` · ${result.message_count} tin`} · ${result.batches.length} lượt AI`;
     $('scopeName').textContent=`${result.name} / ${result.scope.guild} / ${result.scope.day||'toàn bộ thời gian'} / ${result.scope.channel||'tất cả kênh'}`;
     $('scopeWarnings').replaceChildren();
     for(const warning of result.warnings) {const li=document.createElement('li');li.textContent=warning;$('scopeWarnings').append(li);}
@@ -195,7 +196,7 @@ function renderDetail() {
   // Unrelated batch arrivals must not replace focused inputs or reset source scroll.
   if(renderedDetail?.conversation===c && renderedDetail.record===r){updateControls();return;}
   renderedDetail={conversation:c,record:r};
-  $('caseMeta').textContent=`${c.id} · ${c.guild} / ${c.channel} · ${c.messages.length} tin`;
+  $('caseMeta').textContent=`${c.id} · ${c.guild} / ${c.channel} · ${state.review.source==='paste'?'Cuộc trao đổi được dán':`${c.messages.length} tin`}`;
   $('caseTitle').textContent=c.title;
   $('aiLabel').textContent=ai?M.labels[ai.label]:'Chưa phân tích';$('aiLabel').className=`status ${ai?.label||''}`;
   $('aiResult').hidden=!ai;
