@@ -1,5 +1,7 @@
 # Discord Pulse — bản mẫu CP2
 
+**Dashboard mới ở trang chủ:** xem [cách chạy và giới hạn hiện tại](dashboard.md). Chạy `python server.py` từ gốc repo rồi mở http://localhost:8080. Tài liệu bên dưới chỉ mô tả bản CP2.
+
 **Mức: Mock.** HTML/CSS/JS thuần, không cần cài thư viện, API key hay mô hình AI. Toàn bộ tin nhắn và đề xuất là ví dụ tự tạo; không sao chép data pack. Phạm vi một TA rà soát một server/ngày, chốt tối đa 5 hội thoại cần theo dõi.
 
 **Link mã nguồn để nộp CP2:** https://github.com/QuocHiep123/K4-3A-E403-DCKH/tree/main/codebase

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "DEMO-01",
+    "title": "Lỗi truy cập Phoenix dù đã làm theo hướng dẫn",
+    "content": "Em chào các anh chị trợ giảng ạ, em đã thử xoá cache và làm theo hướng dẫn trong tài liệu nhưng vẫn bị trang trắng khi vào Phoenix lab. Nhờ TA xem giúp em với ạ.",
+    "reply": "TA: Em kiểm tra xem đã kết nối VPN trường chưa?",
+    "author": "Học viên (giả lập)",
+    "channel": "#ho-tro-demo",
+    "synthetic": true
+  },
+  {
+    "id": "DEMO-02",
+    "title": "Thắc mắc cộng điểm chuyên cần buổi 2",
+    "content": "Chào TA, em có tham gia đầy đủ buổi 2 nhưng trên bảng theo dõi ghi vắng, TA check lại giúp em với.",
+    "reply": "TA: Em gửi lại MSSV và email trường để anh đối chiếu log điểm danh nhé.",
+    "author": "Học viên (giả lập)",
+    "channel": "#ho-tro-demo",
+    "synthetic": true
+  },
+  {
+    "id": "DEMO-03",
+    "title": "Không import được thư viện torch trong Google Colab",
+    "content": "Mình chạy `import torch` trên Colab bị báo ModuleNotFoundError, có ai bị tương tự không?",
+    "reply": "Bạn chọn Runtime -> Change runtime type -> chọn GPU T4 thử xem.",
+    "author": "Học viên (giả lập)",
+    "channel": "#ho-tro-demo",
+    "synthetic": true
+  },
+  {
+    "id": "DEMO-04",
+    "title": "Hạn chốt nộp bài tập lớn nhóm 3A",
+    "content": "Mọi người cho em hỏi hạn nộp bài là 21h hôm nay hay 23h59 vậy ạ? Em thấy trên thông báo ghi 2 mốc khác nhau.",
+    "reply": "",
+    "author": "Học viên (giả lập)",
+    "channel": "#ho-tro-demo",
+    "synthetic": true
+  },
+  {
+    "id": "DEMO-05",
+    "title": "Cần thêm ngữ cảnh — tin nhắn 'anh ơi'",
+    "content": "Anh ơi cho em hỏi xíu với ạ...",
+    "reply": "",
+    "author": "Học viên (giả lập)",
+    "channel": "#ho-tro-demo",
+    "synthetic": true
+  }
+]
