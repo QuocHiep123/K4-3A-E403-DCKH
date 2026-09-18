@@ -2,10 +2,11 @@ import io
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch, Mock
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from codebase import data_input as D, workflow as W, triage as T, analyze
+from codebase import data_input as D, workflow as W, triage as T, analyze, llm_trace
 import server
 
 CSV = '''msg_id,content,reply_to,created_at_vn,guild,channel,author,is_bot,n_attachments
@@ -99,7 +100,54 @@ class DataTests(unittest.TestCase):
 
 class TriageTests(unittest.TestCase):
     def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.trace_path = Path(directory.name) / 'llm.log'
+        patcher = patch.object(llm_trace, 'TRACE_PATH', self.trace_path)
+        patcher.start(); self.addCleanup(patcher.stop)
         self.cases = D.build_preview(fixture(), 'G', '2026-09-17', 'help')['conversations']
+
+    def test_trace_contains_exact_prompt_response_usage_and_timings(self):
+        payload = {'id': 'provider-id', 'model': 'google/gemini-3.8-flash', 'usage': {'completion_tokens': 120},
+                   'choices': [{'message': {'content': json.dumps({'results': [result(c) for c in self.cases]})}}]}
+        response = Mock(status_code=200, text=json.dumps(payload))
+        response.json.return_value = payload
+        with patch.object(analyze, 'OPENROUTER_API_KEY', 'credential-do-not-log'), patch.object(analyze.requests, 'post', return_value=response) as post:
+            output = T.triage_conversations(self.cases)
+        records = [json.loads(line) for line in self.trace_path.read_text().splitlines()]
+        self.assertEqual([r['event'] for r in records], ['request', 'completion'])
+        self.assertEqual(records[0]['request'], post.call_args.kwargs['json'])
+        self.assertEqual(records[0]['trace_id'], records[1]['trace_id'])
+        self.assertEqual(output['trace_id'], records[0]['trace_id'])
+        self.assertTrue(output['trace_logged'])
+        self.assertEqual(json.loads(records[1]['response_body']), payload)
+        self.assertEqual(records[1]['usage'], payload['usage'])
+        self.assertGreaterEqual(records[1]['timing']['total_seconds'], records[1]['timing']['upstream_seconds'])
+        self.assertNotIn('credential-do-not-log', self.trace_path.read_text())
+        self.assertNotIn('Authorization', self.trace_path.read_text())
+
+    def test_failure_traces_keep_status_and_scrub_echoed_credential(self):
+        response = Mock(status_code=429, text='provider echoed credential-do-not-log')
+        response.raise_for_status.side_effect = analyze.requests.HTTPError(response=response)
+        with patch.object(analyze, 'OPENROUTER_API_KEY', 'credential-do-not-log'), patch.object(analyze.requests, 'post', return_value=response):
+            output = T.triage_conversations(self.cases)
+        record = json.loads(self.trace_path.read_text().splitlines()[-1])
+        self.assertEqual(record['outcome'], 'upstream_error')
+        self.assertEqual(record['http_status'], 429)
+        self.assertEqual(record['trace_id'], output['trace_id'])
+        self.assertNotIn('credential-do-not-log', self.trace_path.read_text())
+        with patch.object(analyze, 'OPENROUTER_API_KEY', 'credential-do-not-log'), patch.object(analyze.requests, 'post', side_effect=analyze.requests.Timeout):
+            output = T.triage_conversations(self.cases)
+        record = json.loads(self.trace_path.read_text().splitlines()[-1])
+        self.assertEqual(record['outcome'], 'upstream_timeout')
+        self.assertIn('upstream_seconds', record['timing'])
+
+    def test_logging_failure_does_not_discard_valid_results(self):
+        response = Mock(); response.json.return_value = {'choices': [{'message': {'content': json.dumps({'results': [result(c) for c in self.cases]})}}]}
+        with patch.object(analyze, 'OPENROUTER_API_KEY', 'key'), patch.object(analyze.requests, 'post', return_value=response), patch.object(llm_trace, 'append', return_value=False):
+            output = T.triage_conversations(self.cases)
+        self.assertFalse(output['trace_logged'])
+        self.assertEqual(len(output['results']), len(self.cases))
 
     def test_citations_must_belong_to_same_conversation(self):
         good = [result(c) for c in self.cases]

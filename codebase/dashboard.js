@@ -3,16 +3,18 @@ const M = window.PulseReview;
 const $ = id => document.getElementById(id);
 const state = {source:'bundled', dataset:null, review:null, records:{}, selected:null, view:'all', busy:false, stop:false, model:null, configLoaded:false};
 let toastTimer;
+const activeRequests=new Set();
 function toast(message) { clearTimeout(toastTimer); $('toast').textContent=message; $('toast').classList.add('show'); toastTimer=setTimeout(()=>$('toast').classList.remove('show'),4500); }
 function log(message) { $('runLog').textContent += `\n[${new Date().toLocaleTimeString()}] ${message}`; $('runLog').scrollTop=$('runLog').scrollHeight; }
-async function api(path, body) {
-  const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),70000);
+async function api(path, body, controller=new AbortController()) {
+  const timer=setTimeout(()=>controller.abort(),70000);
   try {
     const response=await fetch(path,{signal:controller.signal,...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});
     let data; try {data=await response.json();} catch {throw new Error(`Server không trả JSON (HTTP ${response.status}). Chạy lại python server.py.`);}
-    if(!response.ok || data.success!==true) {const error=new Error(data.message || `HTTP ${response.status}`);error.status=response.status;error.code=data.error;throw error;}
+    if(!response.ok || data.success!==true) {const error=new Error(data.message || `HTTP ${response.status}`);error.status=response.status;error.code=data.error;error.traceId=data.trace_id;error.traceLogged=data.trace_logged;throw error;}
     return data;
   } catch(error) {
+    if(controller.signal.reason==='user_stop'){const cancelled=new Error('Đã dừng chờ kết quả.');cancelled.code='analysis_cancelled';throw cancelled;}
     if(error.name==='AbortError') throw new Error('Hết thời gian chờ. Lượt này chưa có kết quả, hãy thử lại.');
     if(error instanceof TypeError) throw new Error('Không kết nối được server. Chạy python server.py rồi thử lại.');
     throw error;
@@ -206,24 +208,36 @@ async function analyzePending(onlyFailed=false) {
   if(state.busy||!state.review||!state.model||draftModel()!==state.model)return;
   const groups=state.review.batches.map(ids=>ids.filter(id=>!state.records[id]?.result && (!onlyFailed||state.records[id]?.error))).filter(ids=>ids.length);
   if(!groups.length)return;
-  state.stop=false;setBusy(true);$('stopBtn').hidden=false;$('stopBtn').disabled=false;
-  for(let i=0;i<groups.length;i++){
-    const ids=groups[i];$('analysisStatus').textContent=`Đang phân tích lượt ${i+1}/${groups.length} (${ids.length} hội thoại)…`;
+  state.stop=false;state.cancelled=false;setBusy(true);$('stopBtn').hidden=false;$('stopBtn').disabled=false;
+  const concurrency=state.model.endsWith(':free')||state.model==='openrouter/free'?1:3;
+  const started=performance.now();let cursor=0,active=0,completed=0;
+  const progress=()=>{$('analysisStatus').textContent=`${state.stop?'Đang dừng; chờ các lượt đã gửi…':'Đang phân tích…'} ${completed}/${groups.length} lượt hoàn tất · ${active} lượt đang chạy · ${Math.round((performance.now()-started)/1000)}s đã trôi qua.`;};
+  const timer=setInterval(progress,1000);
+  async function worker(){
+   while(!state.stop && cursor<groups.length){
+    const i=cursor++,ids=groups[i];active++;progress();
+    const controller=new AbortController();activeRequests.add(controller);
     log(`Bắt đầu lượt ${i+1}: ${ids.join(', ')}`);
     try {
-      const result=await api('/api/analyze',{review_id:state.review.review_id,ids,model:state.model});
+      const result=await api('/api/analyze',{review_id:state.review.review_id,ids,model:state.model},controller);
+      if(controller.signal.aborted)continue;
       if(result.model!==state.model||result.mode!=='live'||result.fingerprint!==state.review.fingerprint||!Array.isArray(result.results)||result.results.length!==ids.length||new Set(result.results.map(r=>r.id)).size!==ids.length||result.results.some(r=>!ids.includes(r.id)||!M.validResult(r,conversations().find(c=>c.id===r.id))))throw new Error('Kết quả AI không khớp model/phạm vi hoặc thiếu căn cứ. Lượt này chưa được chấp nhận.');
-      const next={...state.records};for(const row of result.results)next[row.id]={result:row,model:result.model,served_model:result.served_model,request_id:result.request_id,latency_seconds:result.latency_seconds,analyzed_at:new Date().toISOString(),decision:null,note:'',audit:[]};
-      writeRecords(next);log(`Đã nhận ${result.results.length} kết quả · ${result.model} · ${result.latency_seconds}s`);
-    }catch(error){for(const id of ids)state.records[id]={error:error.message};log(`LỖI: ${error.message}`);if(error.status===400||error.code==='missing_api_key'||error.code==='upstream_error'){state.stop=true;toast(error.message);}}
-    render();
-    if(state.stop)break;
+      const next={...state.records};for(const row of result.results)next[row.id]={result:row,model:result.model,served_model:result.served_model,trace_id:result.trace_id,timing:result.timing,request_id:result.request_id,latency_seconds:result.latency_seconds,analyzed_at:new Date().toISOString(),decision:null,note:'',audit:[]};
+      writeRecords(next);log(`Đã nhận ${result.results.length} kết quả · ${result.model} · ${result.latency_seconds}s${result.trace_id?` · trace ${result.trace_id}`:""}`);if(result.trace_logged===false)log("Không ghi được log LLM; kiểm tra thư mục logs.");
+    }catch(error){
+      if(error.code==='analysis_cancelled'){log(`Đã dừng chờ lượt ${i+1}; chưa lưu kết quả cho ${ids.join(', ')}.`);}
+      else{for(const id of ids)state.records[id]={error:error.message,trace_id:error.traceId};log(`LỖI: ${error.message}${error.traceId?` · trace ${error.traceId}`:""}`);if(error.traceLogged===false)log("Không ghi được log LLM; kiểm tra thư mục logs.");if(error.status===400||error.code==='missing_api_key'||error.code==='upstream_error'){state.stop=true;toast(error.message);}}
+    }finally{activeRequests.delete(controller);active--;if(!controller.signal.aborted)completed++;render();progress();}
+   }
   }
-  setBusy(false);$('stopBtn').hidden=true;
+  try{await Promise.all(Array.from({length:Math.min(concurrency,groups.length)},()=>worker()));}
+  finally{clearInterval(timer);setBusy(false);$('stopBtn').hidden=true;}
+  const elapsed=((performance.now()-started)/1000).toFixed(1);
+  log(`Kết thúc: ${completed}/${groups.length} lượt · ${elapsed}s tổng thời gian · tối đa ${concurrency} lượt đồng thời`);
   const done=Object.values(state.records).filter(r=>r.result).length;
   const failed=Object.values(state.records).filter(r=>r.error).length;
   const blocked=conversations().filter(c=>c.blocked).length;
-  $('analysisStatus').textContent=`Đã phân tích ${done}/${conversations().length} hội thoại. ${failed} lỗi; ${blocked} vượt giới hạn.${done<conversations().length?' Danh sách ưu tiên tạm thời, chưa bao phủ toàn phạm vi.':' Đã có kết quả cho toàn phạm vi. TA cần kiểm tra trước khi chốt.'}`;
+  $('analysisStatus').textContent=`${state.cancelled?'Đã dừng. ':''}Đã phân tích ${done}/${conversations().length} hội thoại. ${failed} lỗi; ${blocked} vượt giới hạn. Lần chạy này: ${elapsed}s.${state.cancelled?' Yêu cầu đã gửi có thể vẫn hoàn tất ở provider; có thể tiếp tục các mục chưa có kết quả.':''}${done<conversations().length?' Danh sách ưu tiên tạm thời, chưa bao phủ toàn phạm vi.':' Đã có kết quả cho toàn phạm vi. TA cần kiểm tra trước khi chốt.'}`;
   state.view='top';state.selected=M.ranked(conversations(),state.records)[0]?.id||conversations()[0]?.id||null;render();
 }
 function saveDecision() {
@@ -248,7 +262,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   $('loadBundled').addEventListener('click',()=>importData('bundled'));$('loadCsv').addEventListener('click',()=>importData('csv'));$('loadPaste').addEventListener('click',()=>importData('paste'));
   $('guildFilter').addEventListener('change',()=>{guildOptions();invalidatePreview();});for(const id of ['dateFilter','channelFilter'])$(id).addEventListener('change',invalidatePreview);
   $('previewBtn').addEventListener('click',()=>loadPreview());$('analyzeBtn').addEventListener('click',()=>analyzePending());$('retryBtn').addEventListener('click',()=>analyzePending(true));
-  $('stopBtn').addEventListener('click',()=>{state.stop=true;$('stopBtn').disabled=true;$('analysisStatus').textContent='Sẽ dừng sau lượt đang chạy. Kết quả đã nhận vẫn được giữ.';});
+  $('stopBtn').addEventListener('click',()=>{state.stop=true;state.cancelled=true;$('stopBtn').disabled=true;for(const controller of activeRequests)controller.abort('user_stop');});
   $('viewTop').addEventListener('click',()=>{state.view='top';renderList();});$('viewAll').addEventListener('click',()=>{state.view='all';renderList();});
   $('sourceReviewed').addEventListener('change',updateControls);$('saveDecision').addEventListener('click',saveDecision);$('exportBtn').addEventListener('click',exportReview);$('evalBtn').addEventListener('click',loadEval);
   $('modelSelect').addEventListener('change',applyModel);

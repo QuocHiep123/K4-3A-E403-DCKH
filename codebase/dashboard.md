@@ -27,7 +27,7 @@ Model mặc định vẫn theo `OPENROUTER_MODEL` (Nemotron nếu chưa đặt);
 1. Chọn **Dữ liệu khoá học**, **Tải CSV của bạn** hoặc **Dán hội thoại**.
 2. Với CSV, dùng **Tải CSV mẫu** để lấy định dạng. Dữ liệu được kiểm tra trước khi gọi AI. Với nội dung dán, dùng một dòng `---` để tách nhiều hội thoại độc lập.
 3. Chọn server, ngày và kênh. Xem số hội thoại, số tin và số lượt AI; đọc vài tin nguồn. Có thể chọn một kênh nhỏ để demo nhanh.
-4. Chọn model ở mục **Mô hình OpenRouter** trên đầu trang, rồi bấm **Tìm hội thoại cần giúp** trong bước 2. Mỗi lượt phân tích tối đa 6 hội thoại. Màn hình cập nhật tiến độ; có thể dừng sau lượt hiện tại, tiếp tục phần chưa chạy hoặc thử lại lỗi.
+4. Chọn model ở mục **Mô hình OpenRouter** trên đầu trang, rồi bấm **Tìm hội thoại cần giúp** trong bước 2. Mỗi lượt phân tích tối đa 6 hội thoại. Model trả phí chạy tối đa 3 lượt đồng thời; ID kết thúc `:free` và `openrouter/free` vẫn chạy tuần tự. Màn hình cập nhật tiến độ; có thể bấm **Dừng phân tích** để mở khóa giao diện ngay, tiếp tục phần chưa chạy hoặc thử lại lỗi.
 5. AI đề xuất tối đa 5 mục dựa trên priority 1–3; cùng mức thì hội thoại cũ hơn trước, sau đó mã tin để ổn định thứ tự. `resolved` và `other` bị loại khỏi đề xuất. Danh sách chỉ là tạm thời nếu còn case chưa chạy/lỗi/vượt giới hạn.
 6. Chọn từng mục, đọc tin nguồn, kiểm tra lý do và mã trích dẫn. Đánh dấu đã đọc, giữ hoặc sửa trạng thái, thêm lý do/bước tiếp theo rồi **Lưu quyết định**.
 7. Tab **Tất cả** cho xem cả những mục không được AI chọn. Có thể bỏ một mục khỏi danh sách cuối và thay bằng mục khác. Không cho chốt quá 5 mục.
@@ -59,14 +59,14 @@ Giám khảo có thể thử câu hỏi mới, một trao đổi đã xác nhậ
 
 `codebase/triage.py` gọi model thật với nội dung và cảnh báo của từng hội thoại. Model trả nhãn, priority, confidence tự báo, lý do, và 1–3 mã căn cứ. Server kiểm tra cấu trúc, đủ case, không lặp ID và mã căn cứ phải thuộc chính hội thoại đó. Kiểm tra ID không chứng minh model diễn giải đúng; TA vẫn cần đọc nguồn.
 
-Batch lỗi không tạo kết quả giả. Thiếu key, phiên dữ liệu hết hạn hoặc lỗi dịch vụ làm dừng các batch tiếp theo để người dùng xử lý; các kết quả đã nhận vẫn giữ. Free tier có thể chậm: toàn bộ server/ngày có thể cần nhiều phút, không phải một lời gọi tức thì.
+Batch lỗi không tạo kết quả giả. Thiếu key, phiên dữ liệu hết hạn hoặc lỗi dịch vụ làm dừng các batch tiếp theo để người dùng xử lý; các kết quả đã nhận vẫn giữ. Khi lỗi dịch vụ, không gửi thêm lượt mới và vẫn lưu kết quả các lượt đã gửi. Khi người dùng bấm Dừng, trình duyệt hủy chờ ngay, giữ kết quả đã nhận và không nhận kết quả đến muộn. Yêu cầu đã gửi có thể vẫn hoàn tất/tính phí ở provider; server tiếp tục ghi log. Tiếp tục sẽ gọi lại những mục chưa có kết quả. Free tier có thể chậm: toàn bộ server/ngày có thể cần nhiều phút, không phải một lời gọi tức thì.
 
 AI phân loại cả `other` để loại thông báo/trò chuyện không cần hỗ trợ; điều này thuộc workflow mới, không tự sửa nhãn hoặc số liệu golden set cũ. **Xem lượt kiểm thử đã lưu** vẫn đọc tệp cũ, không phải kết quả đánh giá workflow mới. Slide PDF và nhật ký R6 chưa được cập nhật trong thay đổi này.
 
 ## Lưu dữ liệu
 
 - Upload và preview ở RAM server, tối đa 12 bộ dữ liệu / 24 preview, hết hạn sau 4 giờ hoặc khi restart. Không ghi file upload vào repo.
-- Kết quả AI/TA ở localStorage, tách theo hash dữ liệu, nguồn, bộ lọc và model. Đổi model cần phân tích lại toàn phạm vi cho model mới; quay lại model cũ sẽ khôi phục kết quả và quyết định riêng của nó. Không đổi model khi đang chạy; dừng sau lượt hiện tại trước. Thời gian hiển thị là thời gian cả batch, không phải mỗi hội thoại hay benchmark chất lượng. Sau reload/restart, nhập lại cùng dữ liệu và bộ lọc để khôi phục quyết định. Nội dung CSV/paste không tự lưu thành file trong trình duyệt.
+- Kết quả AI/TA ở localStorage, tách theo hash dữ liệu, nguồn, bộ lọc và model. Đổi model cần phân tích lại toàn phạm vi cho model mới; quay lại model cũ sẽ khôi phục kết quả và quyết định riêng của nó. Không đổi model khi đang chạy; bấm Dừng phân tích trước. Thời gian trong mỗi kết quả là thời gian cả batch, không phải mỗi hội thoại hay benchmark chất lượng. Thanh tiến độ hiển thị số lượt đang chạy và tổng thời gian thực tế; chạy đồng thời giảm tổng thời gian, không bảo đảm giảm độ trễ của từng batch. Sau reload/restart, nhập lại cùng dữ liệu và bộ lọc để khôi phục quyết định. Nội dung CSV/paste không tự lưu thành file trong trình duyệt.
 - localStorage riêng theo browser/host/cổng; xóa dữ liệu trình duyệt sẽ mất bản lưu. Không đồng bộ nhiều TA.
 - Server chỉ bind localhost; tệp `.env`, thư mục dữ liệu và listing bị chặn qua static HTTP.
 
@@ -93,4 +93,22 @@ Test browser tùy chọn, profile tạm và AI được intercept (import/previe
 node codebase/dashboard.browser.test.cjs /path/to/playwright /path/to/browser http://127.0.0.1:8082
 ```
 
-Kiểm tra CSV mới, pasted input, pack thật, date cutoff, reply thiếu/mã trùng, citations, partial failure/retry, ranking, cap 5, correction/export, khôi phục dữ liệu, đổi model/cách ly quyết định theo model, lỗi credits/ID model và mobile 390px. Đây là kiểm chứng kỹ thuật, không phải quality benchmark hoặc dùng thử R6.
+Kiểm tra CSV mới, pasted input, pack thật, date cutoff, reply thiếu/mã trùng, citations, partial failure/retry, chạy đồng thời/đảo thứ tự kết quả/dừng khi rate limit, ranking, cap 5, correction/export, khôi phục dữ liệu, đổi model/cách ly quyết định theo model, lỗi credits/ID model và mobile 390px. Đây là kiểm chứng kỹ thuật, không phải quality benchmark hoặc dùng thử R6.
+
+## Log prompt và thời gian LLM
+
+Mỗi batch ghi hai dòng JSON vào `logs/llm-requests.log`: `request` (ghi trước khi gọi provider) và `completion`, nối bằng `trace_id`. File được tạo ở lần gọi đầu tiên sau khi khởi động server mới. Nhật ký trên dashboard và JSON xuất có trace ID cho kết quả/lỗi đã nhận.
+
+- `request`: model, đầy đủ system/user prompt và tham số đúng như yêu cầu gửi đi.
+- `completion`: HTTP status, response body (kể cả nội dung lỗi/JSON sai), provider request ID, usage/token counts nếu provider có trả, kết quả validation.
+- `timing.upstream_seconds`: thời gian gọi OpenRouter cho đến khi nhận xong body hoặc lỗi/timeout. Bao gồm mạng, routing, chờ và sinh câu trả lời; không tách được thời gian queue nội bộ của provider.
+- `timing.local_processing_seconds`: thời gian xử lý/validation cục bộ còn lại; `total_seconds` là tổng hai phần, không gồm ghi file trace.
+- Không ghi Authorization header hoặc API key; nếu provider echo đúng API key thì được thay bằng `[REDACTED]`. Log chứa nội dung hội thoại được gửi. Thư mục `/logs/` bị Git bỏ qua và không được phục vụ qua HTTP. Log không tự xóa/xoay vòng; có thể xóa file cục bộ khi không cần giữ.
+
+Xem trực tiếp từ gốc repo:
+
+```sh
+tail -f logs/llm-requests.log
+```
+
+Chỉ có dòng `request` nghĩa là lời gọi còn đang chạy hoặc server đã dừng trước khi ghi completion. Không đủ kết luận provider bị lỗi. Phần lớn thời gian nằm ở `upstream_seconds` nghĩa là nút thắt nằm trong lời gọi OpenRouter/mạng/provider, không phải xử lý giao diện.

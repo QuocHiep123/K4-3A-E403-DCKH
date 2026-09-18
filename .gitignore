@@ -24,6 +24,7 @@ data/
 .DS_Store
 Thumbs.db
 *.log
+/logs/
 
 # Also exclude course packs if copied outside data/.
 vlearn-pack/

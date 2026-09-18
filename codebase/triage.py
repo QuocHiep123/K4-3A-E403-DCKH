@@ -2,7 +2,8 @@
 import json
 import math
 import time
-from codebase import analyze
+import uuid
+from codebase import analyze, llm_trace
 from codebase.model_config import validate_model
 
 LABELS = analyze.LABELS | {'other'}
@@ -63,13 +64,36 @@ def triage_conversations(conversations, scope=None, model=None):
         return {'error': 'missing_api_key', 'message': 'Thêm OPENROUTER_API_KEY vào .env và khởi động lại server.'}
     # No full pack, author IDs, filename, or human golden labels are sent.
     inputs = [{'id': item['id'], 'warnings': item['warnings'], 'messages': item['messages']} for item in conversations]
+    request = {'model': model, 'messages': [{'role': 'system', 'content': PROMPT},
+               {'role': 'user', 'content': json.dumps({'review_date': (scope or {}).get('day') or 'Không có mốc ngày; không suy đoán hạn chót/thời gian chờ.', 'conversations': inputs}, ensure_ascii=False)}],
+               'temperature': 0.1, 'max_tokens': 4000}
+    trace_id = uuid.uuid4().hex
+    common = {'trace_id': trace_id, 'model': model, 'conversation_ids': [item['id'] for item in conversations]}
+    logged = llm_trace.append({**common, 'event': 'request', 'request': request}, analyze.OPENROUTER_API_KEY)
+    started = time.monotonic()
+    diagnostic = {}
+    output = _complete(conversations, model, request, diagnostic)
+    total = round(time.monotonic() - started, 3)
+    timing = {'total_seconds': total, 'upstream_seconds': diagnostic['upstream_seconds'],
+              'local_processing_seconds': round(max(0, total - diagnostic['upstream_seconds']), 3)}
+    ended = llm_trace.append({**common, 'event': 'completion', **diagnostic, 'timing': timing,
+                             'outcome': output.get('error', 'success'), 'request_id': output.get('request_id'),
+                             'served_model': output.get('served_model'), 'usage': output.get('usage')}, analyze.OPENROUTER_API_KEY)
+    output.update({'trace_id': trace_id, 'trace_logged': logged and ended, 'timing': timing})
+    return output
+
+
+def _complete(conversations, model, request, diagnostic):
     started = time.monotonic()
     try:
-        response = analyze.requests.post('https://openrouter.ai/api/v1/chat/completions',
-            headers={'Authorization': f'Bearer {analyze.OPENROUTER_API_KEY}', 'Content-Type': 'application/json'},
-            json={'model': model, 'messages': [{'role': 'system', 'content': PROMPT},
-                  {'role': 'user', 'content': json.dumps({'review_date': (scope or {}).get('day') or 'Không có mốc ngày; không suy đoán hạn chót/thời gian chờ.', 'conversations': inputs}, ensure_ascii=False)}],
-                  'temperature': 0.1, 'max_tokens': 4000}, timeout=60)
+        try:
+            response = analyze.requests.post('https://openrouter.ai/api/v1/chat/completions',
+                headers={'Authorization': f'Bearer {analyze.OPENROUTER_API_KEY}', 'Content-Type': 'application/json'},
+                json=request, timeout=60)
+        finally:
+            diagnostic['upstream_seconds'] = round(time.monotonic() - started, 3)
+        diagnostic['http_status'] = response.status_code if isinstance(response.status_code, int) else None
+        diagnostic['response_body'] = response.text if isinstance(response.text, str) else None
         response.raise_for_status()
         payload = response.json()
         raw = payload['choices'][0]['message']['content']
@@ -98,5 +122,6 @@ def triage_conversations(conversations, scope=None, model=None):
         return {'error': 'upstream_error', 'message': messages.get(status, 'OpenRouter không khả dụng. Thử lại hoặc chọn model khác.')}
     except analyze.requests.RequestException:
         return {'error': 'upstream_error', 'message': 'OpenRouter không khả dụng. Kiểm tra key, model, mạng hoặc hạn mức rồi thử lại.'}
-    except (ValueError, KeyError, TypeError, IndexError):
+    except (ValueError, KeyError, TypeError, IndexError) as error:
+        diagnostic['validation_error'] = str(error)
         return {'error': 'invalid_model_response', 'message': 'AI trả dữ liệu thiếu/sai hoặc mã căn cứ không tồn tại. Đã loại toàn bộ lượt này; hãy thử lại.'}
