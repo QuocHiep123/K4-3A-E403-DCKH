@@ -6,7 +6,9 @@
 <title>Discord Pulse · Rà soát cuối ngày</title>
 <link rel="stylesheet" href="codebase/dashboard.css">
 <script src="codebase/review-model.js" defer></script>
+<script src="codebase/group-model.js" defer></script>
 <script src="codebase/dashboard.js" defer></script>
+<script src="codebase/group-ui.js" defer></script>
 </head>
 <body>
 <header class="topbar"><a class="brand" href="/">Discord <strong>Pulse</strong><span class="signal" aria-hidden="true"></span></a><span>Trợ giảng quyết định. AI hỗ trợ rà soát.</span><a href="codebase/index.html">Bản mẫu CP2</a></header>
@@ -42,6 +44,10 @@
 <div id="decisionArea" hidden><label class="check"><input type="checkbox" id="sourceReviewed"> Tôi đã đọc và kiểm tra các tin nguồn</label><label for="taDecision">Quyết định của trợ giảng</label><select id="taDecision" disabled></select><label for="decisionNote">Lý do / bước tiếp theo</label><textarea id="decisionNote" rows="2" maxlength="500" disabled></textarea><button id="saveDecision" class="primary" disabled>Lưu quyết định</button><p id="decisionStatus" role="status"></p></div></article>
 <aside class="final-list"><h3>Danh sách TA đã chốt <span id="finalCount">0/5</span></h3><p class="hint">Chỉ những mục bạn đã duyệt mới vào danh sách này.</p><ul id="finalList"></ul><button id="exportBtn" disabled>Tải kết quả JSON</button><p id="savedStatus" class="hint">Quyết định lưu trong trình duyệt này. Tải JSON để giữ bản sao.</p></aside>
 </div>
+</section>
+<section id="groupSection" hidden aria-labelledby="groupTitle">
+<div class="group-heading"><div><h2 id="groupTitle">Câu hỏi chung chưa trả lời</h2><p class="hint">Gom những câu hỏi có thể dùng cùng một câu trả lời, như hạn nộp cùng bài tập hoặc ghi hình cùng buổi học.</p></div><div class="actions"><button id="groupsBtn" disabled>Đề xuất nhóm câu hỏi</button><button id="exportGroupsBtn" disabled>Tải bản nháp nhóm</button></div></div>
+<p id="groupsCoverage" class="hint"></p><p id="groupsStatus" class="notice" role="status" aria-live="polite"></p><div id="questionGroups"></div>
 </section>
 <details class="run-details"><summary>Nhật ký phân tích và kết quả kiểm thử đã lưu</summary><pre id="runLog">Chưa chạy phân tích.</pre><button id="evalBtn">Xem lượt kiểm thử đã lưu</button><pre id="evalLog"></pre></details>
 </main>

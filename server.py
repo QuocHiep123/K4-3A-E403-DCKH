@@ -14,16 +14,28 @@ PORT = int(os.getenv('PORT', '8080'))
 try:
     from codebase.analyze import classify_conversation, MODEL, LABELS, validate_result
     from codebase.triage import triage_conversations
+    from codebase.question_groups import suggest_groups
 except ImportError:
     classify_conversation = None
     triage_conversations = None
+    suggest_groups = None
     MODEL = None
     LABELS = {'no-response', 'responded-unclear', 'resolved', 'needs-context'}
 
 SAMPLE_CASES = {row['id']: row for row in json.loads((BASE_DIR / 'codebase/demo-cases.json').read_text())}
 
 
+CURRENT_EVALUATION_PATH = BASE_DIR / 'eval/local/current_run.json'
+
+
 def recorded_evaluation():
+    if CURRENT_EVALUATION_PATH.exists():
+        from codebase.evaluate import recorded
+        return recorded(CURRENT_EVALUATION_PATH)
+    return legacy_recorded_evaluation()
+
+
+def legacy_recorded_evaluation():
     """Recompute counts from the saved rows, never from unverified summary fields."""
     path = BASE_DIR / 'eval/golden_set_results.json'
     data = json.loads(path.read_text(encoding='utf-8-sig'))
@@ -99,7 +111,7 @@ class PulseRequestHandler(http.server.SimpleHTTPRequestHandler):
             pass  # User stopped waiting; the completed provider request is still traced.
 
     def do_POST(self):
-        if urlparse(self.path).path in {'/api/import', '/api/preview', '/api/analyze'}:
+        if urlparse(self.path).path in {'/api/import', '/api/preview', '/api/analyze', '/api/groups'}:
             self.do_workflow()
             return
         if urlparse(self.path).path != '/api/classify':
@@ -155,12 +167,13 @@ class PulseRequestHandler(http.server.SimpleHTTPRequestHandler):
             elif path == '/api/preview':
                 result = workflow.preview(body)
             else:
-                review, inputs = workflow.batch_input(body)
+                review, inputs = workflow.grouping_input(body) if path == '/api/groups' else workflow.batch_input(body)
                 if triage_conversations is None:
                     self.send_json(503, {'success': False, 'message': 'Cài requirements.txt rồi khởi động lại server.'})
                     return
                 model = validate_model(body.get('model', MODEL))
-                result = triage_conversations(inputs, review['scope'], model=model)
+                operation = suggest_groups if path == '/api/groups' else triage_conversations
+                result = operation(inputs, review['scope'], model=model)
                 if result.get('error'):
                     status = 503 if result['error'] == 'missing_api_key' else 504 if result['error'] == 'upstream_timeout' else 502
                     self.send_json(status, {'success': False, **result})

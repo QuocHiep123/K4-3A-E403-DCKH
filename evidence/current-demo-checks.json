@@ -1,0 +1,149 @@
+{
+  "updated": "2026-09-18",
+  "scope": "Evidence for the updated six-slide deck; raw prompts and course messages are excluded.",
+  "live_smoke_tests": [
+    {
+      "description": "One synthetic conversation classification",
+      "trace_id": "02a946b2b4c84c5e91378f692c4ba9c1",
+      "timestamp": "2026-09-18T04:07:43.828398+00:00",
+      "model": "google/gemini-3.8-flash",
+      "input_count": 1,
+      "outcome": "success",
+      "timing": {
+        "total_seconds": 7.503,
+        "upstream_seconds": 7.502,
+        "local_processing_seconds": 0.001
+      },
+      "usage": {
+        "prompt_tokens": 588,
+        "completion_tokens": 630,
+        "total_tokens": 1218,
+        "cost": 0.0028035,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0028035,
+          "upstream_inference_prompt_cost": 0.000441,
+          "upstream_inference_completions_cost": 0.0023625
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 502,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "groups": []
+    },
+    {
+      "description": "Nine synthetic conversations: shared deadlines/recordings versus personal issues, different context and answered questions",
+      "trace_id": "c9a7e07b28764552b7756f393f04cba8",
+      "timestamp": "2026-09-18T04:55:19.691052+00:00",
+      "model": "google/gemini-3.8-flash",
+      "input_count": 9,
+      "outcome": "success",
+      "timing": {
+        "total_seconds": 7.213,
+        "upstream_seconds": 7.212,
+        "local_processing_seconds": 0.001
+      },
+      "usage": {
+        "prompt_tokens": 1752,
+        "completion_tokens": 1004,
+        "total_tokens": 2756,
+        "cost": 0.005079,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.005079,
+          "upstream_inference_prompt_cost": 0.001314,
+          "upstream_inference_completions_cost": 0.003765
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 642,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "groups": [
+        {
+          "title": "Hạn nộp bài tập số 2 lớp K4",
+          "member_ids": [
+            "D1",
+            "D2"
+          ]
+        },
+        {
+          "title": "Link ghi hình buổi học ngày 17/09/2026 lớp K4",
+          "member_ids": [
+            "R1",
+            "R2"
+          ]
+        }
+      ]
+    }
+  ],
+  "technical_checks": {
+    "python_tests_passed": 45,
+    "javascript_tests_passed": 15,
+    "browser_suites": [
+      "codebase/dashboard.browser.test.cjs",
+      "codebase/groups.browser.test.cjs"
+    ],
+    "note": "Technical checks are not a model quality benchmark or a user study."
+  },
+  "limits": [
+    "Live timings are individual requests, not averages or service guarantees.",
+    "The grouping smoke test uses synthetic cases and does not establish precision or recall.",
+    "Earlier user-study results do not evaluate CSV upload, model switching or question grouping in the latest build."
+  ],
+  "legacy_saved_evaluation": {
+    "source": "eval/golden_set_results.json",
+    "total_cases": 3,
+    "expected_cases": 20,
+    "matched": 0,
+    "quality_bar_status": "not_assessable",
+    "warnings": [
+      "Kết quả đã lưu; thao tác này không gọi AI hoặc chạy đánh giá mới.",
+      "Chưa đo độ hợp lệ của trích dẫn AI; không suy ra 100% từ mã tin đầu vào.",
+      "Chỉ có 3/20 case trong lượt được lưu. Chưa đủ đánh giá toàn bộ golden set.",
+      "Golden set có nhãn ngoài bộ nhãn model: other, support-request. Cần rà soát bộ nhãn trước khi đánh giá quality bar.",
+      "Lỗi API/parse được tính là case không đạt, không phải kết quả phân loại. Không báo latency trung bình vì log lỗi cũ không ghi thời gian đầy đủ."
+    ]
+  },
+  "saved_evaluation": {
+    "source": "eval/local/current_run.json",
+    "model": "google/gemini-3.8-flash",
+    "total_cases": 20,
+    "expected_cases": 20,
+    "successful_cases": 18,
+    "reviewed_cases": 0,
+    "accuracy": null,
+    "recall_no_response": null,
+    "quality_bar_status": "not_assessable",
+    "warnings": [
+      "Nhãn chuẩn phải được người rà soát trên toàn hội thoại; nhãn cũ không tự chuyển đổi.",
+      "ID trích dẫn tồn tại không chứng minh nội dung hỗ trợ kết luận; cần người kiểm tra.",
+      "Thời gian API/case = tổng thời gian các request (kể cả retry) / số case; báo riêng thời gian mỗi batch.",
+      "Chưa đo thời gian TA hoàn thành; phép thử phân loại không đánh giá chất lượng gom nhóm.",
+      "Chỉ 0/20 case có nhãn đã rà soát. Không công bố accuracy/recall.",
+      "18/20 case có kết quả hợp lệ; giữ lỗi và case chưa chạy trong báo cáo.",
+      "Cần sửa nguồn đầu vào: M80709, M88243"
+    ],
+    "request_seconds": [
+      14.8,
+      10.688,
+      23.163
+    ],
+    "note": "Diagnostic only. Raw conversations and provider responses remain local and Git-ignored."
+  }
+}

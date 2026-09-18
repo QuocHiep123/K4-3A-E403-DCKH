@@ -59,20 +59,25 @@ def validate_batch(value, conversations):
 
 
 def triage_conversations(conversations, scope=None, model=None):
+    # No full pack, author IDs, filename, or human golden labels are sent.
+    inputs = [{'id': item['id'], 'warnings': item['warnings'], 'messages': item['messages']} for item in conversations]
+    content = {'review_date': (scope or {}).get('day') or 'Không có mốc ngày; không suy đoán hạn chót/thời gian chờ.', 'conversations': inputs}
+    return run_json_request(conversations, model, PROMPT, content, validate_batch, 'results', 'triage')
+
+
+def run_json_request(conversations, model, prompt, content, validator, result_key, task):
     model = validate_model(analyze.MODEL if model is None else model)
     if not analyze.OPENROUTER_API_KEY or analyze.OPENROUTER_API_KEY == 'your_openrouter_api_key_here':
         return {'error': 'missing_api_key', 'message': 'Thêm OPENROUTER_API_KEY vào .env và khởi động lại server.'}
-    # No full pack, author IDs, filename, or human golden labels are sent.
-    inputs = [{'id': item['id'], 'warnings': item['warnings'], 'messages': item['messages']} for item in conversations]
-    request = {'model': model, 'messages': [{'role': 'system', 'content': PROMPT},
-               {'role': 'user', 'content': json.dumps({'review_date': (scope or {}).get('day') or 'Không có mốc ngày; không suy đoán hạn chót/thời gian chờ.', 'conversations': inputs}, ensure_ascii=False)}],
+    request = {'model': model, 'messages': [{'role': 'system', 'content': prompt},
+               {'role': 'user', 'content': json.dumps(content, ensure_ascii=False)}],
                'temperature': 0.1, 'max_tokens': 4000}
     trace_id = uuid.uuid4().hex
-    common = {'trace_id': trace_id, 'model': model, 'conversation_ids': [item['id'] for item in conversations]}
+    common = {'trace_id': trace_id, 'task': task, 'model': model, 'conversation_ids': [item['id'] for item in conversations]}
     logged = llm_trace.append({**common, 'event': 'request', 'request': request}, analyze.OPENROUTER_API_KEY)
     started = time.monotonic()
     diagnostic = {}
-    output = _complete(conversations, model, request, diagnostic)
+    output = _complete(conversations, model, request, diagnostic, validator, result_key)
     total = round(time.monotonic() - started, 3)
     timing = {'total_seconds': total, 'upstream_seconds': diagnostic['upstream_seconds'],
               'local_processing_seconds': round(max(0, total - diagnostic['upstream_seconds']), 3)}
@@ -83,7 +88,7 @@ def triage_conversations(conversations, scope=None, model=None):
     return output
 
 
-def _complete(conversations, model, request, diagnostic):
+def _complete(conversations, model, request, diagnostic, validator, result_key):
     started = time.monotonic()
     try:
         try:
@@ -104,11 +109,11 @@ def _complete(conversations, model, request, diagnostic):
             raw = raw.split('```')[1]
             if raw.startswith('json'):
                 raw = raw[4:]
-        result = validate_batch(json.loads(raw), conversations)
-        return {'results': result, 'model': model, 'served_model': payload.get('model'), 'request_id': payload.get('id'),
+        result = validator(json.loads(raw), conversations)
+        return {result_key: result, 'model': model, 'served_model': payload.get('model'), 'request_id': payload.get('id'),
                 'latency_seconds': round(time.monotonic() - started, 3), 'usage': payload.get('usage')}
     except analyze.requests.Timeout:
-        return {'error': 'upstream_timeout', 'message': 'OpenRouter hết thời gian chờ. Các hội thoại trong lượt này chưa được phân tích; có thể thử lại.'}
+        return {'error': 'upstream_timeout', 'retryable': True, 'message': 'OpenRouter hết thời gian chờ. Các hội thoại trong lượt này chưa được phân tích; có thể thử lại.'}
     except analyze.requests.HTTPError as error:
         status = error.response.status_code if error.response is not None else None
         messages = {
@@ -119,9 +124,9 @@ def _complete(conversations, model, request, diagnostic):
             404: 'Không tìm thấy model/provider. Kiểm tra ID OpenRouter hoặc chọn model khác.',
             429: 'OpenRouter đang giới hạn lượt gọi. Đợi rồi thử lại hoặc chọn model khác.',
         }
-        return {'error': 'upstream_error', 'message': messages.get(status, 'OpenRouter không khả dụng. Thử lại hoặc chọn model khác.')}
+        return {'error': 'upstream_error', 'http_status': status, 'retryable': status == 429 or (status is not None and status >= 500), 'message': messages.get(status, 'OpenRouter không khả dụng. Thử lại hoặc chọn model khác.')}
     except analyze.requests.RequestException:
-        return {'error': 'upstream_error', 'message': 'OpenRouter không khả dụng. Kiểm tra key, model, mạng hoặc hạn mức rồi thử lại.'}
+        return {'error': 'upstream_error', 'retryable': True, 'message': 'OpenRouter không khả dụng. Kiểm tra key, model, mạng hoặc hạn mức rồi thử lại.'}
     except (ValueError, KeyError, TypeError, IndexError) as error:
         diagnostic['validation_error'] = str(error)
         return {'error': 'invalid_model_response', 'message': 'AI trả dữ liệu thiếu/sai hoặc mã căn cứ không tồn tại. Đã loại toàn bộ lượt này; hãy thử lại.'}

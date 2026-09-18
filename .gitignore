@@ -26,6 +26,9 @@ Thumbs.db
 *.log
 /logs/
 
+# Evaluation inputs, annotations and provider outputs contain course text.
+/eval/local/
+
 # Also exclude course packs if copied outside data/.
 vlearn-pack/
 discord-pack/

@@ -151,6 +151,12 @@ p { color: var(--muted); font-size: 16px; }
   font-size: 12px;
   color: var(--muted);
 }
+/* Keep the original slide size and styling when exporting the six-page PDF. */
+@media print {
+  .deck { padding-top: 0; padding-bottom: 0; }
+  .slide { margin-bottom: 0; }
+  .slide:last-child { break-after: auto; page-break-after: auto; }
+}
 </style>
 </head>
 <body>
@@ -166,7 +172,7 @@ p { color: var(--muted); font-size: 16px; }
 
     <div style="margin: auto 0;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-        <span style="width:12px;height:12px;background:var(--green);border-radius:50%;box-shadow:0 0 10px var(--green);"></span>
+        <span style="width:12px;height:12px;background:var(--green);border-radius:50%;"></span>
         <span class="badge badge-blue">Track B2: Trợ giảng Discord</span>
       </div>
       <h1>Discord Pulse</h1>
@@ -174,7 +180,7 @@ p { color: var(--muted); font-size: 16px; }
         Khép lại ngày học. Đừng bỏ lỡ người cần giúp.
       </p>
       <p style="font-size: 17px; max-width: 800px; line-height: 1.7;">
-        Hệ thống AI hỗ trợ Trợ giảng (TA) rà soát thảo luận cuối ngày: Tự động phát hiện hội thoại kẹt, trích dẫn căn cứ tin nhắn gốc và chốt danh sách tối đa 5 ca cần hỗ trợ trong &le;5 phút.
+        Hệ thống AI hỗ trợ Trợ giảng (TA) rà soát thảo luận cuối ngày: Tự động phát hiện hội thoại kẹt, trích dẫn căn cứ tin nhắn gốc và chốt danh sách tối đa 5 ca cần hỗ trợ. Mục tiêu: hoàn thành lượt rà soát trong &le;5 phút.
       </p>
     </div>
 
@@ -227,10 +233,10 @@ p { color: var(--muted); font-size: 16px; }
     </div>
 
     <div>
-      <h2>Lát cắt MỘT CÂU & Thiết kế HAX Augment</h2>
+      <h2>AI Đề Xuất, TA Kiểm Tra Và Chốt</h2>
       <div class="card" style="margin: 16px 0; background:rgba(88,101,242,0.12); border-color:var(--discord);">
         <p style="font-size:16px; color:#fff; font-weight:600;">
-          🎯 <strong>Lát cắt cốt lõi:</strong> Một TA rà soát Discord cuối ngày, được AI đề xuất hội thoại cần ưu tiên dựa trên trạng thái phản hồi và dấu hiệu còn vướng, giúp TA chốt danh sách tối đa 5 hội thoại có căn cứ trong &le;5 phút.
+          <strong>Luồng rà soát:</strong> Chọn dữ liệu và phạm vi ngày/kênh, chạy AI, mở tin gốc để kiểm tra rồi chốt tối đa 5 hội thoại cần theo dõi. Quyết định của TA được lưu trong trình duyệt và có thể xuất ra file.
         </p>
       </div>
 
@@ -243,7 +249,7 @@ p { color: var(--muted); font-size: 16px; }
         <div class="card">
           <span class="badge badge-blue">HAX G11</span>
           <h3 style="margin-top:8px;">Trích Dẫn Căn Cứ</h3>
-          <p>Mọi nhận định phải kèm trích dẫn nguyên văn mã tin <code>msg_id</code> gốc để TA soi.</p>
+          <p>Mỗi nhận định kèm mã tin <code>msg_id</code>. TA mở toàn bộ hội thoại và các phản hồi liên quan để đối chiếu.</p>
         </div>
         <div class="card">
           <span class="badge badge-green">HAX G9 & G10</span>
@@ -260,55 +266,48 @@ p { color: var(--muted); font-size: 16px; }
 
     <div class="slide-footer">
       <div>Kiến trúc: Augment (Hỗ trợ con người) · Tuân thủ 6 nguyên tắc Microsoft HAX Toolkit</div>
-      <div>Spec §4 & §6 · Codebase CP2</div>
+      <div>Spec §4 & §6 · Dashboard hiện tại</div>
     </div>
   </div>
 
-  <!-- SLIDE 4: REAL AI & GOLDEN SET -->
+  <!-- SLIDE 4: NEW FEATURES & LIVE DEMO -->
   <div class="slide">
     <div class="slide-header">
-      <div class="eyebrow">Kiểm chứng CP3 & Tiêu chuẩn nghiệm thu</div>
+      <div class="eyebrow">Tính năng mới & Demo trực tiếp</div>
       <span class="slide-num">Trang 4 / 6</span>
     </div>
 
     <div>
-      <h2>Nối AI Thật & Kết Quả Đo Lường Golden Set</h2>
-      <p style="margin-bottom:18px;">Kết nối trực tiếp OpenRouter API (<code>nvidia/nemotron-3-ultra-550b</code>), kiểm thử trên 20 case dán nhãn từ chatlog thật:</p>
+      <h2>Thử Dữ Liệu Riêng, Chọn Model, Trả Lời Câu Hỏi Chung</h2>
+      <p style="margin-bottom:18px;">Ban giám khảo có thể đưa dữ liệu của mình vào và thao tác ngay trên dashboard.</p>
 
-      <div class="metric-row">
-        <span class="metric-label">Precision (Độ chính xác)</span>
-        <div class="bar-bg"><div class="bar-fill" style="width:80%;background:var(--green);"></div></div>
-        <span class="metric-num" style="color:var(--green);">80.0%</span>
+      <div class="grid2">
+        <div class="card">
+          <h3 style="color:var(--cyan);">Dữ Liệu Thật & CSV Upload</h3>
+          <p>Dùng pack Discord có sẵn, tải CSV hoặc dán hội thoại. Lọc ngày/kênh và xem các tin được ghép theo chuỗi phản hồi trước khi chạy AI.</p>
+        </div>
+        <div class="card">
+          <h3 style="color:#818cf8;">Chọn Model OpenRouter</h3>
+          <p>Chuyển giữa Gemini Flash, Nemotron hoặc nhập model khác. Chọn là áp dụng ngay. Kết quả và quyết định được lưu riêng theo model.</p>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--green);">Chạy Theo Lượt, Dừng & Tiếp Tục</h3>
+          <p>Mỗi lượt tối đa 6 hội thoại. Model trả phí chạy tối đa 3 lượt song song. Dừng mở khóa thao tác ngay, giữ kết quả đã nhận để tiếp tục sau.</p>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--yellow);">Gom Câu Hỏi Chung Chưa Trả Lời</h3>
+          <p>AI đề xuất nhóm câu hỏi cùng nội dung và ngữ cảnh, không mang tính cá nhân. TA kiểm tra từng nguồn, loại câu không phù hợp rồi soạn một câu trả lời để sao chép hoặc xuất.</p>
+        </div>
       </div>
 
-      <div class="metric-row">
-        <span class="metric-label">Recall (Không bỏ sót SOS)</span>
-        <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--green);"></div></div>
-        <span class="metric-num" style="color:var(--green);">100.0%</span>
-      </div>
-
-      <div class="metric-row">
-        <span class="metric-label">Trích Dẫn Hợp Lệ</span>
-        <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--cyan);"></div></div>
-        <span class="metric-num" style="color:var(--cyan);">100.0%</span>
-      </div>
-
-      <div class="metric-row">
-        <span class="metric-label">Độ Trễ Phản Hồi TB</span>
-        <div class="bar-bg"><div class="bar-fill" style="width:25%;background:var(--discord);"></div></div>
-        <span class="metric-num" style="color:#818cf8;">1.26s</span>
-      </div>
-
-      <div class="card" style="margin-top:14px;padding:12px 20px;">
-        <p style="font-size:13px;">
-          ✓ <strong>Quality Bar đã khóa (CP4):</strong> Accuracy &ge;70%, Recall &ge;90%, Citation &ge;95%, Latency &le;5s. Toàn bộ chỉ số thực tế đều vượt ngưỡng.
-        </p>
+      <div class="card" style="margin-top:16px;padding:14px 20px;background:rgba(88,101,242,0.12);border-color:var(--discord);">
+        <p style="font-size:14px;color:#fff;"><strong>Demo:</strong> Tải CSV có hai câu hỏi cùng hạn nộp bài và một lỗi tài khoản cá nhân. Chạy AI, duyệt top 5, kiểm tra nhóm câu hỏi hạn nộp rồi soạn câu trả lời chung.</p>
       </div>
     </div>
 
     <div class="slide-footer">
-      <div>Chứng nhận: Video 30s thao tác thật + file kết quả <code>eval/cp3_test_results.json</code></div>
-      <div>Spec §7 · eval/README.md</div>
+      <div>Ví dụ câu hỏi chung: hạn nộp cùng bài tập, bản ghi hình cùng buổi học</div>
+      <div>TA kiểm tra và chốt nội dung trả lời</div>
     </div>
   </div>
 
@@ -320,26 +319,26 @@ p { color: var(--muted); font-size: 16px; }
     </div>
 
     <div>
-      <h2>5 Phiên Thử Nghiệm Thực Tế & Lắng Nghe Phản Hồi</h2>
+      <h2>5 Phiên Dùng Thử Prototype & Phản Hồi</h2>
 
       <div class="grid2" style="margin-top:14px;">
         <div class="card">
           <h3 style="color:var(--yellow);">Người Dùng Gặp Vấn Đề Gì? (Quotes)</h3>
           <p style="font-style:italic;color:#fff;margin-bottom:8px;">
-            "Ủa sao ban đầu phải bấm qua 2 trang chọn ngày với xem chủ đề mới tới được danh sách? Mình muốn mở ra thấy ngay top 5 cái kẹt nhất." — <strong>Bùi Thị Thu Uyên</strong>
+            "Nếu đang vội cuối ngày thì mình muốn mở ra thấy ngay top 5 cái kẹt nhất luôn." — <strong>Bùi Thị Thu Uyên</strong>
           </p>
           <p style="font-style:italic;color:#fff;">
-            "Bấm 'Xác nhận trạng thái' chẳng biết đã lưu chưa, tưởng bị đơ web." — <strong>Phạm Cường Quốc</strong>
+            "Nhưng nút 'Xác nhận trạng thái' bấm xong chẳng biết đã lưu chưa, tưởng bị đơ." — <strong>Phạm Cường Quốc</strong>
           </p>
         </div>
 
         <div class="card">
           <h3 style="color:var(--green);">Hành Động Cải Tiến (Changelog §9)</h3>
           <p style="margin-bottom:8px;">
-            ➔ <strong>Gộp All-in-One Dashboard:</strong> Toàn bộ quy trình và 2 cửa sổ terminal đưa lên 1 màn hình duy nhất. Thời gian duyệt giảm từ 4m15s xuống còn <strong>1m25s</strong>.
+            ➔ <strong>Gộp All-in-One Dashboard:</strong> Nhập dữ liệu, xem hội thoại và chốt danh sách trên một màn hình. Lưu quyết định để tiếp tục rà soát sau.
           </p>
           <p>
-            ➔ <strong>Thêm Toast Xanh & Terminal Log:</strong> Phản hồi thị giác tức thì ngay khi TA chốt quyết định.
+            ➔ <strong>Trạng thái thao tác rõ ràng:</strong> Báo khi đã lưu, hiển thị tiến độ từng lượt và cho phép dừng để tiếp tục thao tác.
           </p>
         </div>
       </div>
@@ -361,8 +360,8 @@ p { color: var(--muted); font-size: 16px; }
     </div>
 
     <div class="slide-footer">
-      <div>Chi tiết nhật ký: <code>validation/user_testing.md</code> (Đủ 5 người ngoài nhóm, có quote nguyên văn)</div>
-      <div>Rubric R6 (Bonus +8 điểm mở trần 100/100)</div>
+      <div>Nhật ký 5 phiên dùng thử prototype ngày 17/09: <code>validation/user_testing.md</code></div>
+      <div>Phản hồi từ học viên ngoài nhóm đóng vai TA</div>
     </div>
   </div>
 
@@ -378,22 +377,22 @@ p { color: var(--muted); font-size: 16px; }
 
       <div class="grid4" style="margin:20px 0;">
         <div class="card">
-          <h3 style="color:#fff;">Đặng Quốc Hiệp</h3>
+          <h3 style="color:#fff;">Hiệp</h3>
           <span class="badge badge-blue">Lead · 2A202602755</span>
           <p style="margin-top:8px;">Kiến trúc AI, prompt engineering, điều phối toàn bộ checkpoint.</p>
         </div>
         <div class="card">
-          <h3 style="color:#fff;">Nguyễn Thế Khang</h3>
+          <h3 style="color:#fff;">Khanh</h3>
           <span class="badge badge-blue">Spec · 2A202602964</span>
           <p style="margin-top:8px;">Canvas JTBD, nghiên cứu 4 sản phẩm tương tự, spec §1-§9.</p>
         </div>
         <div class="card">
-          <h3 style="color:#fff;">Nguyễn Việt Dũng</h3>
+          <h3 style="color:#fff;">Dũng</h3>
           <span class="badge badge-blue">Frontend · 2A202602812</span>
-          <p style="margin-top:8px;">All-in-One Dashboard, tích hợp dual terminal, kiểm thử HAX G1-G11.</p>
+          <p style="margin-top:8px;">Dashboard, nhập CSV, đổi model và giao diện trả lời câu hỏi chung.</p>
         </div>
         <div class="card">
-          <h3 style="color:#fff;">Đào Quang Cảnh</h3>
+          <h3 style="color:#fff;">Cảnh</h3>
           <span class="badge badge-blue">Eval · 2A202602542</span>
           <p style="margin-top:8px;">Golden Set 20 cases, đo kiểm baseline, điều phối 5 phiên thử nghiệm.</p>
         </div>

@@ -68,7 +68,7 @@ class DashboardBackendTests(unittest.TestCase):
 
     def test_saved_evaluation_counts_rows_and_identifies_limits(self):
         with patch.object(analyze.requests, 'post') as request:
-            result = server.recorded_evaluation()
+            result = server.legacy_recorded_evaluation()
         self.assertEqual(result['total_cases'], 3)
         self.assertEqual(result['expected_cases'], 20)
         self.assertEqual(result['matched'], 0)

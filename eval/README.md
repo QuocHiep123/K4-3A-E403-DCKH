@@ -1,77 +1,144 @@
-﻿# Đánh giá — Discord Pulse
+# Evaluation — Discord Pulse
 
-Thư mục này chứa toàn bộ dữ liệu đánh giá chất lượng AI qua các Checkpoint.
+The current evaluator uses the same conversation assembly, date cutoff, five-label prompt,
+batch limits and response validator as the dashboard. It reads `data/discord-pack/k4_messages.csv`.
+It never trains a model, invents a fallback classification, or sends Discord messages.
 
----
+## Prepare the inputs and human labels (offline)
 
-## CP3 — Chứng minh AI hoạt động (Golden Set 20 case)
+From the repository root:
 
-**Ngày:** 17/09/2026 · **Model:** `nvidia/nemotron-3-ultra-550b-a55b:free` (via OpenRouter)  
-**Phương pháp:** Phân loại trạng thái hội thoại trên 20 case mẫu có nhãn người.
+```bash
+.venv/bin/python -m codebase.evaluate prepare
+```
 
-### Bộ nhãn (Label Schema)
+This creates two local, Git-ignored files:
 
-| Nhãn | Ý nghĩa |
-|---|---|
-| `no-response` | Học viên hỏi/yêu cầu, chưa có phản hồi phù hợp trong pack |
-| `responded-unclear` | Đã có phản hồi nhưng chưa xác nhận giải quyết xong |
-| `resolved` | Vấn đề đã được xác nhận giải quyết rõ ràng |
-| `needs-context` | Tin quá ngắn/mơ hồ, cần ngữ cảnh ngoài pack |
-| `support-request` | Câu hỏi/yêu cầu hỗ trợ chung |
-| `other` | Không cần TA can thiệp (cảm ơn, phản ứng, thông báo…) |
+- `eval/local/review.md`: complete source conversations, warnings and possible duplicate-ID matches.
+- `eval/local/review.json`: source selections and blank human annotations.
 
-### Phân bố Golden Set (20 case) — Đối chiếu Rubric R4
+Read the worksheet, then edit each case in `review.json`:
 
-Bộ kiểm thử được xây dựng phủ đủ 4 lớp chỗ khó theo taxonomy, case thường và case hiếm, 100% từ chatlog thật:
+```json
+{
+  "source_id": "M05023",
+  "expected_label": "responded-unclear",
+  "reviewed_by": "Name of the person who checked the source",
+  "evidence_ids": ["M05023", "M13539"]
+}
+```
 
-| Nhóm theo Rubric | Lớp taxonomy / Phân loại | Case IDs | Số case | Mô tả hành vi kiểm chứng |
-|---|---|---|---|---|
-| **Chỗ khó (≥2 case/lớp)** | ① Nguồn sự thật | Case 1 (M53930), Case 4 (M65121) | 2 | AI phải kiểm tra trích dẫn tin gốc, không bịa mã tin nhắn hay tình trạng hỗ trợ |
-| **Chỗ khó (≥2 case/lớp)** | ② Mơ hồ / thiếu thông tin | Case 6 (M45980), Case 7 (M92861), Case 8 (M36026), Case 9 (M47681), Case 10 (M86664) | 5 | Tin quá ngắn hoặc thiếu context: AI phải chuyển `needs-context`, không phỏng đoán |
-| **Chỗ khó (≥2 case/lớp)** | ③ Ngoài phạm vi / thẩm quyền | Case 18 (M97148), Case 19 (M53663) | 2 | Học viên hỏi điểm danh/XP/thẩm quyền quản trị: AI không tự quyết định thay đào tạo |
-| **Chỗ khó (≥2 case/lớp)** | ④ Đặc thù domain | Case 2 (M84013), Case 3 (M05023), Case 5 (M27034) | 3 | Phân biệt `responded` (có câu hỏi chẩn đoán của TA) vs `resolved` (đã xong thật) |
-| **Case thường (8–10 case)** | Standard support requests | Cases 11, 12, 13, 14, 15, 16, 17 | 7 | Các câu hỏi bài tập, kỹ thuật, link tài liệu, lab, deadline phổ biến |
-| **Case hiếm (2–4 case)** | Rare / edge cases | Case 20 (M88243 - tin cảm ơn / other), Case 1 (lỗi công cụ lạ) | 2 | Tin phi hỗ trợ hoặc báo lỗi hệ thống đặc thù |
-| **Nguồn dữ liệu** | Từ chatlog thật khoá học | Toàn bộ 20/20 cases | 20/20 (100%) | Đều có `msg_id` trích từ Discord pack 12–14/09/2026 |
+Keep the other generated fields. Use one of `no-response`, `responded-unclear`, `resolved`,
+`needs-context`, or `other`. Label the **whole visible conversation**, not just the selected
+message. A diagnostic reply is not proof of resolution; do not infer attachment contents.
+`support-request` is a message category, not a supported conversation status.
+Do not use model predictions as ground truth. Review and freeze labels before the scored run.
 
-### Kết quả lượt đầu (5 case hard — đã có trong cp3_test_results.json)
+The original 20-case list currently gives **18 unique inputs and two ambiguous IDs**, `M80709`
+and `M88243`. For those cases, read both candidates and explicitly choose a suffixed
+`source_id` such as `M80709#1` or `M80709#2`. Several legacy descriptions also disagree with
+the source, so **all labels need review**, even labels previously marked `ta_reviewed`.
+If no candidate represents the intended test, correct the case list and prepare a new set.
+The evaluator never selects an ambiguous candidate automatically or counts the same
+conversation twice.
 
-| Chỉ số | Kết quả | Ghi chú |
+Optional scope flags: `--guild`, `--day YYYY-MM-DD`, `--channel`.
+A day scope includes earlier replies/parents but excludes future messages, exactly like the dashboard.
+Use `--review eval/local/new-review.json` to prepare another set without overwriting annotations.
+
+## Run and resume
+
+Configure `OPENROUTER_API_KEY` in `.env`, then run:
+
+```bash
+.venv/bin/python -m codebase.evaluate run --model google/gemini-3.8-flash
+```
+
+Any valid OpenRouter `provider/model` ID is supported. Paid models consume account credits.
+The default is `OPENROUTER_MODEL` from `.env`. Inputs are bounded batches of up to six complete
+conversations, not the whole CSV. Evaluation batches run sequentially for clear timing.
+
+Every completed API attempt is saved atomically to `eval/local/current_run.json`, including
+failures, timings, model/request IDs and trace IDs. Temporary connection errors, timeouts,
+HTTP 429 and 5xx responses retry with bounded backoff (`--max-attempts`, default 3).
+Authentication/credit/model errors stop the run; successful batches stay saved. Full provider
+prompt/response traces remain in `logs/llm-requests.log` with credentials redacted.
+
+After an interruption or provider failure:
+
+```bash
+.venv/bin/python -m codebase.evaluate run --model google/gemini-3.8-flash --resume
+```
+
+Resume skips valid completed cases and retries outstanding cases. It refuses to mix models,
+changed labels, changed source data/scope, or different pipeline implementations. Use a new
+`--output eval/local/run-NAME.json` for such changes. Existing files are never overwritten by
+a fresh run. To replace the dashboard's default run, first archive the old file under another
+name, then run with the default output path.
+
+For a diagnostic run before labeling is complete:
+
+```bash
+.venv/bin/python -m codebase.evaluate run --model google/gemini-3.8-flash --allow-unreviewed
+```
+
+This permits inference on unambiguous inputs, preserves ambiguous/missing inputs as explicit
+errors, and **does not publish accuracy or recall without reviewed labels**. It is not a
+quality benchmark. Preparing labels afterward requires a new run; no retroactive editing of
+expected answers to match predictions.
+
+## Read results and check citations
+
+```bash
+.venv/bin/python -m codebase.evaluate report
+.venv/bin/python -m codebase.evaluate citations
+```
+
+The second command creates `eval/local/citation-review.json` with each prediction and its
+source messages. A person must set `supported` to `true` or `false`, fill in `reviewed_by`,
+and optionally add a note. Check whether the cited text actually supports the reasoning,
+not just whether the IDs exist. Import those checks:
+
+```bash
+.venv/bin/python -m codebase.evaluate report --citations eval/local/citation-review.json
+```
+
+Both commands accept `--run` for a different result file. Citation reviews are bound to the
+run and the exact prediction; changed predictions invalidate prior checks.
+
+Restart the dashboard server after code changes. **Xem lượt kiểm thử đã lưu** (`GET /api/eval`)
+reads the current default run and recomputes metrics, without calling the model. If no new
+run exists it explicitly falls back to the historical three-case artifact. Generated source
+worksheets and provider outputs are local-only and cannot be served as static files.
+
+## What the metrics mean
+
+| Metric | Required threshold | Reporting rule |
 |---|---|---|
-| **Precision** (đề xuất đúng) | 4/5 = **80%** | M65121: AI gán `needs-context`, người gán `no-response` |
-| **Recall** (không bỏ sót) | 5/5 = **100%** | AI không bỏ sót hội thoại nào cần theo dõi |
-| **Tỷ lệ trích dẫn hợp lệ** | 8/8 = **100%** | Tất cả trích dẫn tồn tại và hỗ trợ nhận định |
-| **Thời gian AI trung bình** | **1.26s** / hội thoại | Không tính thời gian đọc pack |
+| Accuracy | ≥70% | Correct status / all expected cases, only after every input has a reviewed label and every case has been attempted. API/parse failures count as misses. |
+| Recall of `no-response` | ≥90% | Correct `no-response` predictions / all human-labeled `no-response` cases. No positive examples means undefined, not 100%. |
+| Citation validity | ≥95% | Human-confirmed supported predictions / all expected cases; unknown until every case is checked. ID validation alone is insufficient. |
+| Average API time | ≤5 s/case | Sum of request durations, including failed attempts, divided by all cases, once all have valid results. Mean batch request duration is reported separately. This is not single-request latency or end-to-end user time. |
+| TA completion | ≤5 minutes | Requires a separate timed user session. Not measured by this evaluator. |
 
-> **Để chạy đánh giá đầy đủ 20 case:**
-> ```bash
-> pip install -r requirements.txt
-> # Điền OPENROUTER_API_KEY vào .env trước
-> python codebase/analyze.py
-> ```
+Unrun cases are not dropped from denominators. Unreviewed labels and missing inputs keep
+accuracy/recall unavailable. Valid model output, passing code tests, and synthetic smoke tests
+do not establish AI quality. The overall quality bar cannot pass while required evidence is
+missing. Grouping quality needs a separate evaluation; this set measures classification.
 
----
+## Historical artifacts
 
-## CP4 — Quality Bar ĐÃ CHỐT (đồng bộ với spec.md §7)
+`golden_set.json`, `golden_set_results.json` and `cp3_test_results.json` are preserved as
+historical evidence, not overwritten. The saved three-case run contains one API error and
+two valid but mismatched predictions. Notes claiming an earlier 20-case score cannot be
+verified from those three rows. Historical five-case results are not a current 20-case benchmark.
 
-| Chỉ số | Ngưỡng tối thiểu | Lý do |
-|---|---|---|
-| Overall accuracy (20 case) | >= 70% | Đủ để TA tin vào đề xuất làm điểm xuất phát (cần tune prompt hoặc model nhanh hơn) |
-| Recall (no-response) | >= 90% | Không bỏ sót người đang cần giúp là ưu tiên sống còn của TA |
-| Trích dẫn hợp lệ | >= 95% | Mọi đề xuất phải có căn cứ tin nhắn gốc đọc được, không bịa mã tin |
-| Avg API time | <= 5s / case | Toàn bộ lượt rà soát 5 case trong <=25s là chấp nhận được |
-| Thời gian TA hoàn thành | <= 5 phút | Đo bằng session timer trong mock; xác nhận với TA thật ở CP5 |
+`codebase/analyze.py` retains the old demo classifier for compatibility, but its CLI now delegates
+to this evaluator. Its old single-message benchmark, hardcoded labels and automatic webhook
+report have been removed.
 
-> **Lưu ý:** Bảng trên đã được đồng bộ với spec.md §7 (17/09/2026). Phiên bản nháp trước đó ghi ngưỡng accuracy >=75% và API time <=3s.
+Offline regression tests:
 
----
-
-## File liên quan
-
-| File | Mô tả |
-|---|---|
-| [golden_set.json](golden_set.json) | 20 case mẫu có nhãn người — nguồn đánh giá chính |
-| [cp3_test_results.json](cp3_test_results.json) | Kết quả 5 case hard (đồng đội đã làm) |
-| [golden_set_results.json](golden_set_results.json) | Kết quả 20 case từ `codebase/analyze.py` (sinh ra khi chạy script) |
-| [../evidence/sample-annotations.json](../evidence/sample-annotations.json) | Nhãn sơ bộ 50 tin, do AI đề xuất, nhóm rà soát |
-| [../codebase/analyze.py](../codebase/analyze.py) | Script chính gọi OpenRouter API |
+```bash
+.venv/bin/python -m unittest codebase.evaluation_test codebase.workflow_test codebase.dashboard_backend_test codebase.grouping_test
+```

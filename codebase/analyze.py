@@ -4,11 +4,10 @@ Phân loại trạng thái hội thoại Discord và đề xuất ưu tiên cho 
 
 Cách dùng:
   1. Điền OPENROUTER_API_KEY vào file .env
-  2. Chạy: python codebase/analyze.py
-  3. Kết quả lưu vào eval/golden_set_results.json và hiện thị lên terminal
+  2. Đánh giá dashboard: python -m codebase.evaluate prepare
+  3. Xem eval/README.md để rà soát nhãn và chạy bộ đánh giá mới.
 """
 
-import csv
 import json
 import os
 import time
@@ -43,71 +42,6 @@ def validate_result(result):
     if not isinstance(result.get("needs_ta_review"), bool):
         raise ValueError("Invalid review flag")
     return result
-
-
-DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "")
-
-BASE_DIR = Path(__file__).parent.parent
-# challenge_materials nằm ở cùng cấp với repo K4-3A-E403-DCKH
-REPO_ROOT = BASE_DIR
-CHALLENGE_ROOT = BASE_DIR.parent / "challenge_materials"
-DATA_PATH = CHALLENGE_ROOT / "discord-pack" / "k4_messages.csv"
-# Fallback: thử đường dẫn trong repo
-if not DATA_PATH.exists():
-    DATA_PATH = BASE_DIR / "challenge_materials" / "discord-pack" / "k4_messages.csv"
-GOLDEN_SET_PATH = BASE_DIR / "eval" / "golden_set.json"
-RESULTS_PATH = BASE_DIR / "eval" / "golden_set_results.json"
-
-# Golden set: 20 msg_id được chọn từ evidence/sample-annotations.json
-# Gồm: support_request (câu hỏi cần hỗ trợ), needs_context, resolved, other
-GOLDEN_SET_IDS = [
-    # === Lớp chỗ khó ①: Nguồn sự thật / chưa có phản hồi rõ ===
-    "M53930", "M84013", "M05023", "M65121", "M27034",
-    # === Lớp chỗ khó ②: Mơ hồ / cần ngữ cảnh thêm ===
-    "M45980", "M92861", "M36026", "M47681", "M86664",
-    # === Case thông thường (câu hỏi học tập / logistics) ===
-    "M56157", "M09090", "M49586", "M80709", "M67785",
-    "M32171", "M48859", "M97148", "M53663", "M88243",
-]
-
-HUMAN_LABELS = {
-    # Dán nhãn thủ công từ evidence/sample-annotations.json + nhóm rà soát
-    "M53930": "no-response",       # Báo vẫn chưa truy cập được
-    "M84013": "responded-unclear", # Có reply nhưng chưa chốt kết quả
-    "M05023": "responded-unclear", # Reply là câu hỏi chẩn đoán
-    "M65121": "no-response",       # Câu hỏi cách nộp, chưa được trả lời
-    "M27034": "resolved",          # Đã có xác nhận giải quyết
-    "M45980": "needs-context",     # Tin quá ngắn
-    "M92861": "needs-context",     # Phụ thuộc ngữ cảnh thread
-    "M36026": "needs-context",     # Không đủ thông tin để phân loại
-    "M47681": "needs-context",     # Cần xem reply chain
-    "M86664": "needs-context",     # Chỉ có 1 từ
-    "M56157": "support-request",   # Câu hỏi về quy trình
-    "M09090": "support-request",   # Hỏi logistics
-    "M49586": "support-request",   # Hỏi cách làm lab
-    "M80709": "support-request",   # Báo cáo lỗi kỹ thuật
-    "M67785": "support-request",   # Hỏi cơ cấu nhóm
-    "M32171": "support-request",   # Hỏi deadline
-    "M48859": "support-request",   # Hỏi link tài liệu
-    "M97148": "support-request",   # Hỏi quy định
-    "M53663": "support-request",   # Hỏi điểm danh
-    "M88243": "other",             # Cảm ơn/không cần hỗ trợ
-}
-
-# ── Đọc dữ liệu CSV ───────────────────────────────────────────────────────────
-def load_messages(csv_path: Path, target_ids: list[str]) -> dict:
-    """Đọc các tin nhắn theo msg_id từ CSV. Encoding UTF-8-BOM."""
-    messages = {}
-    try:
-        with open(csv_path, encoding="utf-8-sig") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                if row["msg_id"] in target_ids:
-                    messages[row["msg_id"]] = row
-    except FileNotFoundError:
-        print(f"⚠️  Không tìm thấy file dữ liệu tại: {csv_path}")
-        print("   Đảm bảo bạn có thư mục challenge_materials/discord-pack/ bên cạnh repo.")
-    return messages
 
 
 # ── Gọi OpenRouter API ────────────────────────────────────────────────────────
@@ -210,139 +144,12 @@ Format trả về:
         }
 
 
-# ── Tính điểm đánh giá ────────────────────────────────────────────────────────
-def evaluate_results(cases: list[dict]) -> dict:
-    """Tính precision, recall và các chỉ số khác cho toàn bộ golden set."""
-    total = len(cases)
-    matched = sum(1 for c in cases if c.get("match"))
-    needs_review = sum(1 for c in cases if c.get("ai_result", {}).get("needs_ta_review"))
-    avg_confidence = round(
-        sum(c.get("ai_result", {}).get("confidence", 0) for c in cases) / total, 3
-    ) if total else 0
-    avg_time = round(
-        sum(c.get("ai_result", {}).get("api_time_seconds", 0) for c in cases) / total, 2
-    ) if total else 0
-
-    return {
-        "total_cases": total,
-        "matched": matched,
-        "accuracy": f"{matched}/{total} = {round(matched/total*100, 1)}%",
-        "needs_ta_review": needs_review,
-        "avg_confidence": avg_confidence,
-        "avg_api_time_seconds": avg_time,
-        "model": MODEL,
-    }
-
-
-# ── Gửi bản tin Discord Webhook (tuỳ chọn) ───────────────────────────────────
-def send_discord_report(summary: dict, top5: list[dict]):
-    """Bắn bản tin kết quả CP3 sang Discord channel qua Webhook."""
-    if not DISCORD_WEBHOOK_URL:
-        print("ℹ️  DISCORD_WEBHOOK_URL chưa được cấu hình, bỏ qua gửi Discord.")
-        return
-
-    lines = [
-        "📊 **[Discord Pulse] Kết quả phân loại CP3**",
-        f"- Model: `{summary['model']}`",
-        f"- Độ chính xác: **{summary['accuracy']}**",
-        f"- Cần TA xem lại: **{summary['needs_ta_review']}** case",
-        f"- Thời gian TB: **{summary['avg_api_time_seconds']}s** / hội thoại",
-        "",
-        "🔴 **Top hội thoại cần ưu tiên:**",
-    ]
-    for i, case in enumerate(top5[:5], 1):
-        label = case.get("ai_result", {}).get("label", "?")
-        conf = case.get("ai_result", {}).get("confidence", 0)
-        lines.append(f"  {i}. `{case['msg_id']}` — {label} (confidence: {conf:.0%})")
-
-    payload = {"content": "\n".join(lines)}
-    try:
-        requests.post(DISCORD_WEBHOOK_URL, json=payload, timeout=10)
-        print("✅ Đã gửi bản tin sang Discord!")
-    except Exception as e:
-        print(f"⚠️  Gửi Discord thất bại: {e}")
-
-
-# ── Main ──────────────────────────────────────────────────────────────────────
 def main():
-    print("=" * 60)
-    print("  Discord Pulse — CP3 AI Engine")
-    print(f"  Model: {MODEL}")
-    print("=" * 60)
-
-    # 1. Đọc tin nhắn từ CSV
-    print(f"\n📂 Đọc dữ liệu từ: {DATA_PATH}")
-    messages = load_messages(DATA_PATH, GOLDEN_SET_IDS)
-    if not messages:
-        print("❌ Không đọc được dữ liệu. Kiểm tra đường dẫn challenge_materials/.")
-        return
-
-    print(f"   ✅ Đọc được {len(messages)}/{len(GOLDEN_SET_IDS)} tin nhắn cần phân tích.")
-
-    import sys
-    limit = len(GOLDEN_SET_IDS)
-    for arg in sys.argv[1:]:
-        if arg.startswith("--limit="):
-            limit = int(arg.split("=")[1])
-        elif arg.isdigit():
-            limit = int(arg)
-    target_ids = GOLDEN_SET_IDS[:limit]
-
-    # 2. Phân loại từng tin nhắn
-    print(f"\n🤖 Gọi AI phân loại {len(target_ids)}/{len(GOLDEN_SET_IDS)} hội thoại...")
-    cases = []
-    for i, msg_id in enumerate(target_ids, 1):
-        if msg_id not in messages:
-            print(f"  [{i:02d}/{len(target_ids)}] ⚠️  {msg_id} — Không tìm thấy trong CSV, bỏ qua.")
-            continue
-
-        row = messages[msg_id]
-        content = row.get("content", "")[:500]  # Giới hạn 500 ký tự để tiết kiệm token
-        reply_to = row.get("reply_to", "")
-
-        ai_result = classify_conversation(msg_id, content, reply_to)
-        human_label = HUMAN_LABELS.get(msg_id, "unknown")
-        match = ai_result.get("label") == human_label
-
-        case = {
-            "msg_id": msg_id,
-            "human_label": human_label,
-            "ai_result": ai_result,
-            "match": match,
-            "content_preview": content[:80] + "..." if len(content) > 80 else content,
-        }
-        cases.append(case)
-
-        status = "✅" if match else "❌"
-        print(
-            f"  [{i:02d}/{len(target_ids)}] {status} {msg_id} "
-            f"AI={ai_result.get('label')} Human={human_label} "
-            f"conf={ai_result.get('confidence', 0):.0%} "
-            f"({ai_result.get('api_time_seconds', 0)}s)"
-        )
-        time.sleep(0.5)  # Tránh rate limit
-
-    # 3. Tính kết quả
-    summary = evaluate_results(cases)
-    print("\n" + "=" * 60)
-    print("  KẾT QUẢ ĐÁNH GIÁ")
-    print("=" * 60)
-    for k, v in summary.items():
-        print(f"  {k:30s}: {v}")
-
-    # 4. Lưu kết quả
-    RESULTS_PATH.parent.mkdir(exist_ok=True)
-    output = {"summary": summary, "cases": cases}
-    with open(RESULTS_PATH, "w", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
-    print(f"\n💾 Kết quả lưu vào: {RESULTS_PATH}")
-
-    # 5. Gửi Discord (nếu có webhook)
-    high_priority = [c for c in cases if c["ai_result"].get("label") in ("no-response", "responded-unclear")]
-    send_discord_report(summary, high_priority)
-
-    print("\n✅ Hoàn tất! Xem kết quả chi tiết tại eval/golden_set_results.json")
+    # Compatibility entrypoint: never run the old single-message benchmark or send webhooks.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from codebase.evaluate import main as evaluate_main
+    return evaluate_main(sys.argv[1:] or ['run'])
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

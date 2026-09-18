@@ -78,3 +78,18 @@ def batch_input(body):
     if len(inputs) > 1 and sum(len(json.dumps(item, ensure_ascii=False)) for item in inputs) > data_input.MAX_BATCH_CHARS:
         raise ValueError('Lượt quá dài; chia nhỏ các hội thoại.')
     return review, inputs
+
+
+def grouping_input(body):
+    # Retrieve source from the preview, never accept replacement text from the browser.
+    review = get(PREVIEWS, body.get('review_id'))
+    ids = body.get('ids')
+    if not isinstance(ids, list) or not 2 <= len(ids) <= 80 or any(not isinstance(mid, str) for mid in ids) or len(set(ids)) != len(ids):
+        raise ValueError('Gom 2–80 hội thoại chưa trả lời mỗi lần. Hãy lọc ngày/kênh nhỏ hơn nếu vượt giới hạn.')
+    lookup = {c['id']: c for c in review['conversations']}
+    if any(mid not in lookup or lookup[mid]['blocked'] for mid in ids):
+        raise ValueError('Hội thoại không thuộc phạm vi hoặc vượt giới hạn.')
+    inputs = [lookup[mid] for mid in ids]
+    if sum(len(json.dumps(c, ensure_ascii=False)) for c in inputs) > 60000:
+        raise ValueError('Nội dung gom nhóm quá dài (tối đa 60.000 ký tự). Hãy chọn phạm vi nhỏ hơn; không cắt nội dung nguồn.')
+    return review, inputs

@@ -1,8 +1,17 @@
 'use strict';
 const M = window.PulseReview;
 const $ = id => document.getElementById(id);
-const state = {source:'bundled', dataset:null, review:null, records:{}, selected:null, view:'all', busy:false, stop:false, model:null, configLoaded:false};
+const state = {source:'bundled', dataset:null, review:null, records:{}, selected:null, view:'all', busy:false, analyzing:false, stop:false, model:null, configLoaded:false};
 let toastTimer;
+const decisionDrafts=new Map();
+let renderedDetail=null,reviewInteraction=0;
+function resetDecisionDrafts(){decisionDrafts.clear();renderedDetail=null;}
+function rememberDecisionDraft(){
+  const result=state.records[state.selected]?.result;
+  if(!result)return;
+  reviewInteraction++;
+  decisionDrafts.set(state.selected,{result,reviewed:$('sourceReviewed').checked,decision:$('taDecision').value,note:$('decisionNote').value});
+}
 const activeRequests=new Set();
 function toast(message) { clearTimeout(toastTimer); $('toast').textContent=message; $('toast').classList.add('show'); toastTimer=setTimeout(()=>$('toast').classList.remove('show'),4500); }
 function log(message) { $('runLog').textContent += `\n[${new Date().toLocaleTimeString()}] ${message}`; $('runLog').scrollTop=$('runLog').scrollHeight; }
@@ -65,6 +74,7 @@ function writeRecords(next, required=false) {
   state.records=next;
 }
 function readRecords() {
+  resetDecisionDrafts();
   const records={};
   try {
     const saved=JSON.parse(localStorage.getItem(storageKey())||localStorage.getItem(`discord-pulse-review-v2:${state.review.fingerprint}`)||'null');
@@ -101,14 +111,17 @@ function updateControls() {
   $('analyzeBtn').disabled=state.busy || !modelReady || pending.length===0;
   $('analyzeBtn').textContent=Object.values(state.records).some(r=>r.result)?'Tiếp tục phân tích':'Tìm hội thoại cần giúp';
   $('retryBtn').hidden=failed.length===0; $('retryBtn').disabled=state.busy||!modelReady;
-  const canDecide=!state.busy && !!state.records[state.selected]?.result && $('sourceReviewed').checked;
+  const canReview=(!state.busy || state.analyzing) && !!state.records[state.selected]?.result;
+  const canDecide=canReview && $('sourceReviewed').checked;
   for(const id of ['taDecision','decisionNote','saveDecision']) $(id).disabled=!canDecide;
-  $('sourceReviewed').disabled=state.busy;
+  $('sourceReviewed').disabled=!canReview;
   $('exportBtn').disabled=state.busy || !Object.values(state.records).some(r=>r.decision);
+  updateGroupControls();
 }
 function invalidatePreview() {
+  resetDecisionDrafts();
   state.review=null; state.records={}; state.selected=null;
-  $('analysisSection').hidden=true; $('reviewSection').hidden=true;
+  $('analysisSection').hidden=true; $('reviewSection').hidden=true;renderGroups();
 }
 function options(element, values, allLabel) {
   element.replaceChildren();
@@ -173,12 +186,15 @@ function renderList() {
     const r=state.records[c.id];const button=document.createElement('button');button.className=`case-button${state.selected===c.id?' selected':''}`;button.dataset.id=c.id;
     const title=document.createElement('strong');title.textContent=c.id;const text=document.createTextNode(c.title.length>=110?c.title+'…':c.title);
     const meta=document.createElement('span');meta.textContent=r?.decision?`TA: ${M.labels[r.decision]}`:r?.result?`${M.labels[r.result.label]} · Ưu tiên ${r.result.priority}/3`:c.blocked?'Vượt giới hạn':r?.error?'Lỗi · chưa phân tích':'Chưa phân tích';
-    button.append(title,text,meta);button.addEventListener('click',()=>{state.selected=c.id;renderList();renderDetail();});$('caseList').append(button);
+    button.append(title,text,meta);button.addEventListener('click',()=>{reviewInteraction++;state.selected=c.id;renderList();renderDetail();});$('caseList').append(button);
   }
 }
 function renderDetail() {
-  const c=selected();$('detail').hidden=!c;if(!c)return;
+  const c=selected();$('detail').hidden=!c;if(!c){renderedDetail=null;return;}
   const r=state.records[c.id], ai=r?.result;
+  // Unrelated batch arrivals must not replace focused inputs or reset source scroll.
+  if(renderedDetail?.conversation===c && renderedDetail.record===r){updateControls();return;}
+  renderedDetail={conversation:c,record:r};
   $('caseMeta').textContent=`${c.id} · ${c.guild} / ${c.channel} · ${c.messages.length} tin`;
   $('caseTitle').textContent=c.title;
   $('aiLabel').textContent=ai?M.labels[ai.label]:'Chưa phân tích';$('aiLabel').className=`status ${ai?.label||''}`;
@@ -191,24 +207,27 @@ function renderDetail() {
     const meta=document.createElement('p');meta.className='meta';meta.textContent=`${msg.msg_id} · ${msg.speaker} · ${msg.created_at_vn||'Không có thời gian'}${msg.reply_to?' · reply '+msg.reply_to:''}`;
     const content=document.createElement('p');content.textContent=msg.content;article.append(meta,content);
     if(msg.n_attachments){const note=document.createElement('p');note.className='attachment';note.textContent=`${msg.n_attachments} tệp đính kèm không có trong dữ liệu`;article.append(note);}$('messages').append(article);}
-  $('decisionArea').hidden=!ai;$('sourceReviewed').checked=false;
-  $('taDecision').value=r?.decision||ai?.label||'needs-context';$('decisionNote').value=r?.note||'';
+  const draft=decisionDrafts.get(c.id);
+  const currentDraft=ai && draft?.result===ai ? draft : null;
+  $('decisionArea').hidden=!ai;$('sourceReviewed').checked=currentDraft?.reviewed||false;
+  $('taDecision').value=currentDraft?.decision||r?.decision||ai?.label||'needs-context';$('decisionNote').value=currentDraft?.note??r?.note??'';
   $('decisionStatus').textContent=r?.decision?`Đã lưu: ${M.labels[r.decision]} · ${r.saved_at}`:'Chưa lưu quyết định.';
   updateControls();
 }
 function renderFinal() {
   const final=conversations().filter(c=>M.follow.has(state.records[c.id]?.decision));
   $('finalCount').textContent=`${final.length}/5`;$('finalList').replaceChildren();
-  for(const c of final){const li=document.createElement('li');li.textContent=`${c.id} · ${c.title}`;const button=document.createElement('button');button.textContent='Xem / đổi quyết định';button.addEventListener('click',()=>{state.selected=c.id;state.view='all';renderList();renderDetail();$('detail').scrollIntoView({block:'start'});});li.append(button);$('finalList').append(li);}
+  for(const c of final){const li=document.createElement('li');li.textContent=`${c.id} · ${c.title}`;const button=document.createElement('button');button.textContent='Xem / đổi quyết định';button.addEventListener('click',()=>{reviewInteraction++;state.selected=c.id;state.view='all';renderList();renderDetail();$('detail').scrollIntoView({block:'start'});});li.append(button);$('finalList').append(li);}
   if(!final.length){const li=document.createElement('li');li.textContent='Chưa chốt mục cần theo dõi.';$('finalList').append(li);}
   updateControls();
 }
-function render(){renderList();renderDetail();renderFinal();const count=Object.values(state.records).filter(r=>r.result).length;$('analysisProgress').max=Math.max(1,conversations().length);$('analysisProgress').value=count;}
+function render(){renderList();renderDetail();renderFinal();renderGroups();const count=Object.values(state.records).filter(r=>r.result).length;$('analysisProgress').max=Math.max(1,conversations().length);$('analysisProgress').value=count;}
 async function analyzePending(onlyFailed=false) {
   if(state.busy||!state.review||!state.model||draftModel()!==state.model)return;
   const groups=state.review.batches.map(ids=>ids.filter(id=>!state.records[id]?.result && (!onlyFailed||state.records[id]?.error))).filter(ids=>ids.length);
   if(!groups.length)return;
-  state.stop=false;state.cancelled=false;setBusy(true);$('stopBtn').hidden=false;$('stopBtn').disabled=false;
+  const interactionAtStart=reviewInteraction,reviewingCompleted=!!state.records[state.selected]?.result;
+  state.analyzing=true;state.stop=false;state.cancelled=false;setBusy(true);$('stopBtn').hidden=false;$('stopBtn').disabled=false;
   const concurrency=state.model.endsWith(':free')||state.model==='openrouter/free'?1:3;
   const started=performance.now();let cursor=0,active=0,completed=0;
   const progress=()=>{$('analysisStatus').textContent=`${state.stop?'Đang dừng; chờ các lượt đã gửi…':'Đang phân tích…'} ${completed}/${groups.length} lượt hoàn tất · ${active} lượt đang chạy · ${Math.round((performance.now()-started)/1000)}s đã trôi qua.`;};
@@ -231,31 +250,41 @@ async function analyzePending(onlyFailed=false) {
    }
   }
   try{await Promise.all(Array.from({length:Math.min(concurrency,groups.length)},()=>worker()));}
-  finally{clearInterval(timer);setBusy(false);$('stopBtn').hidden=true;}
+  finally{clearInterval(timer);state.analyzing=false;setBusy(false);$('stopBtn').hidden=true;}
   const elapsed=((performance.now()-started)/1000).toFixed(1);
   log(`Kết thúc: ${completed}/${groups.length} lượt · ${elapsed}s tổng thời gian · tối đa ${concurrency} lượt đồng thời`);
   const done=Object.values(state.records).filter(r=>r.result).length;
   const failed=Object.values(state.records).filter(r=>r.error).length;
   const blocked=conversations().filter(c=>c.blocked).length;
   $('analysisStatus').textContent=`${state.cancelled?'Đã dừng. ':''}Đã phân tích ${done}/${conversations().length} hội thoại. ${failed} lỗi; ${blocked} vượt giới hạn. Lần chạy này: ${elapsed}s.${state.cancelled?' Yêu cầu đã gửi có thể vẫn hoàn tất ở provider; có thể tiếp tục các mục chưa có kết quả.':''}${done<conversations().length?' Danh sách ưu tiên tạm thời, chưa bao phủ toàn phạm vi.':' Đã có kết quả cho toàn phạm vi. TA cần kiểm tra trước khi chốt.'}`;
-  state.view='top';state.selected=M.ranked(conversations(),state.records)[0]?.id||conversations()[0]?.id||null;render();
+  if(!reviewingCompleted && reviewInteraction===interactionAtStart){state.view='top';state.selected=M.ranked(conversations(),state.records)[0]?.id||conversations()[0]?.id||null;}
+  render();
 }
 function saveDecision() {
-  if(state.busy)return;
-  try{const next=M.decide(state.records,state.selected,$('taDecision').value,$('decisionNote').value,$('sourceReviewed').checked);writeRecords(next,true);render();toast('Đã lưu quyết định trong trình duyệt này.');}
+  if(state.busy && !state.analyzing)return;
+  try{const next=M.decide(state.records,state.selected,$('taDecision').value,$('decisionNote').value,$('sourceReviewed').checked);writeRecords(next,true);decisionDrafts.delete(state.selected);reviewInteraction++;render();toast('Đã lưu quyết định trong trình duyệt này.');}
   catch(error){toast(error.message);}
 }
 function exportReview() {
   if(state.busy||!state.review)return;
   const saved=conversations().filter(c=>state.records[c.id]?.decision);
   if(!saved.length)return;
-  const output={product:'Discord Pulse',model:state.model,source:state.review.source,scope:state.review.scope,fingerprint:state.review.fingerprint,exportedAt:new Date().toISOString(),sentToDiscord:false,
+  const output={product:'Discord Pulse',model:state.model,source:state.review.source,scope:state.review.scope,fingerprint:state.review.fingerprint,exportedAt:new Date().toISOString(),sentToDiscord:false,question_groups:groupExport(),
     coverage:{total:conversations().length,analyzed:Object.values(state.records).filter(r=>r.result).length,reviewed:saved.length},
     followUp:saved.filter(c=>M.follow.has(state.records[c.id].decision)).map(c=>c.id),
     decisions:saved.map(c=>({id:c.id,sourceIds:c.messages.map(m=>m.msg_id),...state.records[c.id]}))};
   const url=URL.createObjectURL(new Blob([JSON.stringify(output,null,2)],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download='discord-pulse-review.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-async function loadEval(){ $('evalBtn').disabled=true;try{const r=await api('/api/eval');$('evalLog').textContent=`${r.source}\n${r.model}\n${r.matched}/${r.total_cases} khớp; chỉ có ${r.total_cases}/${r.expected_cases} case\nCHƯA ĐỦ CƠ SỞ ĐÁNH GIÁ QUALITY BAR\n${r.warnings.join('\n')}`;}catch(error){$('evalLog').textContent=error.message;}finally{$('evalBtn').disabled=false;}}
+async function loadEval(){
+  $('evalBtn').disabled=true;
+  try{
+    const r=await api('/api/eval');
+    const matches=r.matched===null?'Chưa có đủ nhãn chuẩn để tính độ chính xác':`${r.matched}/${r.expected_cases} khớp`;
+    const coverage=r.successful_cases===undefined?`${r.total_cases}/${r.expected_cases} case trong tệp cũ`:`${r.successful_cases}/${r.expected_cases} kết quả hợp lệ; ${r.reviewed_cases}/${r.expected_cases} nhãn đã rà soát`;
+    const quality=r.quality_bar_status==='failed'?'CÓ CHỈ SỐ CHƯA ĐẠT QUALITY BAR':'CHƯA ĐỦ CƠ SỞ XÁC NHẬN QUALITY BAR';
+    $('evalLog').textContent=`${r.source}\n${r.model}\n${matches}\n${coverage}\n${quality}\n${r.warnings.join('\n')}`;
+  }catch(error){$('evalLog').textContent=error.message;}finally{$('evalBtn').disabled=false;}
+}
 window.addEventListener('DOMContentLoaded',()=>{
   for(const [value,label] of Object.entries(M.labels))$('taDecision').add(new Option(label,value));
   for(const b of document.querySelectorAll('[data-source]'))b.addEventListener('click',()=>chooseSource(b.dataset.source));
@@ -263,8 +292,10 @@ window.addEventListener('DOMContentLoaded',()=>{
   $('guildFilter').addEventListener('change',()=>{guildOptions();invalidatePreview();});for(const id of ['dateFilter','channelFilter'])$(id).addEventListener('change',invalidatePreview);
   $('previewBtn').addEventListener('click',()=>loadPreview());$('analyzeBtn').addEventListener('click',()=>analyzePending());$('retryBtn').addEventListener('click',()=>analyzePending(true));
   $('stopBtn').addEventListener('click',()=>{state.stop=true;state.cancelled=true;$('stopBtn').disabled=true;for(const controller of activeRequests)controller.abort('user_stop');});
-  $('viewTop').addEventListener('click',()=>{state.view='top';renderList();});$('viewAll').addEventListener('click',()=>{state.view='all';renderList();});
-  $('sourceReviewed').addEventListener('change',updateControls);$('saveDecision').addEventListener('click',saveDecision);$('exportBtn').addEventListener('click',exportReview);$('evalBtn').addEventListener('click',loadEval);
+  $('viewTop').addEventListener('click',()=>{reviewInteraction++;state.view='top';renderList();});$('viewAll').addEventListener('click',()=>{reviewInteraction++;state.view='all';renderList();});
+  $('sourceReviewed').addEventListener('change',()=>{rememberDecisionDraft();updateControls();});
+  $('taDecision').addEventListener('change',rememberDecisionDraft);$('decisionNote').addEventListener('input',rememberDecisionDraft);
+  $('saveDecision').addEventListener('click',saveDecision);$('exportBtn').addEventListener('click',exportReview);$('evalBtn').addEventListener('click',loadEval);
   $('modelSelect').addEventListener('change',applyModel);
   $('customModel').addEventListener('input',editModel);$('customModel').addEventListener('change',applyModel);
   $('customModel').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();applyModel();}});
